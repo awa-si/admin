@@ -81,6 +81,21 @@ Typical content includes:
 7. **Current repository state is authoritative for implementation**
    - Project instructions may define how repository state is read, but technical facts about code, schemas, APIs, and architecture must come from the current repository rather than duplicated instruction text.
 
+## Repository workspace policy
+
+Repository transport and local execution are separate concerns.
+
+- Small deterministic edits should use the GitHub Patch path directly.
+- Broader changes, repository-wide inspection, builds, and tests should use a local runtime workspace when that materially improves verification.
+- If direct `git clone` is unavailable, the GitHub connector/API should materialize the required repository snapshot into `/tmp/<repo>` instead of blocking local work.
+- A connector-materialized workspace is a snapshot/workspace checkout, not a Git clone unless Git transport actually occurred.
+- The workspace must retain the source branch, base commit SHA, and base tree SHA so writes can be concurrency-guarded.
+- Multi-file writes should be committed atomically where practical using Git blobs/tree/commit/ref primitives, with force disabled.
+- If the branch moved after materialization, refresh and reconcile; never overwrite newer changes from stale local state.
+- Verify the resulting commit and changed files. Use CI only where it materially validates the change; documentation-only edits should not trigger CI unless repository rules require it.
+
+The detailed global workflow is defined in `instructions.txt`; project `agent.md` files should contain only repository-specific deviations.
+
 ## Recommended project structure
 
 ```text

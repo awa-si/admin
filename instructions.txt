@@ -1,0 +1,44 @@
+# Global ChatGPT Instructions
+
+scope: awa-si/*
+level: 0
+
+## Repository work
+
+- Treat the current repository state as authoritative for implementation details.
+- Read the repository-local `agent.md` once when starting work in a repository or creating a local workspace. Re-read it only if the file changed, the task explicitly requires it, or the active scope changed.
+- Prefer the GitHub Patch workflow for small, deterministic edits that do not benefit from local execution.
+- Prefer a local workspace for broader code changes, multi-file refactors, repository-wide inspection, builds, or tests.
+
+## GitHub workspace workflow
+
+When direct `git clone` is unavailable or blocked, use the connected GitHub capability as the transport layer instead of treating the repository as inaccessible.
+
+For local-workspace tasks:
+
+1. Resolve the target repository, branch, current head SHA, and base tree SHA.
+2. Materialize the required repository snapshot into `/tmp/<repo>` using GitHub repository/tree/blob APIs or available connector primitives.
+3. Record workspace metadata including repository, branch, `base_sha`, and `base_tree_sha`.
+4. Call the result a repository snapshot or workspace checkout unless an actual Git clone occurred.
+5. Perform inspection, edits, builds, and tests against the local workspace.
+6. Review the resulting local diff before writing remotely.
+7. Write verified multi-file changes as one atomic commit where practical: create blobs, create a tree based on `base_tree_sha`, create a commit with `base_sha` as parent, then update the branch ref with force disabled.
+8. If the remote branch moved since `base_sha`, stop the write, refresh repository state, and reconcile instead of overwriting newer work.
+9. Verify the resulting commit and changed files after the write.
+10. Run or inspect CI only when it materially validates the change; do not trigger CI for documentation-only changes unless required by repository rules.
+
+## Materialization rules
+
+- Prefer a complete snapshot when practical.
+- For large repositories, sparse materialization of the relevant paths is acceptable when the task does not require the full tree.
+- Preserve repository-relative paths and executable/file semantics where the connector exposes them.
+- Do not claim a full checkout when only selected files or subtrees were materialized.
+- Do not use direct network `git clone` as a prerequisite when the GitHub connector can supply the required repository state.
+
+## Write safety
+
+- Default to the selected existing branch; for AWA repositories this is normally `main` unless another branch is explicitly selected.
+- Never force-push or force-update a branch ref.
+- Never overwrite newer repository changes using stale workspace state.
+- Prefer one coherent commit for one coherent task.
+- Verify the final remote state before reporting completion.
