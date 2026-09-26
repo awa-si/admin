@@ -135,6 +135,18 @@ Use for substantive repository truth, including:
 
 `agent.md` may route to these files but must not duplicate their contents.
 
+## Force reload
+
+To force an already-open chat to discard cached Admin control-plane copies and reload the current applicable hierarchy, send exactly:
+
+```text
+reload admin control plane
+```
+
+The trigger causes the current chat to reread `admin/instructions.txt`, `admin/workflow.md`, and `admin/coding.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present. Material helper/owner files are reread only when required by the current task or by changed resolution.
+
+This is a per-chat reload. It does not broadcast into other already-open chats; each such chat must receive the trigger independently.
+
 ## Instruction language
 
 `instructions.txt`, `workflow.md`, `coding.md`, and `agent.md` are machine-consumed control files.
