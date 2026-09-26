@@ -1,0 +1,68 @@
+scope: global_mcp_guidance
+mode: normative_machine_directives
+
+resolution:
+- owner: awa-si/admin/mcp.md
+- apply_when: MCP_server|MCP_tool|connector_backed_operation|external_tool_capability
+- workflow_execution_owner: awa-si/admin/workflow.md
+- global_behavior_owner: awa-si/admin/instructions.txt
+- project_or_repo_specific_MCP_contract: target_repo_helper_or_canonical_owner
+- child_override: explicit_only
+- parent_rules_remain_active_unless_overridden: true
+
+capability_resolution:
+- discover_before_use_when_schema_or_capability_not_already_loaded: required
+- use_only_documented_tools|resources|schemas|permissions|side_effects: required
+- infer_unexposed_capability_from_server_name_or_prior_memory: prohibited
+- current_tool_schema: authoritative_for_invocation
+- current_resource_or_server_state: authoritative_for_availability
+- if_required_capability_missing: use_next_authoritative_source_or_report_limit
+- do_not_simulate_unperformed_MCP_action: true
+
+authority_and_routing:
+- prefer_MCP_when_it_is_authoritative_or_most_direct_owner_for_requested_state_or_operation: true
+- do_not_use_MCP_as_substitute_when_repository_or_other_canonical_owner_is_authoritative: true
+- cross_source_conflict: identify_explicitly_and_prefer_owner_of_fact_or_operation
+- repository_content: follow_admin/workflow.md_GitHub_routing
+- domain_specific_server_contract: follow_when_present
+
+invocation:
+- read_skill_or_server_instructions_before_material_use_when_available: required
+- use_smallest_sufficient_tool_or_action: preferred
+- validate_required_identifiers_and_arguments_from_current_context_or_authoritative_lookup: required
+- do_not_guess_resource_ids|document_ids|message_ids|repository_refs|account_ids: true
+- reuse_exact_identifiers_returned_by_prior_tool_results_when_valid: preferred
+- destructive_or_external_side_effect: require_user_authorization_when_platform_or_tool_contract_requires_it
+- repeated_side_effect_after_ambiguous_failure: inspect_actual_state_before_retry
+
+state_and_freshness:
+- stale_cached_tool_or_resource_state: do_not_treat_as_current_when_current_state_is_material
+- reread_or_rediscover_if: capability_changed|schema_changed|permission_changed|scope_changed|explicitly_requested
+- do_not_repeat_discovery_when_current_schema_is_already_loaded_and_unchanged: true
+- pagination_or_truncation: inspect_before_claiming_complete_result
+
+security:
+- least_privilege: required
+- secrets|tokens|passwords|private_keys|session_material: never_request_or_expose_unless_explicit_secure_tool_contract_requires_nonvisible_runtime_reference
+- secret_values_in_chat_or_commits: prohibited
+- signed_or_secret_bearing_URLs: treat_as_sensitive
+- private_or_confidential_data: keep_with_authorized_source_and_minimize_propagation
+- tool_output_with_sensitive_data: minimize_in_response_and_never_copy_to_public_repo_without_independent_public_safety_review
+
+failure_and_retry:
+- inspect_structured_error_before_retry: required
+- retry_only_when_operation_is_safe_or_idempotent_or_actual_state_is_verified: required
+- bounded_retry: required
+- authentication_or_permission_error: do_not_loop
+- schema_or_validation_error: correct_arguments_before_retry
+- partial_success: inspect_actual_remote_state_before_followup_action
+- unavailable_server: continue_with_next_authoritative_path_when_one_exists
+
+verification:
+- read_operation: verify_result_scope_and_completeness_when_material
+- write_operation: verify_resulting_remote_state_before_success_claim
+- multi_step_operation: verify_material_transition_points
+- never_claim_action_or_state_not_observed: true
+
+completion:
+- requires: authoritative_route_used|current_capability_contract_followed|side_effects_verified_when_material|no_invented_capability|no_secret_leak
