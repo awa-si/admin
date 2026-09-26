@@ -11,6 +11,8 @@ admin/workflow.md
         ↓
 admin/coding.md                              # when coding is material
         ↓
+admin/mcp.md                                 # when MCP/tool capability is material
+        ↓
 projects/<project>/instructions.txt         # optional project behavior/repository delta
         ↓
 projects/<project>/workflow.md              # optional workflow delta
@@ -27,6 +29,7 @@ Rules:
 - `instructions.txt` controls global ChatGPT behavior, scope, connector/tool preferences, project repository resolution, and the content policy for repository agents.
 - `workflow.md` controls repository execution, editing, verification, CI/Actions, profiling, artifact handling, concurrency, and recovery.
 - `coding.md` controls global implementation strategy, reuse/dependency selection, custom-code gates, native/compiled-library preference, refactoring principles, and coding-level correctness/performance expectations.
+- `mcp.md` controls global MCP/tool capability discovery, authority, invocation, freshness, security, retry, and verification behavior.
 - repository `agent.md` is AI-centric: it controls AI behavior, reasoning, routing, source resolution, decision/completion gates, and repository-specific governance needed by the AI.
 - substantive domain, technical, business, runtime, data, model, API, or operational contracts belong in helper or canonical owner files in the target repository.
 - project files are delta-only; parent rules remain active unless explicitly overridden.
@@ -43,6 +46,7 @@ admin/
 ├── instructions.txt
 ├── workflow.md
 ├── coding.md
+├── mcp.md
 ├── agent.md
 ├── README.md
 └── projects/
@@ -109,6 +113,20 @@ Use for global coding and implementation principles that apply across repositori
 
 `coding.md` does not own repository-specific architecture, API, runtime, domain, or business contracts. Those remain in the target repository's narrowest helper/canonical owner.
 
+### `mcp.md`
+
+Use for global MCP and connector-backed tool behavior, including:
+
+- capability/schema discovery before use when not already loaded;
+- authority and source routing;
+- invocation and identifier discipline;
+- freshness, pagination, and completeness checks;
+- secret/data handling;
+- bounded retry and partial-success recovery;
+- verification of MCP writes and multi-step side effects.
+
+Server- or domain-specific MCP contracts stay in their narrowest project/repository helper or canonical owner.
+
 ### repo `agent.md`
 
 Use only for AI-facing repository behavior such as:
@@ -143,13 +161,13 @@ To force an already-open chat to discard cached Admin control-plane copies and r
 reload admin control plane
 ```
 
-The trigger causes the current chat to reread `admin/instructions.txt`, `admin/workflow.md`, and `admin/coding.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present. Material helper/owner files are reread only when required by the current task or by changed resolution.
+The trigger causes the current chat to reread `admin/instructions.txt`, `admin/workflow.md`, `admin/coding.md`, and `admin/mcp.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present. Material helper/owner files are reread only when required by the current task or by changed resolution.
 
 This is a per-chat reload. It does not broadcast into other already-open chats; each such chat must receive the trigger independently.
 
 ## Instruction language
 
-`instructions.txt`, `workflow.md`, `coding.md`, and `agent.md` are machine-consumed control files.
+`instructions.txt`, `workflow.md`, `coding.md`, `mcp.md`, and `agent.md` are machine-consumed control files.
 
 Prefer:
 
@@ -187,6 +205,9 @@ global workflow
 
 global coding
 < explicit repository-specific coding contract
+
+global MCP guidance
+< explicit project/repository-specific MCP contract
 ```
 
 A child overrides only when explicit. Otherwise parent rules remain active.
@@ -195,7 +216,7 @@ Repository-local `agent.md` does not replace global/project behavior, workflow p
 
 ## Source-of-truth boundaries
 
-- `awa-si/admin` owns global/project ChatGPT behavior, global workflow policy, and global coding guidance.
+- `awa-si/admin` owns global/project ChatGPT behavior, global workflow policy, global coding guidance, and global MCP/tool guidance.
 - target repositories own their `agent.md`, helper/owner files, implementation state, and repository-specific coding/domain contracts.
 - repository `agent.md` owns AI-facing repository behavior and resolution logic only.
 - helper/canonical owner files own delegated substantive details.
