@@ -16,6 +16,10 @@ instructions:
 workflow:
 - global_dependency: awa-si/admin/workflow.md
 - global_required: true
+- repository_task_gate: classify_GitHub_Patch|GitHub_Workspace|GitHub_Actions_before_repository_operation
+- route_selection_required: true
+- route_reclassification_required_if_scope_changes: true
+- completion_requires_route_compliance: true
 - project_dependency: awa-si/admin/projects/<project>/workflow.md
 - project_required: false
 - project_semantics: extend_parent_and_explicit_override_only
