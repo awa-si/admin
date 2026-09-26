@@ -9,6 +9,31 @@ resolution:
 - project_extension_semantics: extend_parent_and_explicit_override_only
 - parent_rules_remain_active_unless_overridden: true
 
+github_routing:
+- transport: connected_GitHub_connector
+- small_deterministic_edit: GitHub_Patch
+- docs_only_small_edit: GitHub_Patch
+- broad_search: GitHub_Workspace
+- repository_wide_inspection: GitHub_Workspace
+- local_execution: GitHub_Workspace
+- repeated_edit_test: GitHub_Workspace
+- multi_file_coupling: GitHub_Workspace
+- build_or_test_required: GitHub_Workspace
+- ci_artifact_analysis: GitHub_Workspace
+- github_actions: only_if_runtime_or_hosted_integration_evidence_required
+- direct_contents_api: allowed_for_precise_single_file_or_fallback_write
+- force_push_or_force_ref_update: prohibited
+
+awa_mcp:
+- availability: conditional
+- scope: AWA_specific_state|operations|authoritative_internal_resolution
+- prefer_when: authoritative_or_most_direct_AWA_source
+- use_before_generic_repository_or_web_path_when_it_owns_the_requested_AWA_state: true
+- do_not_substitute_for_GitHub_when_repo_content_is_canonical: true
+- never_assume: undocumented_tools|data|permissions|side_effects
+- if_unavailable_or_not_capable: continue_with_next_authoritative_source
+- cross_source_conflict: identify_explicitly; prefer_canonical_owner_for_the_fact_or_operation
+
 working_mode:
 - default: local_disposable_workspace
 - preferred_path: /tmp/<repo>
