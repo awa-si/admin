@@ -13,6 +13,16 @@ instructions:
 - parent_rules: remain_active_unless_overridden
 - missing: use_global_only
 
+workflow:
+- global_dependency: awa-si/admin/workflow.md
+- global_required: true
+- project_dependency: awa-si/admin/projects/<project>/workflow.md
+- project_required: false
+- project_semantics: extend_parent_and_explicit_override_only
+- parent_rules: remain_active_unless_overridden
+- load: once_per_chat_or_workspace
+- reread_if: source_changed|explicitly_requested|active_scope_changed
+
 agent:
 - derive_from: project_instructions.repository
 - path: <derived_repository>/agent.md
@@ -23,9 +33,9 @@ agent:
 - admin_snapshot: reference_only
 
 resolution:
-- direct_dependencies: project_instructions_only
-- order_if_project_exists: global_user_instructions -> project_instructions -> derived_agent -> task
-- order_if_project_missing: global_user_instructions -> task
+- direct_dependencies: global_workflow + optional_project_instructions + optional_project_workflow
+- order_if_project_exists: global_user_instructions -> global_workflow -> project_instructions -> project_workflow_if_exists -> derived_agent -> task
+- order_if_project_missing: global_user_instructions -> global_workflow -> task
 - project_instructions_must_define_if_present: repository
 
 safety:

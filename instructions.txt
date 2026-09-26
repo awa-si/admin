@@ -53,102 +53,31 @@ mode: normative
 - prefer_when: authoritative_or_most_direct_AWA_source
 - never_assume: undocumented_tools,data,permissions,side_effects
 
+## workflow
+- dependency: awa-si/admin/workflow.md
+- load: once_per_chat_or_workspace
+- required: true
+- apply_to: repository_editing|verification|ci|actions|profiling|benchmark|backtest|training|artifact_handling|recovery
+- project_extension: awa-si/admin/projects/<project>/workflow.md
+- project_extension_required: false
+- extension_semantics: extend_parent_and_explicit_override_only
+- parent_rules: remain_active_unless_overridden
+- reread_if: source_changed|explicitly_requested|active_scope_changed
+
 ## repository
 - source_of_truth: current_repository_state
 - startup: read_repo_agent_once_per_chat_or_workspace
 - reread_agent_if: file_changed|task_requires|scope_changed
-- small_deterministic_edit: GitHub_Patch
-- broad_or_iterative_work: GitHub_Workspace
 - github_transport: connected_GitHub_connector
-- separate_mcp_for_github_workspace: not_required
+- workflow_policy_source: awa-si/admin/workflow.md
 
-## github_workspace.lifecycle
-state_machine: OPEN->DIRTY->VERIFIED->PREVIEWED->COMMITTED->VERIFIED_REMOTE
-recovery_paths: REFRESH|REAPPLY|RECOVER
-operations:
-- open: materialize_repo_state
-- status: classify_local_changes_vs_baseline
-- diff: inspect_paths_and_text_diff
-- refresh: detect_remote_branch_movement
-- reapply: move_local_intent_to_new_base_when_safe
-- test: run_narrowest_meaningful_verification
-- preview: inspect_exact_writeback
-- commit: guarded_atomic_commit_when_supported
-- verify: verify_commit_branch_files_ci_artifacts_when_relevant
-- recover: preserve_and_reconcile_local_work
-
-## github_workspace.checkout
-- if_git_clone_unavailable: use_connected_GitHub_transport
-- resolve: repository,branch,head_sha,base_tree_sha
-- read: applicable_project_and_repo_instructions
-- enumerate_tree: recursive_when_available; inspect_truncation
-- workspace: /tmp/<repo>
-- preserve: repo_relative_paths,file_modes_when_possible
-- metadata_file: .chatgpt-github/workspace.json
-- metadata_required: repository,branch,base_sha,base_tree_sha,scope,blob_shas,modes,skipped_paths,complete_flag
-- terminology: snapshot_or_workspace_checkout unless_actual_git_clone
-- snapshot_policy: complete_for_small_medium; dependency_closed_sparse_for_large_or_narrow
-- special_entries: no_placeholders; record_binary|oversized|LFS|submodule|special_limits
-
-## github_workspace.local
-- use_local_for: search,edits,scripts,tests,linters,builds,generated_artifacts
-- prefer: local_edit_test_cycles_before_remote_mutation
-- exclude_from_commit: ignored,caches,venvs,generated_outputs,editor_state,workspace_metadata
-- preserve_semantics: executable,symlink,submodule,binary,LFS
-- status_without_git: modified,added,deleted,mode_changed,ignored,rename_candidates
-- before_nontrivial_write: inspect_changed_paths + diff_when_practical
-- dry_run_or_preview: stop_before_remote_mutation
-
-## verification
-order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
-- escalate_only_if: risk|coupling|repo_rules|failure
-- record: material_commands,results,runtime_limits,sparse_workspace_limits
-- remote_ci: only_if_material
-- docs_only_ci: avoid_unless_required
-
-## concurrency
-- guard: base_sha
-- before_writeback: reread_branch_head
-- if_head_unchanged: continue
-- if_head_moved: never_overwrite; never_force
-- nonoverlap: refresh + reapply + rerun_affected_verification
-- overlap: preserve_diff + fetch_new_content + reconcile_explicitly + inspect_diff + rerun_verification
-
-## writeback
-- commit_policy: one_coherent_change -> one_coherent_commit
-- atomic_preferred: create_blob* -> create_tree(base_tree_sha) -> create_commit(parent=base_sha) -> update_ref(force=false)
-- tree_rule: build_from_base_tree_sha
-- deletions: use_supported_tree_delete_semantics
-- commit_message: user_supplied_else_concise_accurate
-- split_commits_only_if: user_requests|repo_requires|independent_rollback_boundary
-- never: force_push,force_update,overwrite_newer_state
-- fallback_if_no_atomic: GitHub_Patch_or_per_file_with_current_blob_sha
-- do_not_call_atomic: multiple_independent_file_writes
-
-## branch_pr
-- default_branch: selected_existing_branch; AWA_default=main unless_project_rule_overrides
-- direct_commit: when_allowed
-- branch_or_pr_only_if: explicitly_requested|required_by_repo|direct_write_blocked_and_authorized_fallback
-- merge_pr: only_if_explicitly_requested
-
-## remote_verify
-- fetch_result_commit
-- compare_base_to_result
-- verify_changed_file_set
-- verify_branch_points_to_result
-- verify_no_unintended_files
-- inspect_status_checks_when_relevant
-- inspect_jobs_steps_logs_artifacts_when_material
-- ci_failure: identify_earliest_causal_failure
-- completion: only_after_remote_verification
-
-## recovery
-- preserve_workspace_and_intended_diff_until_remote_verified
-- orphan_git_objects_before_ref_update: not_branch_mutation
-- partial_per_file_write: inspect_actual_remote_state_before_repair
-- undo_wrong_commit: prefer_revert_or_compensating_commit
-- github_dns_failure: do_not_loop_clone; use_GitHub_connector_API
-
-## routing
-small_deterministic_edit -> GitHub_Patch
-broad_search|local_execution|repeated_edit_test|multi_file_coupling|ci_artifact_analysis -> GitHub_Workspace
+## public_repo_safety
+- repository: awa-si/admin
+- visibility: public
+- assume_committed_content: publicly_readable
+- before_admin_write: verify_public_safe
+- never_commit: secrets,api_keys,access_tokens,passwords,private_keys,credentials,session_material,secret_bearing_urls,private_or_confidential_data
+- source_private_repo: does_not_make_content_safe_for_admin
+- agent_or_workflow_snapshot: inspect_and_redact_before_copy
+- sensitive_reference: use_symbolic_name|placeholder|authoritative_private_reference
+- uncertainty: do_not_commit_until_verified_public_safe
