@@ -6,6 +6,7 @@ mode: normative_machine_directives
 agent_content_policy:
 - purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|self_governance
 - substantive_workflow_detail: delegate_to_workflow.md
+- global_coding_detail: delegate_to_coding.md
 - global_behavior_detail: delegate_to_instructions.txt
 - project_specific_behavior: delegate_to_projects/<project>/instructions.txt
 - project_specific_workflow: delegate_to_projects/<project>/workflow.md
@@ -13,14 +14,14 @@ agent_content_policy:
 - load_helpers: only_when_material_to_task
 
 role:
-- operate_as: maintainer_of_chatgpt_instruction_and_workflow_architecture
+- operate_as: maintainer_of_chatgpt_instruction_coding_and_workflow_architecture
 - objective: keep_instruction_layers_minimal|nonduplicative|composable|safe|machine_readable
 
 managed_scope:
 - admin_role: control_plane_for_managed_projects_and_repositories
 - managed_projects: projects/*
 - managed_repository_resolution: projects/<project>/instructions.txt.repository
-- manage_from_here: instruction_hierarchy|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
+- manage_from_here: instruction_hierarchy|coding_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
 - project_or_repo_change_may_require: inspect_and_update_admin_control_files|target_repo_agent|target_helper_or_owner_files|human_docs|registries
 - cross_repository_work: allowed_when_required_to_keep_managed_project_and_repository_state_consistent
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
@@ -32,6 +33,7 @@ source_resolution:
 - current_repository_state: authoritative
 - global_behavior_owner: instructions.txt
 - global_workflow_owner: workflow.md
+- global_coding_owner: coding.md
 - human_orientation_owner: README.md
 - project_behavior_owner: projects/<project>/instructions.txt
 - project_workflow_owner: projects/<project>/workflow.md
@@ -40,7 +42,7 @@ source_resolution:
 
 startup:
 - read: agent.md
-- then_if_material: instructions.txt|workflow.md|README.md|projects/template.txt
+- then_if_material: instructions.txt|workflow.md|coding.md|README.md|projects/template.txt
 - for_project_change: read_only_target_projects/<project>/instructions.txt_and_workflow.md_when_present
 - for_managed_repo_change: resolve_target_repository_from_project_instructions -> read_target_agent -> load_material_helpers_or_owners
 - avoid_loading_unrelated_project_files: true
@@ -48,7 +50,7 @@ startup:
 reasoning:
 - preserve_single_owner_per_rule: required
 - identify_before_edit: owner|consumers|precedence|inheritance|public_safety_impact
-- distinguish: global_behavior|global_workflow|project_delta|repo_agent_policy|human_documentation
+- distinguish: global_behavior|global_workflow|global_coding|project_delta|repo_agent_policy|human_documentation
 - move_rule_to_narrowest_correct_owner_when_misplaced: true
 - do_not_preserve_duplication_for_compatibility: true
 - semantic_consistency_over_textual_similarity: true
@@ -56,7 +58,7 @@ reasoning:
 - when_admin_change_affects_managed_projects_or_repositories: inspect_downstream_semantic_impact
 
 layering:
-- resolution_order: global_instructions -> global_workflow -> project_instructions_if_present -> project_workflow_if_present -> derived_repo_agent_if_present -> material_helpers_or_canonical_owners -> task
+- resolution_order: global_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> derived_repo_agent_if_present -> material_helpers_or_canonical_owners -> task
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
 - project_files: delta_only
@@ -76,6 +78,11 @@ workflow_behavior:
 - AWA_MCP: use_for_AWA_specific_state_or_operations_when_it_is_the_authoritative_owner
 - never_duplicate_full_tool_usage_contracts_here: true
 
+coding_behavior:
+- follow_when_applicable: coding.md
+- repository_specific_coding_contract: target_repo_helper_or_canonical_owner
+- never_duplicate_full_coding_contracts_here: true
+
 public_safety:
 - repository_visibility: public
 - treat_all_committed_content_as_public: true
@@ -90,14 +97,12 @@ edit_behavior:
 - update_consumers_when_semantics_or_resolution_changes: required
 - README_update: required_when_human_facing_architecture_or_responsibility_changes
 - template_update: required_when_bootstrap_or_project_contract_changes
-- downstream_managed_repo_update: required_when_control_plane_change_materially_changes_repo_resolution_or_agent_contract
 - docs_only_ci: avoid_unless_machine_checked_or_executable_contract_changed
 
 verification:
 - after_material_change: refetch_changed_files|verify_owner_boundaries|verify_resolution_order|check_for_stale_cross_references|verify_public_safety
 - when_rule_moved: search_for_old_owner_claims_and_stale_paths
-- when_control_plane_changes: verify_affected_project_resolution_and_target_repo_consistency
 - completion_claim_requires_verified_remote_state: true
 
 completion:
-- requires: requested_change_applied|no_material_rule_loss|no_active_duplicate_owner|references_consistent|affected_managed_projects_or_repositories_consistent_when_material|remote_state_verified
+- requires: requested_change_applied|no_material_rule_loss|no_active_duplicate_owner|references_consistent|remote_state_verified
