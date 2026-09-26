@@ -1,0 +1,80 @@
+scope: global_coding_guidance
+mode: normative_machine_directives
+
+resolution:
+- owner: awa-si/admin/coding.md
+- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm
+- project_or_repo_specific_coding_contract: target_repo_helper_or_canonical_owner
+- project_specific_override: explicit_only
+- parent_rules_remain_active_unless_overridden: true
+- workflow_execution_owner: awa-si/admin/workflow.md
+- AI_behavior_owner: awa-si/admin/instructions.txt
+
+implementation_strategy:
+- before_new_method: inspect_existing_repo_implementation|existing_dependencies|standard_library|mature_external_libraries
+- reuse_existing_implementation_when_contract_satisfied: preferred
+- compose_existing_primitives_before_creating_parallel_abstraction: preferred
+- duplicate_implementation_without_material_reason: prohibited
+- prefer_battle_tested_implementation_over_custom_code: true
+- custom_implementation: last_resort_when_existing_options_fail_material_requirements
+
+selection_order:
+- default: existing_repo_code > standard_library > existing_repo_dependency > mature_stable_external_library > custom_implementation
+- evaluate_materially: correctness|maintenance|security|performance|license|portability|dependency_cost|API_stability
+- novelty_alone: not_justification_for_custom_code
+- fewer_dependencies_alone: not_justification_if_custom_code_materially_increases_risk_or_maintenance
+
+native_and_compiled_implementations:
+- prefer_when_material_for: performance|numerical_kernels|parsing|compression|cryptography|concurrency|serialization|systems_primitives
+- preferred_backends: mature_C|C++|Rust|native_backed_library
+- require: maintained|stable_API_or_versioned_contract|compatible_license|supported_platforms|acceptable_security_posture
+- custom_low_level_reimplementation_of_mature_primitive: avoid
+- language_preference_is_not_absolute: choose_best_supported_implementation_for_contract
+
+new_method_gate:
+- question_1: can_existing_repo_method_or_primitive_be_reused_or_extended
+- question_2: does_standard_library_or_existing_dependency_already_solve_it
+- question_3: does_mature_stable_external_library_solve_it_better_than_custom_code
+- question_4: is_custom_implementation_materially_justified
+- custom_requires: explicit_reason|clear_contract|tests|failure_modes|maintenance_owner
+- performance_claim_requires: representative_measurement
+- correctness_sensitive_method_requires: reference_behavior_or_independent_validation_when_practical
+
+refactoring:
+- preserve_behavior_unless_change_is_explicit: true
+- prefer_removal_of_duplicate_paths_after_migration: true
+- abstraction_requires_multiple_real_consumers_or_clear_contract_value: preferred
+- speculative_framework_building: avoid
+- preserve_public_or_persisted_contracts_unless_intentionally_migrated: true
+
+libraries_and_dependencies:
+- dependency_addition_requires_material_value: true
+- prefer_mature_well_maintained_library: true
+- inspect_before_add: existing_transitive_or_direct_dependency_can_satisfy_need
+- pin_or_bound_version_when_repository_policy_requires_reproducibility: true
+- abandoned_or_unmaintained_library: avoid_unless_no_better_option_and_risk_is_explicit
+- wrapper_over_external_library: keep_thin_unless_repo_contract_requires_adaptation
+- vendor_or_fork: only_if_maintenance_and_supply_chain_tradeoff_is_justified
+
+correctness_and_safety:
+- preserve_existing_domain_contracts: required
+- handle_boundary_conditions_and_failure_modes_explicitly: true
+- silent_fallback_that_changes_semantics: prohibited
+- undefined_or_ambiguous_behavior: resolve_before_optimization
+- security_sensitive_primitive: prefer_standard_or_well_reviewed_library_over_custom_implementation
+
+performance:
+- optimize_measured_bottlenecks_first: true
+- algorithmic_improvement_before_micro_optimization: preferred
+- reuse_vectorized_native_or_compiled_primitive_when_available: preferred
+- custom_native_extension: only_when_measurement_shows_material_need_and_existing_options_are_insufficient
+- preserve_correctness_and_semantics_during_optimization: required
+
+verification:
+- new_or_replaced_method: test_contract_and_material_edge_cases
+- library_substitution: compare_semantics_and_failure_behavior
+- optimized_path: compare_against_reference_or_previous_path_when_practical
+- never_claim_improvement_without_observed_evidence: true
+
+completion:
+- requires: reuse_options_considered|dependency_choice_justified_when_material|custom_code_only_when_needed|repo_specific_contracts_preserved|relevant_verification_observed
