@@ -64,12 +64,22 @@ mode: normative
 - parent_rules: remain_active_unless_overridden
 - reread_if: source_changed|explicitly_requested|active_scope_changed
 
+## coding
+- dependency: awa-si/admin/coding.md
+- load: when_task_involves_code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm
+- required_when_applicable: true
+- repository_specific_contract: target_repo_helper_or_canonical_owner
+- repository_specific_override: explicit_only
+- parent_rules: remain_active_unless_overridden
+- reread_if: source_changed|explicitly_requested|active_scope_changed
+
 ## repository
 - source_of_truth: current_repository_state
 - startup: read_repo_agent_once_per_chat_or_workspace_if_derived_and_present
 - reread_agent_if: file_changed|task_requires|scope_changed
 - github_transport: connected_GitHub_connector
 - workflow_policy_source: awa-si/admin/workflow.md
+- coding_policy_source: awa-si/admin/coding.md
 
 ## repository_agent_policy
 - purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|completion_gates
@@ -88,8 +98,8 @@ mode: normative
 - project_workflow_required: false
 - repo_agent: derive_from_project_instructions.repository/agent.md
 - repo_agent_required: false
-- if_project_instructions_exist: global_instructions -> global_workflow -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
-- if_project_instructions_missing: global_instructions -> global_workflow -> task
+- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
+- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> task
 - project_child_override: explicit_only
 - workflow_child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
