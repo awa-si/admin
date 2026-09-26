@@ -3,7 +3,7 @@ mode: normative_machine_directives
 
 resolution:
 - owner: awa-si/admin/coding.md
-- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm
+- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm|observability|alerting
 - project_or_repo_specific_coding_contract: target_repo_helper_or_canonical_owner
 - project_specific_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
@@ -78,6 +78,38 @@ libraries_and_dependencies:
 - replacing_working_dependency_only_for_newness: prohibited
 - migration_to_modern_library_requires_material_gain: security|maintainability|compatibility|performance|correctness|ecosystem_support
 
+alerting_and_observability:
+- design_observability_with_feature_when_operational_failure_is_material: true
+- prefer_existing_repo_observability_stack_before_new_stack: required
+- prefer_modern_mature_logging_metrics_tracing_alerting_libraries_and_backends: true
+- custom_alert_transport_or_monitoring_framework: avoid_unless_existing_options_fail_material_requirements
+- structured_events_over_unstructured_text_when_machine_processing_expected: preferred
+- preserve_context: component|operation|severity|timestamp|correlation_or_trace_id|material_dimensions
+- metrics_for_repeated_numeric_state: preferred
+- logs_for_diagnostic_context: preferred
+- traces_for_cross_component_or_latency_path_analysis: preferred_when_material
+- alert_only_on_actionable_or_material_conditions: required
+- alert_on_symptom_or_user_impact_over_internal_noise_when_possible: preferred
+- severity_levels: explicit_and_semantically_consistent
+- severity_should_reflect: impact|urgency|scope|recoverability
+- warning_is_not_page: true
+- critical_or_page_requires_immediate_actionability: true
+- transient_expected_failures: do_not_alert_unless_threshold_or_duration_exceeded
+- deduplicate_repeated_alerts: required
+- rate_limit_or_group_bursty_alerts: required
+- alert_storms: prohibited_by_design_when_practical
+- recovery_or_resolved_signal: emit_when_operationally_useful
+- thresholds: derive_from_contract|SLO|capacity|baseline|measured_behavior_when_possible
+- arbitrary_threshold_without_rationale: avoid
+- alert_payload: identify_condition|affected_component|current_value_or_state|threshold_or_expected_state|time_context|diagnostic_reference_when_available
+- sensitive_data_in_logs_metrics_traces_alerts: prohibited
+- secrets_credentials_tokens_session_material_in_observability: prohibited
+- high_cardinality_dimensions: avoid_unless_material_and_backend_can_support
+- observability_failure_must_not_break_primary_business_path_unless_contract_requires_fail_closed: true
+- silent_failure_of_critical_monitoring_path: avoid; expose_monitoring_health_when_material
+- test_alert_condition_and_recovery_path_when_alerting_is_material: required
+- test_dedup_rate_limit_or_grouping_when_incident_fanout_is_material: required
+
 correctness_and_safety:
 - preserve_existing_domain_contracts: required
 - handle_boundary_conditions_and_failure_modes_explicitly: true
@@ -98,6 +130,7 @@ verification:
 - library_substitution: compare_semantics_and_failure_behavior
 - dependency_upgrade_or_major_migration: inspect_breaking_changes|deprecated_behavior|runtime_support|performance_regressions
 - optimized_path: compare_against_reference_or_previous_path_when_practical
+- observability_or_alerting_change: verify_signal_semantics|noise_behavior|failure_path|sensitive_data_exclusion
 - never_claim_improvement_without_observed_evidence: true
 
 completion:
