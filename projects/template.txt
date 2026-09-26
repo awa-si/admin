@@ -23,6 +23,15 @@ workflow:
 - load: once_per_chat_or_workspace
 - reread_if: source_changed|explicitly_requested|active_scope_changed
 
+coding:
+- global_dependency: awa-si/admin/coding.md
+- global_required_when_applicable: true
+- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm
+- repository_specific_contract: target_repo_helper_or_canonical_owner
+- repository_specific_override: explicit_only
+- parent_rules: remain_active_unless_overridden
+- reread_if: source_changed|explicitly_requested|active_scope_changed
+
 agent:
 - derive_from: project_instructions.repository
 - path: <derived_repository>/agent.md
@@ -33,12 +42,26 @@ agent:
 - required: false
 
 resolution:
-- order_if_project_exists: global_user_instructions -> global_workflow -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
-- order_if_project_missing: global_user_instructions -> global_workflow -> task
+- order_if_project_exists: global_user_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
+- order_if_project_missing: global_user_instructions -> global_workflow -> global_coding_if_applicable -> task
 - project_instructions_must_define_if_present: repository
 - child_override: explicit_only
 - parent_rules: remain_active_unless_overridden
 - admin_project_agent_snapshot: prohibited
+
+force_reload:
+- trigger_phrase: reload admin control plane
+- semantics: explicit_full_reread_of_active_user_control_plane
+- ignore_cached_copies: true
+- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md
+- reread_active_project: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
+- rederive_target_repository_from_current_project_instructions: true
+- reread_derived_repo_agent_if_present: <derived_repository>/agent.md
+- reread_material_helpers: only_if_required_by_current_task_or_changed_resolution
+- use_current_repository_state_only: true
+- previously_loaded_copy_after_trigger: non_authoritative
+- apply_newly_loaded_rules_to_subsequent_work_in_current_chat: true
+- does_not_broadcast_to_other_open_chats: true
 
 safety:
 - admin_repo: public
