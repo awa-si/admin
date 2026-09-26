@@ -1,6 +1,6 @@
 # GPT Admin
 
-`awa-si/admin` defines the user-controlled ChatGPT instruction and workflow hierarchy used across AWA projects.
+`awa-si/admin` defines the user-controlled ChatGPT instruction, coding-guidance, and workflow hierarchy used across AWA projects.
 
 ## Canonical resolution
 
@@ -9,13 +9,15 @@ admin/instructions.txt
         ↓
 admin/workflow.md
         ↓
-projects/<project>/instructions.txt        # optional project behavior/repository delta
+admin/coding.md                              # when coding is material
         ↓
-projects/<project>/workflow.md             # optional workflow delta
+projects/<project>/instructions.txt         # optional project behavior/repository delta
         ↓
-<derived-repository>/agent.md              # optional AI repository layer
+projects/<project>/workflow.md              # optional workflow delta
         ↓
-material helper / canonical owner files    # loaded only when needed
+<derived-repository>/agent.md               # optional AI repository layer
+        ↓
+material helper / canonical owner files     # loaded only when needed
         ↓
 current task
 ```
@@ -24,10 +26,11 @@ Rules:
 
 - `instructions.txt` controls global ChatGPT behavior, scope, connector/tool preferences, project repository resolution, and the content policy for repository agents.
 - `workflow.md` controls repository execution, editing, verification, CI/Actions, profiling, artifact handling, concurrency, and recovery.
+- `coding.md` controls global implementation strategy, reuse/dependency selection, custom-code gates, native/compiled-library preference, refactoring principles, and coding-level correctness/performance expectations.
 - repository `agent.md` is AI-centric: it controls AI behavior, reasoning, routing, source resolution, decision/completion gates, and repository-specific governance needed by the AI.
 - substantive domain, technical, business, runtime, data, model, API, or operational contracts belong in helper or canonical owner files in the target repository.
 - project files are delta-only; parent rules remain active unless explicitly overridden.
-- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow only.
+- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow + global coding when applicable.
 - `projects/<project>/workflow.md` is optional and extends/overrides only the global workflow.
 - target `agent.md` is derived from `projects/<project>/instructions.txt.repository` and loaded only when present.
 - helper/owner files are resolved from the repository agent or repository registry and loaded only when material to the task.
@@ -39,6 +42,8 @@ Rules:
 admin/
 ├── instructions.txt
 ├── workflow.md
+├── coding.md
+├── agent.md
 ├── README.md
 └── projects/
     ├── template.txt
@@ -68,10 +73,10 @@ Use for:
 - tool/connector preferences;
 - project scope and target repository identity;
 - explicit project-level behavioral overrides;
-- workflow dependency declaration;
+- workflow and coding-policy dependency declarations;
 - global repository-agent content policy.
 
-Do not duplicate substantive repository contracts or execution policy here.
+Do not duplicate substantive repository contracts, coding details, or execution policy here.
 
 ### `workflow.md`
 
@@ -88,6 +93,21 @@ Use for:
 - remote verification and recovery.
 
 Project workflow files contain only project-specific additions or explicit overrides.
+
+### `coding.md`
+
+Use for global coding and implementation principles that apply across repositories, including:
+
+- reuse before invention;
+- inspection of existing repository code and dependencies before adding methods;
+- preference for standard libraries and mature, stable external libraries before custom implementations;
+- preference for mature C/C++/Rust/native-backed implementations when materially better for low-level or performance-sensitive primitives;
+- explicit justification gates for custom code;
+- dependency quality, maintenance, license, portability, security, and API-stability considerations;
+- behavior-preserving refactoring;
+- correctness, edge-case, and performance verification expectations.
+
+`coding.md` does not own repository-specific architecture, API, runtime, domain, or business contracts. Those remain in the target repository's narrowest helper/canonical owner.
 
 ### repo `agent.md`
 
@@ -117,7 +137,7 @@ Use for substantive repository truth, including:
 
 ## Instruction language
 
-`instructions.txt`, `workflow.md`, and `agent.md` are machine-consumed control files.
+`instructions.txt`, `workflow.md`, `coding.md`, and `agent.md` are machine-consumed control files.
 
 Prefer:
 
@@ -152,16 +172,19 @@ global instructions
 
 global workflow
 < project workflow
+
+global coding
+< explicit repository-specific coding contract
 ```
 
 A child overrides only when explicit. Otherwise parent rules remain active.
 
-Repository-local `agent.md` does not replace global/project behavior or workflow policy. It adds repository-specific AI reasoning/routing. Helper/owner files add the substantive contracts required by the task.
+Repository-local `agent.md` does not replace global/project behavior, workflow policy, or applicable global coding guidance. It adds repository-specific AI reasoning/routing. Helper/owner files add the substantive contracts required by the task and may explicitly refine coding rules for their repository scope.
 
 ## Source-of-truth boundaries
 
-- `awa-si/admin` owns global/project ChatGPT behavior and workflow policy.
-- target repositories own their `agent.md`, helper/owner files, and implementation state.
+- `awa-si/admin` owns global/project ChatGPT behavior, global workflow policy, and global coding guidance.
+- target repositories own their `agent.md`, helper/owner files, implementation state, and repository-specific coding/domain contracts.
 - repository `agent.md` owns AI-facing repository behavior and resolution logic only.
 - helper/canonical owner files own delegated substantive details.
 - project `instructions.txt` owns repository resolution for that project.
