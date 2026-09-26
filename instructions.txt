@@ -105,6 +105,20 @@ mode: normative
 - parent_rules_remain_active_unless_overridden: true
 - admin_project_agent_snapshot: prohibited
 
+## force_reload
+- trigger_phrase: reload admin control plane
+- semantics: explicit_full_reread_of_active_user_control_plane
+- ignore_cached_copies: true
+- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md
+- reread_if_active_project_exists: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
+- rederive_target_repository_from_current_project_instructions: true
+- reread_if_derived_repo_agent_exists: <derived_repository>/agent.md
+- reread_material_helpers: only_if_required_by_current_task_or_changed_resolution
+- use_current_repository_state_only: true
+- previously_loaded_copy_after_trigger: non_authoritative
+- apply_newly_loaded_rules_to_subsequent_work_in_current_chat: true
+- does_not_broadcast_to_other_open_chats: true
+
 ## public_repo_safety
 - repository: awa-si/admin
 - visibility: public
