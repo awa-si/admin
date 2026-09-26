@@ -3,7 +3,7 @@ mode: normative_machine_directives
 
 resolution:
 - owner: awa-si/admin/coding.md
-- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm|observability|alerting|logging|documentation
+- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm|observability|alerting|logging|documentation|error_handling|concurrency|configuration|testing|security
 - project_or_repo_specific_coding_contract: target_repo_helper_or_canonical_owner
 - project_specific_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
@@ -77,6 +77,19 @@ libraries_and_dependencies:
 - vendor_or_fork: only_if_maintenance_and_supply_chain_tradeoff_is_justified
 - replacing_working_dependency_only_for_newness: prohibited
 - migration_to_modern_library_requires_material_gain: security|maintainability|compatibility|performance|correctness|ecosystem_support
+
+boundaries_and_contracts:
+- external_input: validate_at_boundary
+- public_or_persisted_contract_change: version_or_migrate_explicitly
+- configuration: validate_at_startup_or_load_boundary
+- silent_reinterpretation_of_existing_data_or_config: prohibited
+
+failure_and_resources:
+- swallowed_exception: prohibited
+- remote_or_blocking_operation: use_timeout_when_material
+- retry: bounded|only_when_safe_or_idempotent|backoff_when_repeated
+- concurrency: bound_parallelism_and_avoid_uncontrolled_shared_mutable_state
+- resource_lifecycle: close_or_release_on_success|failure|cancellation
 
 logging:
 - prefer_existing_repo_logging_stack_before_new_logger: required
@@ -169,6 +182,8 @@ correctness_and_safety:
 - silent_fallback_that_changes_semantics: prohibited
 - undefined_or_ambiguous_behavior: resolve_before_optimization
 - security_sensitive_primitive: prefer_current_standard_or_well_reviewed_modern_mature_library_over_custom_implementation
+- security_sensitive_change: apply_least_privilege_and_secure_defaults
+- injection_or_command_construction: use_safe_parameterized_or_structured_API_when_available
 
 performance:
 - optimize_measured_bottlenecks_first: true
@@ -180,6 +195,9 @@ performance:
 
 verification:
 - new_or_replaced_method: test_contract_and_material_edge_cases
+- fixed_bug: add_regression_test_when_practical
+- tests: prefer_deterministic_behavior_and_external_boundary_coverage
+- flaky_test: fix_or_quarantine_with_explicit_reason; do_not_normalize
 - library_substitution: compare_semantics_and_failure_behavior
 - dependency_upgrade_or_major_migration: inspect_breaking_changes|deprecated_behavior|runtime_support|performance_regressions
 - optimized_path: compare_against_reference_or_previous_path_when_practical
