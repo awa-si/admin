@@ -57,6 +57,22 @@ Typical content includes:
 
 `agent.md` must not duplicate generic ChatGPT interaction rules that belong in the instruction hierarchy.
 
+## Public repository and secret handling
+
+`awa-si/admin` is a public repository. Treat every committed file as publicly readable.
+
+For all `instructions.txt`, project instruction files, `agent.md` snapshots, examples, documentation, and generated instruction artifacts:
+
+- never commit secrets, API keys, access tokens, passwords, private keys, credentials, session material, or secret-bearing URLs;
+- never copy private or confidential user, company, customer, infrastructure, or account data into instruction files;
+- never move secret values from private repositories, chats, connected apps, environment files, CI secrets, or runtime state into this repository;
+- use symbolic names, placeholders, secret identifiers, or references to the authoritative private source instead of secret values;
+- treat copied `agent.md` content as untrusted for publication until checked for secrets and private data;
+- redact or omit sensitive values before creating or updating any file in this repository;
+- when uncertain whether content is public-safe, do not commit it until verified.
+
+This rule is mandatory and applies even when the source repository itself is private.
+
 ## Resolution rules
 
 1. **Parent first**
