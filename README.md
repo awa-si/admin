@@ -57,6 +57,23 @@ Typical content includes:
 
 `agent.md` must not duplicate generic ChatGPT interaction rules that belong in the instruction hierarchy.
 
+## Instruction-file language
+
+`instructions.txt` and `agent.md` are machine-consumed control files. Write them in compact, normative, machine-oriented language.
+
+Rules:
+
+- prefer stable section names, key/value directives, short imperatives, enumerations, and explicit conditions;
+- encode precedence, scope, triggers, exceptions, and fallbacks explicitly;
+- use consistent identifiers and terminology across parent and child layers;
+- avoid narrative prose, motivational text, conversational explanation, rhetorical wording, and duplicated rationale;
+- keep examples only when they materially disambiguate execution semantics;
+- move human-oriented explanation, background, design rationale, and long-form guidance to `README.md` or dedicated documentation;
+- preserve semantic completeness: machine-oriented does not mean vague, abbreviated, or lossy;
+- project instruction files should remain delta-only; repository `agent.md` files should contain only repository/domain-specific directives.
+
+When importing an existing prose-heavy `agent.md` into this hierarchy, normalize it toward this format without changing its intended operational semantics.
+
 ## Public repository and secret handling
 
 `awa-si/admin` is a public repository. Treat every committed file as publicly readable.
