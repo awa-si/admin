@@ -61,6 +61,9 @@ mode: normative
 - repository_task_gate: classify_GitHub_Patch|GitHub_Workspace|GitHub_Actions_before_repository_operation
 - route_selection_required: true
 - route_reclassification_required_if_scope_changes: true
+- GitHub_Workspace_selected: load_and_follow_skills://plugins/github-workspace-web/github-workspace/skill.md_before_workspace_operation
+- GitHub_Patch_selected: use_installed_GitHub_connector_and_follow_admin/workflow.md#github_patch
+- nonexistent_patch_skill_reference: prohibited
 - completion_requires_route_compliance: true
 - project_extension: awa-si/admin/projects/<project>/workflow.md
 - project_extension_required: false
