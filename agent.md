@@ -22,6 +22,7 @@ agent_content_policy:
 - purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|self_governance
 - substantive_workflow_detail: delegate_to_workflow.md
 - global_coding_detail: delegate_to_coding.md
+- global_mcp_detail: delegate_to_mcp.md
 - global_behavior_detail: delegate_to_instructions.txt
 - project_specific_behavior: delegate_to_projects/<project>/instructions.txt
 - project_specific_workflow: delegate_to_projects/<project>/workflow.md
@@ -49,6 +50,7 @@ source_resolution:
 - global_behavior_owner: instructions.txt
 - global_workflow_owner: workflow.md
 - global_coding_owner: coding.md
+- global_mcp_owner: mcp.md
 - human_orientation_owner: README.md
 - project_behavior_owner: projects/<project>/instructions.txt
 - project_workflow_owner: projects/<project>/workflow.md
@@ -57,7 +59,7 @@ source_resolution:
 
 startup:
 - read: agent.md
-- then_if_material: instructions.txt|workflow.md|coding.md|README.md|projects/template.txt
+- then_if_material: instructions.txt|workflow.md|coding.md|mcp.md|README.md|projects/template.txt
 - for_project_change: read_only_target_projects/<project>/instructions.txt_and_workflow.md_when_present
 - for_managed_repo_change: resolve_target_repository_from_project_instructions -> read_target_agent -> load_material_helpers_or_owners
 - avoid_loading_unrelated_project_files: true
@@ -65,7 +67,7 @@ startup:
 reasoning:
 - preserve_single_owner_per_rule: required
 - identify_before_edit: owner|consumers|precedence|inheritance|public_safety_impact
-- distinguish: global_behavior|global_workflow|global_coding|project_delta|repo_agent_policy|human_documentation
+- distinguish: global_behavior|global_workflow|global_coding|global_mcp|project_delta|repo_agent_policy|human_documentation
 - move_rule_to_narrowest_correct_owner_when_misplaced: true
 - do_not_preserve_duplication_for_compatibility: true
 - semantic_consistency_over_textual_similarity: true
@@ -73,7 +75,7 @@ reasoning:
 - when_admin_change_affects_managed_projects_or_repositories: inspect_downstream_semantic_impact
 
 layering:
-- resolution_order: global_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> derived_repo_agent_if_present -> material_helpers_or_canonical_owners -> task
+- resolution_order: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> derived_repo_agent_if_present -> material_helpers_or_canonical_owners -> task
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
 - project_files: delta_only
@@ -92,6 +94,11 @@ workflow_behavior:
 - GitHub_Actions: use_only_when_hosted_or_integration_evidence_is_material
 - AWA_MCP: use_for_AWA_specific_state_or_operations_when_it_is_the_authoritative_owner
 - never_duplicate_full_tool_usage_contracts_here: true
+
+mcp_behavior:
+- follow_when_applicable: mcp.md
+- project_or_repo_specific_MCP_contract: target_repo_helper_or_canonical_owner
+- never_duplicate_full_MCP_contracts_here: true
 
 coding_behavior:
 - follow_when_applicable: coding.md
