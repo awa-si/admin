@@ -1,0 +1,29 @@
+bootstrap: project
+
+project_scope:
+- project: <project>
+- repository: <owner>/<repo>
+
+instructions:
+- global: inherited_from_user_bootstrap
+- project_source: awa-si/admin/projects/<project>/instructions.txt
+- load_project_instructions: if_exists
+- apply_project_delta: true
+- child_override: explicit_only
+- parent_rules: remain_active_unless_overridden
+
+agent:
+- source: target_repository/agent.md
+- read: once_per_chat
+- reread_if: source_changed|explicitly_requested|active_scope_changed
+- source_of_truth: target_repository_current_state
+- admin_snapshot: reference_only
+
+resolution:
+- order: global -> project -> subproject -> target_repository/agent.md -> task
+- missing_project_instructions: continue_with_parent_layer
+
+safety:
+- admin_repo: public
+- before_copy_to_admin: verify_public_safe
+- never_commit: secrets,keys,tokens,passwords,private_keys,credentials,session_material,secret_bearing_urls,private_or_confidential_data
