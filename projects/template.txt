@@ -6,16 +6,17 @@ project_scope:
 instructions:
 - dependency: awa-si/admin/projects/<project>/instructions.txt
 - load: once_per_chat
-- required: true
+- required: false
 - apply_with_global_user_instructions: true
 - project_delta_only: true
 - child_override: explicit_only
 - parent_rules: remain_active_unless_overridden
+- missing: use_global_only
 
 agent:
 - derive_from: project_instructions.repository
 - path: <derived_repository>/agent.md
-- load: if_exists
+- load: if_project_instructions_exist_and_agent_exists
 - read: once_per_chat
 - reread_if: source_changed|explicitly_requested|active_scope_changed
 - source_of_truth: derived_repository_current_state
@@ -23,8 +24,9 @@ agent:
 
 resolution:
 - direct_dependencies: project_instructions_only
-- order: global_user_instructions -> project_instructions -> derived_agent -> task
-- project_instructions_must_define: repository
+- order_if_project_exists: global_user_instructions -> project_instructions -> derived_agent -> task
+- order_if_project_missing: global_user_instructions -> task
+- project_instructions_must_define_if_present: repository
 
 safety:
 - admin_repo: public
