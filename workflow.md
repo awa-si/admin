@@ -21,6 +21,17 @@ github_routing_gate:
 - completion_requires_route_compliance: true
 - if_required_route_unavailable: use_documented_safe_fallback_only; never_simulate_or_claim_unperformed_workspace_or_patch
 
+github_route_activation:
+- GitHub_Workspace_skill: skills://plugins/github-workspace-web/github-workspace/skill.md
+- when_GitHub_Workspace_selected: load_skill_before_workspace_operation
+- workspace_skill_execution_contract: authoritative_for_workspace_mechanics
+- workspace_protocol_improvisation_when_skill_available: prohibited
+- GitHub_Patch_skill: none_currently_installed
+- when_GitHub_Patch_selected: use_installed_GitHub_connector_and_follow_github_patch_contract_in_this_file
+- patch_protocol_improvisation_outside_connector_and_github_patch_contract: prohibited
+- do_not_invent_or_reference_nonexistent_patch_skill: true
+- completion_requires_selected_route_execution_contract_followed: true
+
 github_routing:
 - transport: connected_GitHub_connector
 - separate_mcp_for_github_workspace: not_required
@@ -53,6 +64,8 @@ github_patch:
 github_workspace:
 - role: local_materialized_repository_work_path
 - required_for: broad_search|repository_wide_inspection|local_execution|scripts|tests|linters|builds|repeated_edit_test|multi_file_coupling|generated_artifact_analysis|ci_artifact_analysis|uncertain_change_scope
+- skill: skills://plugins/github-workspace-web/github-workspace/skill.md
+- load_skill_before_use: required
 - transport: connected_GitHub_connector_or_installed_GitHub_app
 - separate_workspace_mcp: not_required
 - preferred_path: /tmp/<repo>
@@ -127,8 +140,7 @@ workspace:
 - refresh_before_new_coherent_change_if_remote_may_have_moved: true
 
 edit_flow:
-- steps: classify_GitHub_route -> read_current_target -> inspect_material_dependencies -> make_smallest_coherent_change -> run_lightest_relevant_local_checks -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
-- route_reclassification_on_material_scope_change: required
+- steps: read_current_target -> inspect_material_dependencies -> make_smallest_coherent_change -> run_lightest_relevant_local_checks -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
 - prefer_focused_patch_over_full_file_rewrite: true
 - unrelated_refactors_in_same_change: prohibited
 - docs_only_ci: avoid_unless_executable_examples_or_machine_checked_contracts_changed
