@@ -41,6 +41,33 @@ state_and_freshness:
 - do_not_repeat_discovery_when_current_schema_is_already_loaded_and_unchanged: true
 - pagination_or_truncation: inspect_before_claiming_complete_result
 
+workspace_runtime:
+- purpose: bounded_development_execution_via_AWA_MCP_workspace_tools
+- preferred_runtime: rootless_podman
+- service_user_namespace: preserve_service_identity_with_podman_--userns_keep-id
+- subordinate_uid_gid_ranges_for_service_user: required
+- persistent_user_runtime_for_supervised_service: required
+- XDG_RUNTIME_DIR_for_rootless_podman: required
+- systemd_user_lingering_for_noninteractive_service: required_when_needed_to_provide_persistent_user_runtime
+- workspace_root: service_user_owned_mode_0700
+- container_root_filesystem: read_only
+- writable_host_mounts: selected_workspace_only
+- workspace_mount: /workspace:rw
+- command_invocation: argv_only_no_gateway_shell_interpolation
+- image_policy: exact_allowlist_and_pre_pulled_only
+- pull_policy: never_at_tool_execution
+- network_default: none
+- network_enablement: explicit_deployment_allow_and_per_call_request_both_required
+- drop_linux_capabilities: all
+- no_new_privileges: required
+- bounded_resources: pids|memory|cpu|timeout|stdout|stderr|file_size
+- bounded_tmpfs: /tmp
+- runtime_socket_mount_into_execution_container: prohibited
+- current_allowlisted_images: docker.io/library/alpine:3.22|docker.io/library/python:3.14-slim
+- verified_live_path: workspace_create->workspace_write->workspace_exec->workspace_read->workspace_delete
+- verified_python_runtime: python_3.14_slim
+- project_specific_workspace_contract: target_repo_server/_mcp/workspace.md_when_present
+
 security:
 - least_privilege: required
 - secrets|tokens|passwords|private_keys|session_material: never_request_or_expose_unless_explicit_secure_tool_contract_requires_nonvisible_runtime_reference
@@ -62,6 +89,7 @@ verification:
 - read_operation: verify_result_scope_and_completeness_when_material
 - write_operation: verify_resulting_remote_state_before_success_claim
 - multi_step_operation: verify_material_transition_points
+- workspace_runtime_after_deployment_change: verify_registered_tools_and_live_create_write_exec_read_delete_path
 - never_claim_action_or_state_not_observed: true
 
 completion:
