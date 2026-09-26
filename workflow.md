@@ -19,6 +19,54 @@ github_routing:
 - direct_contents_api: allowed_for_precise_single_file_or_fallback_write
 - force_push_or_force_ref_update: prohibited
 
+github_patch:
+- role: precise_remote_patch_path
+- preferred_for: small_deterministic_edit|small_docs_edit|known_file_known_change|focused_low_coupling_fix
+- prerequisite: read_current_target_and_current_blob_sha
+- inspect_dependencies_before_patch: when_material
+- patch_scope: smallest_coherent_diff
+- preserve: unrelated_content|formatting|file_mode|newer_remote_state
+- blind_global_replace: prohibited
+- whole_file_rewrite_when_focused_patch_suffices: avoid
+- same_path_writes: sequential
+- multi_file_patch: allowed_only_when_one_coherent_change_and_tool_supports_safe_combined_write
+- before_write: verify_target_content_matches_patch_assumptions
+- before_commit_or_remote_mutation: reread_branch_head_when_concurrency_material
+- after_write: refetch_changed_paths|verify_exact_content|verify_resulting_commit_or_branch_head
+- tests: run_only_when_change_semantics_require_them; docs_only_default_no_ci
+- if_patch_context_stale_or_conflicts: stop_patch -> refresh_current_state -> reapply_intent
+- if_change_requires_broad_search_or_execution: route_to_GitHub_Workspace
+- if_patch_tool_unavailable: use_precise_contents_API_with_current_blob_sha; do_not_claim_GitHub_Patch_used
+
+github_workspace:
+- role: local_materialized_repository_work_path
+- preferred_for: broad_search|repository_wide_inspection|local_execution|scripts|tests|linters|builds|repeated_edit_test|multi_file_coupling|generated_artifact_analysis|ci_artifact_analysis
+- transport: connected_GitHub_connector_or_installed_GitHub_app
+- separate_workspace_mcp: not_required
+- preferred_path: /tmp/<repo>
+- open_steps: resolve_repository_branch_head_sha_base_tree_sha -> read_applicable_instructions -> materialize_required_repo_state -> write_workspace_metadata
+- complete_snapshot: prefer_for_small_or_medium_repo
+- sparse_snapshot: allowed_for_large_or_narrow_task_only_if_dependency_closed_and_marked_partial
+- tree_enumeration: recursive_when_available; inspect_truncation_before_assuming_complete
+- metadata_file: .chatgpt-github/workspace.json
+- metadata_required: repository|branch|base_sha|base_tree_sha|scope|blob_shas|modes|skipped_paths|complete_flag
+- terminology_without_real_git_clone: snapshot_or_workspace_checkout
+- special_entries: preserve_when_supported; never_fake_binary|LFS|submodule|symlink|executable_semantics
+- unsupported_special_entry: record_limit_and_exclude_from_unsafe_rewrite
+- local_use: search|inspect|edit|run_scripts|tests|linters|builds|generate_artifacts|status|diff
+- local_edit_test_cycles_before_remote_mutation: preferred
+- status_without_git: modified|added|deleted|mode_changed|ignored|rename_candidates
+- before_nontrivial_writeback: inspect_changed_paths_and_complete_diff_when_practical
+- exclude_from_writeback: ignored|caches|venvs|generated_outputs_unless_intended|editor_state|workspace_metadata
+- dry_run|preview|show_diff|do_not_commit: stop_before_remote_mutation
+- writeback: guarded_against_base_sha_and_current_branch_head
+- writeback_preference: one_coherent_atomic_commit_when_supported
+- writeback_fallback: GitHub_Patch_or_precise_per_file_write_with_current_blob_sha
+- after_writeback: verify_resulting_commit|branch_head|changed_file_set|absence_of_unintended_files
+- preserve_workspace_and_intended_diff_until_remote_verified: true
+- if_workspace_transport_or_materialization_unavailable: use_GitHub_Patch_only_for_safe_small_deterministic_work; otherwise report_execution_limit_without_faking_local_run
+- github_actions_as_edit_test_loop: prohibited
+
 awa_mcp:
 - availability: available
 - scope: AWA_specific_state|operations|authoritative_internal_resolution
