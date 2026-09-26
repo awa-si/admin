@@ -17,13 +17,15 @@ project/instructions.txt
         ↓ inherited
 Level -2
 subproject/instructions.txt
-        ↓
+        ↓ derives target repository
 repo-local agent.md
         ↓
 current task
 ```
 
 A more specific level inherits all applicable parent instructions and adds only its own project-specific delta.
+
+For a ChatGPT project, `projects/<project>/instructions.txt` is the single direct project dependency. It must identify the target repository. The applicable repository `agent.md` is derived from that repository reference and loaded from the target repository when present.
 
 ## Files and responsibilities
 
@@ -38,14 +40,15 @@ Typical content includes:
 - tool and connector preferences
 - project-specific operating behavior
 - explicit overrides of inherited instructions
+- target repository identity for project-scoped instruction files
 
 The root `instructions.txt` is Level 0 and contains global user-controlled ChatGPT instructions.
 
-Each project may define its own `instructions.txt`. That file must reference its parent instruction file and should contain only project-specific additions or overrides.
+Each project may define its own `instructions.txt`. That file must reference its parent instruction file, identify the target repository, and should contain only project-specific additions or overrides.
 
 ### `agent.md`
 
-Each project or repository should also contain an `agent.md` where repository-specific technical and domain rules belong.
+Each target repository may contain an `agent.md` where repository-specific technical and domain rules belong. It is not a separate project-bootstrap dependency: its location is derived from the repository declared by the applicable project `instructions.txt`.
 
 Typical content includes:
 
@@ -107,11 +110,16 @@ This rule is mandatory and applies even when the source repository itself is pri
 5. **Explicit parent link**
    - Every non-root `instructions.txt` must identify its parent instruction source.
 
-6. **Separate interaction from implementation**
-   - `instructions.txt` controls ChatGPT behavior in the project context.
-   - `agent.md` controls technical and domain work inside the repository.
+6. **Single project dependency**
+   - The project bootstrap depends directly only on `projects/<project>/instructions.txt`.
+   - That file identifies the target repository.
+   - The repository-local `agent.md` is derived from that repository and loaded when present.
 
-7. **Current repository state is authoritative for implementation**
+7. **Separate interaction from implementation**
+   - `instructions.txt` controls ChatGPT behavior in the project context and resolves the target repository.
+   - `agent.md` controls technical and domain work inside that repository.
+
+8. **Current repository state is authoritative for implementation**
    - Project instructions may define how repository state is read, but technical facts about code, schemas, APIs, and architecture must come from the current repository rather than duplicated instruction text.
 
 ## Repository workspace policy
@@ -131,24 +139,32 @@ The detailed global workflow is defined in `instructions.txt`; project `agent.md
 
 ## Recommended project structure
 
+Admin-side project configuration:
+
 ```text
-project/
-├─ instructions.txt
-└─ agent.md
+projects/<project>/
+└─ instructions.txt   # single direct project dependency; declares repository
+```
+
+Target repository:
+
+```text
+<owner>/<repo>/
+└─ agent.md           # derived from repository declaration; optional repository layer
 ```
 
 A project instruction file should be minimal, for example:
 
 ```text
-parent: <link-or-path-to-parent-instructions>
+parent: ../../instructions.txt
 scope: awa-si/example
+repository: awa-si/example
 
-Project-specific instructions:
-- ...
+project_delta:
 - ...
 ```
 
-Nested scopes may form deeper levels when useful:
+Nested scopes may form deeper levels when useful, but they remain part of instruction resolution rather than separate bootstrap dependencies:
 
 ```text
 admin/instructions.txt
@@ -156,7 +172,7 @@ admin/instructions.txt
 projects/awa/instructions.txt
         ↓
 projects/nautilus/instructions.txt
-        ↓
+        ↓ derives repository
 awa-si/nautilus/agent.md
 ```
 
@@ -165,5 +181,7 @@ awa-si/nautilus/agent.md
 `awa-si/admin` owns the user-controlled instruction hierarchy.
 
 Individual project repositories own their local `agent.md` and implementation state.
+
+Admin-side `projects/*/agent.md` files, when retained, are reference snapshots only and are not project-bootstrap dependencies or technical sources of truth.
 
 The hierarchy must avoid copying the same rule into multiple levels. Shared behavior belongs at the highest scope where it is universally valid; narrower scopes contain only the differences.
