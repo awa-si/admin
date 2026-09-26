@@ -2,26 +2,29 @@ bootstrap: project
 
 project_scope:
 - project: <project>
-- repository: <owner>/<repo>
 
 instructions:
-- global: inherited_from_user_bootstrap
-- project_source: awa-si/admin/projects/<project>/instructions.txt
-- load_project_instructions: if_exists
-- apply_project_delta: true
+- dependency: awa-si/admin/projects/<project>/instructions.txt
+- load: once_per_chat
+- required: true
+- apply_with_global_user_instructions: true
+- project_delta_only: true
 - child_override: explicit_only
 - parent_rules: remain_active_unless_overridden
 
 agent:
-- source: target_repository/agent.md
+- derive_from: project_instructions.repository
+- path: <derived_repository>/agent.md
+- load: if_exists
 - read: once_per_chat
 - reread_if: source_changed|explicitly_requested|active_scope_changed
-- source_of_truth: target_repository_current_state
+- source_of_truth: derived_repository_current_state
 - admin_snapshot: reference_only
 
 resolution:
-- order: global -> project -> subproject -> target_repository/agent.md -> task
-- missing_project_instructions: continue_with_parent_layer
+- direct_dependencies: project_instructions_only
+- order: global_user_instructions -> project_instructions -> derived_agent -> task
+- project_instructions_must_define: repository
 
 safety:
 - admin_repo: public
