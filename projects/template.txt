@@ -30,15 +30,18 @@ agent:
 - read: once_per_chat
 - reread_if: source_changed|explicitly_requested|active_scope_changed
 - source_of_truth: derived_repository_current_state
-- admin_snapshot: reference_only
+- required: false
 
 resolution:
-- direct_dependencies: global_workflow + optional_project_instructions + optional_project_workflow
-- order_if_project_exists: global_user_instructions -> global_workflow -> project_instructions -> project_workflow_if_exists -> derived_agent -> task
+- order_if_project_exists: global_user_instructions -> global_workflow -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
 - order_if_project_missing: global_user_instructions -> global_workflow -> task
 - project_instructions_must_define_if_present: repository
+- child_override: explicit_only
+- parent_rules: remain_active_unless_overridden
+- admin_project_agent_snapshot: prohibited
 
 safety:
 - admin_repo: public
 - before_copy_to_admin: verify_public_safe
 - never_commit: secrets,keys,tokens,passwords,private_keys,credentials,session_material,secret_bearing_urls,private_or_confidential_data
+- confidential_repo_content: reference_repo_path_only
