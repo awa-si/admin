@@ -1,0 +1,15 @@
+scope:
+- project: awa
+- repository: awa-si/awa
+- branch: main
+
+inheritance:
+- parent: global
+- mode: delta_only
+
+repository:
+- source_of_truth: awa-si/awa@main
+- agent: agent.md
+
+project_delta:
+- none

@@ -1,0 +1,15 @@
+scope:
+- project: nautilus
+- repository: awa-si/nautilus
+- branch: main
+
+inheritance:
+- parent: global
+- mode: delta_only
+
+repository:
+- source_of_truth: awa-si/nautilus@main
+- agent: agent.md
+
+project_delta:
+- none

@@ -1,0 +1,15 @@
+scope:
+- project: private
+- repository: awa-si/private
+- branch: main
+
+inheritance:
+- parent: global
+- mode: delta_only
+
+repository:
+- source_of_truth: awa-si/private@main
+- agent: agent.md
+
+project_delta:
+- language: de

@@ -1,0 +1,15 @@
+scope:
+- project: oreon
+- repository: awa-si/oreon
+- branch: main
+
+inheritance:
+- parent: global
+- mode: delta_only
+
+repository:
+- source_of_truth: awa-si/oreon@main
+- agent: agent.md
+
+project_delta:
+- none
