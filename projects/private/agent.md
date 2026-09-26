@@ -1,79 +1,31 @@
----
-title: AI-Arbeitsanweisungen
-description: Verbindliche, kompakte Regeln für KI-gestützte Arbeit im privaten Repository.
-type: instructions
-status: active
-language: de
-owner: AWA
-created: 2026-09-14
-updated: 2026-09-16
----
+scope: project_agent_snapshot
+project: private
+repository: awa-si/private
+branch: main
+visibility: private
+mode: public_safe_reference_manifest
 
-# AI-Arbeitsanweisungen
+source_of_truth:
+- repository_current_state: true
+- canonical_agent: agent.md
+- canonical_registry: index.md
+- repository_orientation: README.md
 
-## Initialisierung
+resolution:
+- read: agent.md
+- then: index.md
+- resolve: task_relevant_file
+- load_only: minimum_required_context
 
-Vor jeder Arbeit: `agent.md` → `index.md` → nur relevante referenzierte Dateien. Bestehende Projektdateien sind für dokumentierte Entscheidungen die Quelle der Wahrheit; explizite Nutzeranweisungen haben Vorrang.
+confidentiality:
+- copy_private_content_to_admin: false
+- expose_personal_data: false
+- expose_case_data: false
+- expose_financial_or_legal_data: false
+- expose_infrastructure_details: false
+- public_admin_representation: repository_and_paths_only
 
-## Sprache
-
-- Entwicklungs-, Dokumentations- und Arbeitssprache: **Deutsch**.
-- Code-Bezeichner/technische Begriffe dürfen Englisch bleiben, wenn technisch üblich oder projektkonsistent.
-- Andere Sprache nur auf ausdrückliche Anweisung oder wenn das Zielformat sie erfordert.
-
-## Schreibstil
-
-- **Kompakt, präzise, informationsdicht.**
-- Keine Fülltexte, Wiederholungen oder künstlich langen Erklärungen.
-- Bestehende Terminologie und Struktur erhalten.
-- Fakten, Annahmen, offene Punkte und interne Überlegungen klar trennen.
-- Arbeitsdokumente so schreiben, dass sie direkt weiterbearbeitet werden können.
-
-## Metadaten – jede Datei
-
-Jede neu erstellte **oder inhaltlich bearbeitete Datei** benötigt Metadaten. Markdown/Text bevorzugt YAML-Frontmatter:
-
-```yaml
----
-title: Eindeutiger Titel
-description: Kurzer Zweck/Inhalt
-type: document
-status: draft
-language: de
-owner: AWA
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
----
-```
-
-Pflicht: `title`, `description`, `type`, `status`, `language`, `owner`, `created`, `updated`.
-
-- Status: `draft | active | review | archived`.
-- `created` nie verändern; `updated` bei materieller Änderung aktualisieren.
-- Quellcode: kompakter sprachüblicher Metadaten-Header, sofern technisch zulässig.
-- Formate ohne sichere Inline-Metadaten (z. B. JSON/Binär): `<dateiname>.meta.yaml`.
-- Bestehende Datei ohne Metadaten: bei nächster inhaltlicher Bearbeitung ergänzen.
-- Metadaten bleiben kurz; keine Fachinhalte darin duplizieren.
-
-## Dateiregister
-
-`index.md` ist Registry/Projektkarte.
-
-Bei relevanter Datei-Erstellung, Verschiebung, Umbenennung, Archivierung oder Löschung `index.md` **im selben Arbeitsvorgang** aktualisieren. Eintrag kompakt: Pfad, Typ, Status, Zweck, Aktualisierungsdatum. Fachdetails bleiben in der jeweiligen Datei.
-
-## Bearbeitung
-
-- Bestehende Struktur erweitern; keine redundanten Parallelablagen.
-- Semantisch ändern, keine blinden globalen Ersetzungen.
-- Unverwandte Inhalte/Nutzeränderungen bewahren.
-- Dokumentierte Entscheidungen nicht stillschweigend überschreiben.
-- Arbeitsdateien dürfen Entwurf/Annahmen enthalten; diese eindeutig kennzeichnen.
-- Vor Abschluss prüfen: Inhalt, Pfad, Metadaten, Registry und interne Konsistenz.
-
-## GitHub
-
-- Standard: `main`.
-- Zusammengehörige Änderungen möglichst atomar committen.
-- Vor Schreiben aktuellen Stand lesen.
-- Nach Commit Pfade und Inhalt verifizieren.
-- Kein Force-Push; keine neueren Änderungen überschreiben.
+sync:
+- this_file: reference_snapshot_only
+- substantive_rules: remain_in_private_repository
+- refresh_if: agent_or_index_changes
