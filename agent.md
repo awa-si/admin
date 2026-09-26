@@ -1,3 +1,18 @@
+# ADMIN — AGENT
+
+> AI self-directive for operating and governing the Admin control plane and its managed project/repository instruction architecture.
+
+**File:** `agent.md`  
+**Owner:** Admin AI repository operating rules  
+**Scope:** AI behavior, control-plane reasoning, source resolution, managed-project routing and completion gates  
+**Status:** Canonical  
+**Repository:** `awa-si/admin`  
+**Branch:** `main`  
+**Mode:** normative machine directives  
+**AI Instruction:** Apply this file when operating on Admin itself or coordinating managed projects/repositories from the Admin control plane; delegate workflow, coding and substantive target-repository contracts to their canonical owners.
+
+---
+
 scope: repository_agent
 repository: awa-si/admin
 branch: main
