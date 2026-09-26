@@ -9,6 +9,18 @@ resolution:
 - project_extension_semantics: extend_parent_and_explicit_override_only
 - parent_rules_remain_active_unless_overridden: true
 
+github_routing_gate:
+- before_any_repository_read_write_or_execution_task: classify_route_as_GitHub_Patch|GitHub_Workspace|GitHub_Actions
+- route_decision_is_mandatory_not_advisory: true
+- default_for_known_small_deterministic_low_coupling_change: GitHub_Patch
+- mandatory_workspace_if_any: broad_search|repository_wide_inspection|local_execution|script_execution|test_or_lint_required|build_required|repeated_edit_test_cycle|multi_file_coupling|generated_artifact_analysis|ci_artifact_analysis|change_scope_uncertain
+- patch_must_not_be_stretched_to_avoid_workspace: true
+- if_patch_task_expands_beyond_patch_criteria: stop_remote_editing -> open_GitHub_Workspace -> continue_from_current_remote_state
+- if_workspace_task_collapses_to_single_known_deterministic_change_before_materialization: GitHub_Patch_allowed
+- reclassify_route_when_scope_changes_materially: required
+- completion_requires_route_compliance: true
+- if_required_route_unavailable: use_documented_safe_fallback_only; never_simulate_or_claim_unperformed_workspace_or_patch
+
 github_routing:
 - transport: connected_GitHub_connector
 - separate_mcp_for_github_workspace: not_required
@@ -21,7 +33,7 @@ github_routing:
 
 github_patch:
 - role: precise_remote_patch_path
-- preferred_for: small_deterministic_edit|small_docs_edit|known_file_known_change|focused_low_coupling_fix
+- required_for: small_deterministic_edit|small_docs_edit|known_file_known_change|focused_low_coupling_fix
 - prerequisite: read_current_target_and_current_blob_sha
 - inspect_dependencies_before_patch: when_material
 - patch_scope: smallest_coherent_diff
@@ -40,7 +52,7 @@ github_patch:
 
 github_workspace:
 - role: local_materialized_repository_work_path
-- preferred_for: broad_search|repository_wide_inspection|local_execution|scripts|tests|linters|builds|repeated_edit_test|multi_file_coupling|generated_artifact_analysis|ci_artifact_analysis
+- required_for: broad_search|repository_wide_inspection|local_execution|scripts|tests|linters|builds|repeated_edit_test|multi_file_coupling|generated_artifact_analysis|ci_artifact_analysis|uncertain_change_scope
 - transport: connected_GitHub_connector_or_installed_GitHub_app
 - separate_workspace_mcp: not_required
 - preferred_path: /tmp/<repo>
@@ -115,7 +127,8 @@ workspace:
 - refresh_before_new_coherent_change_if_remote_may_have_moved: true
 
 edit_flow:
-- steps: read_current_target -> inspect_material_dependencies -> make_smallest_coherent_change -> run_lightest_relevant_local_checks -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
+- steps: classify_GitHub_route -> read_current_target -> inspect_material_dependencies -> make_smallest_coherent_change -> run_lightest_relevant_local_checks -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
+- route_reclassification_on_material_scope_change: required
 - prefer_focused_patch_over_full_file_rewrite: true
 - unrelated_refactors_in_same_change: prohibited
 - docs_only_ci: avoid_unless_executable_examples_or_machine_checked_contracts_changed
