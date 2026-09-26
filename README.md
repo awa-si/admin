@@ -1,187 +1,145 @@
 # GPT Admin
 
-`awa-si/admin` is the source of truth for the ChatGPT instruction hierarchy used across AWA projects.
+`awa-si/admin` defines the user-controlled ChatGPT instruction and workflow hierarchy used across AWA projects.
 
-The repository separates global interaction rules from project-specific rules and from repository-local engineering instructions.
-
-## Design
-
-Instruction resolution is hierarchical:
+## Canonical resolution
 
 ```text
-Level 0
 admin/instructions.txt
-        ↓ inherited
-Level -1
-project/instructions.txt
-        ↓ inherited
-Level -2
-subproject/instructions.txt
-        ↓ derives target repository
-repo-local agent.md
+        ↓
+admin/workflow.md
+        ↓
+projects/<project>/instructions.txt        # optional project behavior/repository delta
+        ↓
+projects/<project>/workflow.md             # optional workflow delta
+        ↓
+<derived-repository>/agent.md              # optional repo/domain layer
         ↓
 current task
 ```
 
-A more specific level inherits all applicable parent instructions and adds only its own project-specific delta.
-
-For a ChatGPT project, `projects/<project>/instructions.txt` is the single direct project dependency. It must identify the target repository. The applicable repository `agent.md` is derived from that repository reference and loaded from the target repository when present.
-
-## Files and responsibilities
-
-### `instructions.txt`
-
-`instructions.txt` defines how ChatGPT should operate in a given scope.
-
-Typical content includes:
-
-- interaction and communication rules
-- verification and reasoning requirements
-- tool and connector preferences
-- project-specific operating behavior
-- explicit overrides of inherited instructions
-- target repository identity for project-scoped instruction files
-
-The root `instructions.txt` is Level 0 and contains global user-controlled ChatGPT instructions.
-
-Each project may define its own `instructions.txt`. That file must reference its parent instruction file, identify the target repository, and should contain only project-specific additions or overrides.
-
-### `agent.md`
-
-Each target repository may contain an `agent.md` where repository-specific technical and domain rules belong. It is not a separate project-bootstrap dependency: its location is derived from the repository declared by the applicable project `instructions.txt`.
-
-Typical content includes:
-
-- architecture and engineering rules
-- repository conventions
-- domain-specific methodology
-- validation and testing requirements
-- runtime and implementation constraints
-
-`agent.md` must not duplicate generic ChatGPT interaction rules that belong in the instruction hierarchy.
-
-## Instruction-file language
-
-`instructions.txt` and `agent.md` are machine-consumed control files. Write them in compact, normative, machine-oriented language.
-
 Rules:
 
-- prefer stable section names, key/value directives, short imperatives, enumerations, and explicit conditions;
-- encode precedence, scope, triggers, exceptions, and fallbacks explicitly;
-- use consistent identifiers and terminology across parent and child layers;
-- avoid narrative prose, motivational text, conversational explanation, rhetorical wording, and duplicated rationale;
-- keep examples only when they materially disambiguate execution semantics;
-- move human-oriented explanation, background, design rationale, and long-form guidance to `README.md` or dedicated documentation;
-- preserve semantic completeness: machine-oriented does not mean vague, abbreviated, or lossy;
-- project instruction files should remain delta-only; repository `agent.md` files should contain only repository/domain-specific directives.
+- `instructions.txt` controls ChatGPT behavior, scope, connector/tool preferences, and project repository resolution.
+- `workflow.md` controls repository execution, editing, verification, CI/Actions, profiling, artifact handling, concurrency, and recovery.
+- `agent.md` lives in the target repository and controls repository/domain/engineering contracts.
+- project files are delta-only; parent rules remain active unless explicitly overridden.
+- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow only.
+- `projects/<project>/workflow.md` is optional and extends/overrides only the global workflow.
+- target `agent.md` is derived from `projects/<project>/instructions.txt.repository` and loaded only when present.
+- current target repository state is authoritative for implementation facts.
 
-When importing an existing prose-heavy `agent.md` into this hierarchy, normalize it toward this format without changing its intended operational semantics.
-
-## Public repository and secret handling
-
-`awa-si/admin` is a public repository. Treat every committed file as publicly readable.
-
-For all `instructions.txt`, project instruction files, `agent.md` snapshots, examples, documentation, and generated instruction artifacts:
-
-- never commit secrets, API keys, access tokens, passwords, private keys, credentials, session material, or secret-bearing URLs;
-- never copy private or confidential user, company, customer, infrastructure, or account data into instruction files;
-- never move secret values from private repositories, chats, connected apps, environment files, CI secrets, or runtime state into this repository;
-- use symbolic names, placeholders, secret identifiers, or references to the authoritative private source instead of secret values;
-- treat copied `agent.md` content as untrusted for publication until checked for secrets and private data;
-- redact or omit sensitive values before creating or updating any file in this repository;
-- when uncertain whether content is public-safe, do not commit it until verified.
-
-This rule is mandatory and applies even when the source repository itself is private.
-
-## Resolution rules
-
-1. **Parent first**
-   - Resolve instructions from the highest applicable parent level down to the active project.
-
-2. **Inheritance by default**
-   - Parent rules remain active unless a child explicitly overrides them.
-
-3. **Child specificity wins**
-   - When two user-controlled instruction levels conflict, the instruction closest to the active project scope takes precedence.
-
-4. **Delta only**
-   - Child instruction files should not copy inherited rules. They should contain only additions, refinements, or explicit overrides.
-
-5. **Explicit parent link**
-   - Every non-root `instructions.txt` must identify its parent instruction source.
-
-6. **Single project dependency**
-   - The project bootstrap depends directly only on `projects/<project>/instructions.txt`.
-   - That file identifies the target repository.
-   - The repository-local `agent.md` is derived from that repository and loaded when present.
-
-7. **Separate interaction from implementation**
-   - `instructions.txt` controls ChatGPT behavior in the project context and resolves the target repository.
-   - `agent.md` controls technical and domain work inside that repository.
-
-8. **Current repository state is authoritative for implementation**
-   - Project instructions may define how repository state is read, but technical facts about code, schemas, APIs, and architecture must come from the current repository rather than duplicated instruction text.
-
-## Repository workspace policy
-
-Repository transport and local execution are separate concerns.
-
-- Small deterministic edits should use the GitHub Patch path directly.
-- Broader changes, repository-wide inspection, builds, and tests should use a local runtime workspace when that materially improves verification.
-- If direct `git clone` is unavailable, the GitHub connector/API should materialize the required repository snapshot into `/tmp/<repo>` instead of blocking local work.
-- A connector-materialized workspace is a snapshot/workspace checkout, not a Git clone unless Git transport actually occurred.
-- The workspace must retain the source branch, base commit SHA, and base tree SHA so writes can be concurrency-guarded.
-- Multi-file writes should be committed atomically where practical using Git blobs/tree/commit/ref primitives, with force disabled.
-- If the branch moved after materialization, refresh and reconcile; never overwrite newer changes from stale local state.
-- Verify the resulting commit and changed files. Use CI only where it materially validates the change; documentation-only edits should not trigger CI unless repository rules require it.
-
-The detailed global workflow is defined in `instructions.txt`; project `agent.md` files should contain only repository-specific deviations.
-
-## Recommended project structure
-
-Admin-side project configuration:
+## Repository structure
 
 ```text
-projects/<project>/
-└─ instructions.txt   # single direct project dependency; declares repository
+admin/
+├── instructions.txt
+├── workflow.md
+├── README.md
+└── projects/
+    ├── template.txt
+    └── <project>/
+        ├── instructions.txt
+        └── workflow.md        # optional
 ```
 
 Target repository:
 
 ```text
 <owner>/<repo>/
-└─ agent.md           # derived from repository declaration; optional repository layer
+└── agent.md                  # optional canonical repo/domain instructions
 ```
 
-A project instruction file should be minimal, for example:
+Admin does not retain `projects/*/agent.md` snapshots. Repository-local `agent.md` is always read from the derived target repository when needed.
+
+## File responsibilities
+
+### `instructions.txt`
+
+Use for:
+
+- communication and decision behavior;
+- accuracy and verification expectations;
+- tool/connector preferences;
+- project scope and target repository identity;
+- explicit project-level behavioral overrides;
+- workflow dependency declaration.
+
+Do not duplicate implementation/domain rules that belong in repo `agent.md` or execution policy that belongs in `workflow.md`.
+
+### `workflow.md`
+
+Use for:
+
+- local/disposable workspace policy;
+- edit/test/commit/writeback flow;
+- concurrency protection;
+- CI and GitHub Actions escalation;
+- long-running job observability;
+- profiling/benchmark/research artifact handling;
+- remote verification and recovery.
+
+Project workflow files contain only project-specific additions or explicit overrides.
+
+### repo `agent.md`
+
+Use for:
+
+- repository ownership/navigation conventions;
+- architecture and engineering contracts;
+- domain-specific methodology;
+- runtime/model/data semantics;
+- repository-local validation requirements.
+
+Do not duplicate generic ChatGPT behavior or global workflow policy.
+
+## Instruction language
+
+`instructions.txt`, `workflow.md`, and `agent.md` are machine-consumed control files.
+
+Prefer:
+
+- stable section names;
+- key/value directives;
+- short normative imperatives;
+- explicit scope, precedence, conditions, exceptions, and fallbacks;
+- consistent identifiers across layers.
+
+Avoid narrative prose, motivational text, rhetorical wording, and duplicated rationale. Human-oriented explanation belongs in README/docs.
+
+## Public repository safety
+
+`awa-si/admin` is public. Treat every committed file as publicly readable.
+
+Never commit:
+
+- secrets, keys, tokens, passwords, private keys, credentials, or session material;
+- secret-bearing URLs;
+- private/confidential user, customer, company, infrastructure, or account data;
+- copied content from private repositories unless independently verified public-safe.
+
+For confidential project state, reference the authoritative private repository/path instead of copying content into Admin.
+
+## Precedence
+
+For user-controlled Admin layers:
 
 ```text
-parent: ../../instructions.txt
-scope: awa-si/example
-repository: awa-si/example
+global instructions
+< project instructions
 
-project_delta:
-- ...
+global workflow
+< project workflow
 ```
 
-Nested scopes may form deeper levels when useful, but they remain part of instruction resolution rather than separate bootstrap dependencies:
+A child overrides only when explicit. Otherwise parent rules remain active.
 
-```text
-admin/instructions.txt
-        ↓
-projects/awa/instructions.txt
-        ↓
-projects/nautilus/instructions.txt
-        ↓ derives repository
-awa-si/nautilus/agent.md
-```
+Repository-local `agent.md` does not replace global/project behavior or workflow policy; it adds repository/domain-specific contracts.
 
 ## Source-of-truth boundaries
 
-`awa-si/admin` owns the user-controlled instruction hierarchy.
-
-Individual project repositories own their local `agent.md` and implementation state.
-
-Admin-side `projects/*/agent.md` files, when retained, are reference snapshots only and are not project-bootstrap dependencies or technical sources of truth.
-
-The hierarchy must avoid copying the same rule into multiple levels. Shared behavior belongs at the highest scope where it is universally valid; narrower scopes contain only the differences.
+- `awa-si/admin` owns global/project ChatGPT behavior and workflow policy.
+- target repositories own their `agent.md` and implementation/domain state.
+- project `instructions.txt` owns repository resolution for that project.
+- project `workflow.md` owns only workflow deltas.
+- duplicated active definitions across layers are prohibited.
