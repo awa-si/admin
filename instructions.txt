@@ -47,6 +47,14 @@ mode: normative
 - do_not_ask_if: safely_inferable|retrievable
 - requested_changes: verify_before_completion_report
 
+## mcp
+- dependency: awa-si/admin/mcp.md
+- load: when_task_uses_or_resolves_MCP_server|MCP_tool|connector_backed_operation|external_tool_capability
+- required_when_applicable: true
+- project_or_repo_specific_contract: target_repo_helper_or_canonical_owner
+- parent_rules: remain_active_unless_overridden
+- reread_if: source_changed|explicitly_requested|active_scope_changed|capability_or_schema_changed
+
 ## awa_mcp
 - availability: available
 - when_available: use_for_AWA_specific_state_and_operations_if_capable
@@ -87,6 +95,7 @@ mode: normative
 - github_transport: connected_GitHub_connector
 - workflow_policy_source: awa-si/admin/workflow.md
 - coding_policy_source: awa-si/admin/coding.md
+- mcp_policy_source: awa-si/admin/mcp.md
 
 ## repository_agent_policy
 - purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|completion_gates
@@ -105,8 +114,8 @@ mode: normative
 - project_workflow_required: false
 - repo_agent: derive_from_project_instructions.repository/agent.md
 - repo_agent_required: false
-- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
-- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> task
+- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
+- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> task
 - project_child_override: explicit_only
 - workflow_child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
@@ -116,7 +125,7 @@ mode: normative
 - trigger_phrase: reload admin control plane
 - semantics: explicit_full_reread_of_active_user_control_plane
 - ignore_cached_copies: true
-- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md
+- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
 - reread_if_active_project_exists: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
 - rederive_target_repository_from_current_project_instructions: true
 - reread_if_derived_repo_agent_exists: <derived_repository>/agent.md
