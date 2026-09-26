@@ -7,38 +7,145 @@ level: 0
 
 - Treat the current repository state as authoritative for implementation details.
 - Read the repository-local `agent.md` once when starting work in a repository or creating a local workspace. Re-read it only if the file changed, the task explicitly requires it, or the active scope changed.
-- Prefer the GitHub Patch workflow for small, deterministic edits that do not benefit from local execution.
-- Prefer a local workspace for broader code changes, multi-file refactors, repository-wide inspection, builds, or tests.
+- Prefer the GitHub Patch workflow for small, deterministic edits that do not materially benefit from local execution.
+- Prefer the `GitHub Workspace` skill for repository-wide inspection, local execution, repeated edit/test cycles, CI artifact analysis, builds, tests, or coordinated multi-file changes.
+- `GitHub Workspace` uses the already-installed GitHub connector/app as transport. Do not require or configure a separate MCP server for this workflow.
 
-## GitHub workspace workflow
+## GitHub Workspace lifecycle
+
+Treat a local repository workspace as an explicit lifecycle:
+
+```text
+OPEN -> DIRTY -> VERIFIED -> PREVIEWED -> COMMITTED -> VERIFIED_REMOTE
+  \        |         |           |
+   \-> REFRESH / REAPPLY / RECOVER <---/
+```
+
+Supported operations are:
+
+- `open`: materialize repository state locally;
+- `status`: classify local changes against the recorded baseline;
+- `diff`: inspect changed paths and text diffs;
+- `refresh`: detect remote branch movement without discarding local work;
+- `reapply`: move intended local changes onto a newer remote base when safe;
+- `test`: run the narrowest meaningful local verification;
+- `preview`: inspect the exact intended write-back;
+- `commit`: write one guarded atomic Git commit where supported;
+- `verify`: verify commit, branch, changed files, CI, and artifacts when relevant;
+- `recover`: preserve and reconcile local work after failed or stale write-back.
+
+## Workspace checkout
 
 When direct `git clone` is unavailable or blocked, use the connected GitHub capability as the transport layer instead of treating the repository as inaccessible.
 
 For local-workspace tasks:
 
-1. Resolve the target repository, branch, current head SHA, and base tree SHA.
-2. Materialize the required repository snapshot into `/tmp/<repo>` using GitHub repository/tree/blob APIs or available connector primitives.
-3. Record workspace metadata including repository, branch, `base_sha`, and `base_tree_sha`.
-4. Call the result a repository snapshot or workspace checkout unless an actual Git clone occurred.
-5. Perform inspection, edits, builds, and tests against the local workspace.
-6. Review the resulting local diff before writing remotely.
-7. Write verified multi-file changes as one atomic commit where practical: create blobs, create a tree based on `base_tree_sha`, create a commit with `base_sha` as parent, then update the branch ref with force disabled.
-8. If the remote branch moved since `base_sha`, stop the write, refresh repository state, and reconcile instead of overwriting newer work.
-9. Verify the resulting commit and changed files after the write.
-10. Run or inspect CI only when it materially validates the change; do not trigger CI for documentation-only changes unless required by repository rules.
+1. Resolve the target repository, selected branch, current head SHA, and the tree SHA referenced by that head commit.
+2. Read applicable repository/project instructions before substantive work.
+3. Enumerate the repository tree through GitHub Git-tree APIs or equivalent connector primitives. Prefer recursive tree enumeration and inspect whether the response is truncated.
+4. Materialize the required repository snapshot into a unique `/tmp/<repo>` workspace while preserving repository-relative paths and file modes where practical.
+5. Record `.chatgpt-github/workspace.json` with at least repository, branch, `base_sha`, `base_tree_sha`, materialization scope, file blob SHAs/modes, skipped paths, and whether the snapshot is complete.
+6. Call the result a repository snapshot or workspace checkout unless an actual Git transport clone occurred.
+7. Prefer a complete snapshot for small/medium source repositories. For large repositories, binary-heavy repositories, or narrow tasks, use a dependency-closed sparse workspace and mark it partial.
+8. Never create placeholder files for unsupported binary, oversized, LFS, submodule, or other special entries. Record limitations explicitly.
 
-## Materialization rules
+## Local workspace behavior
 
-- Prefer a complete snapshot when practical.
-- For large repositories, sparse materialization of the relevant paths is acceptable when the task does not require the full tree.
-- Preserve repository-relative paths and executable/file semantics where the connector exposes them.
-- Do not claim a full checkout when only selected files or subtrees were materialized.
-- Do not use direct network `git clone` as a prerequisite when the GitHub connector can supply the required repository state.
+- Use local filesystem/runtime tools for repository-wide search, edits, scripts, tests, linters, builds, and generated artifacts.
+- Prefer local edit/test cycles over repeated remote mutation during investigation.
+- Use `.gitignore`, repository instructions, and workspace metadata to exclude caches, virtual environments, generated outputs, editor state, and other non-source files from commits.
+- Preserve executable mode, symlink, submodule, binary, and Git LFS semantics where supported; do not silently coerce special entries into regular text files.
+- Determine local status from the workspace baseline when no `.git` checkout exists: classify files as modified, added, deleted, mode-changed, ignored, or rename candidates.
+- Before any non-trivial remote mutation, inspect the changed-path summary and text diff where practical.
+- If the user requests `dry run`, `preview`, `show diff`, or `do not commit`, stop before remote mutation.
 
-## Write safety
+## Verification strategy
 
-- Default to the selected existing branch; for AWA repositories this is normally `main` unless another branch is explicitly selected.
+Use the narrowest meaningful verification first:
+
+```text
+syntax/static check -> focused tests -> affected package tests -> broader suite
+```
+
+Escalate only when risk, coupling, repository instructions, or failures justify it.
+
+Record material verification commands/results and any runtime or sparse-workspace limitation that affects confidence.
+
+Do not trigger remote CI merely because local verification is available. Avoid CI for documentation-only changes unless repository rules require it.
+
+## Refresh and stale-state handling
+
+Treat `base_sha` as an optimistic concurrency guard.
+
+Immediately before write-back, re-read the selected branch head.
+
+- If the head still equals `base_sha`, continue.
+- If the head moved, do not overwrite it and never use force as a shortcut.
+- Compare remote changes against local intended paths.
+- If changes are non-overlapping, refresh the baseline and reapply the local diff, then rerun affected verification.
+- If changes overlap, preserve the local diff, fetch the new remote content, reconcile explicitly, inspect the resulting diff, and rerun affected verification.
+
+## Safe write-back
+
+Prefer one coherent commit for one coherent user-requested change.
+
+When low-level Git object operations are available, use the atomic path:
+
+```text
+local changed bytes
+    -> create_blob x N
+    -> create_tree(base_tree_sha)
+    -> create_commit(parent=base_sha)
+    -> update_ref(force=false)
+```
+
+Rules:
+
+- Build the new tree from `base_tree_sha`; never construct a replacement repository tree from only changed paths.
+- Represent deletions with the connector/API deletion-tree semantics when supported.
+- Use the user's commit message when supplied; otherwise generate a concise accurate message from the actual diff.
+- Split into multiple commits only when explicitly requested, required by repository rules, or when changes have genuinely independent rollback/validation boundaries.
 - Never force-push or force-update a branch ref.
 - Never overwrite newer repository changes using stale workspace state.
-- Prefer one coherent commit for one coherent task.
-- Verify the final remote state before reporting completion.
+
+If low-level Git-object operations are unavailable, fall back to the GitHub Patch/per-file workflow using current blob SHAs as stale-content guards. Do not describe multiple independent file writes as atomic.
+
+## Branch and PR behavior
+
+- Default to the selected existing branch; for AWA repositories this is normally `main` unless another branch is explicitly selected.
+- Commit directly when repository instructions and permissions allow it.
+- Use a feature branch or pull request only when explicitly requested, required by repository policy, or direct branch update is blocked and the authorized fallback permits it.
+- Do not merge a pull request unless explicitly requested.
+
+## Remote verification
+
+After write-back:
+
+1. fetch the resulting commit;
+2. compare the previous base with the resulting commit and verify the intended changed-file set;
+3. verify the selected branch points to the expected commit;
+4. confirm no unintended files changed;
+5. inspect commit status/checks when relevant;
+6. inspect workflow jobs, steps, logs, and artifacts when they materially validate the requested task.
+
+For CI failures, identify the earliest causal failure rather than only the final cascading error. For successful runs, inspect expected artifacts when those artifacts are part of the task's evidence.
+
+Never report repository modification as complete until the resulting remote state has been verified.
+
+## Recovery
+
+- Preserve the local workspace and intended diff until remote verification succeeds.
+- If write-back fails before ref update, created Git blobs/trees/commits alone are not a branch mutation.
+- If per-file fallback partially succeeds, inspect the actual repository state before retrying or repairing it.
+- If an incorrect commit must be undone, prefer a compensating/revert commit over force-resetting a shared branch.
+- If the runtime cannot resolve `github.com`, do not repeatedly retry normal `git clone`; use GitHub connector/API materialization instead.
+
+## Decision rule
+
+```text
+small deterministic edit
+    -> GitHub Patch
+
+broad search / local execution / repeated edit-test / multi-file coupling / CI artifact analysis
+    -> GitHub Workspace
+```
