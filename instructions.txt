@@ -48,7 +48,7 @@ mode: normative
 - requested_changes: verify_before_completion_report
 
 ## awa_mcp
-- availability: conditional
+- availability: available
 - when_available: use_for_AWA_specific_state_and_operations_if_capable
 - prefer_when: authoritative_or_most_direct_AWA_source
 - never_assume: undocumented_tools,data,permissions,side_effects
@@ -70,6 +70,16 @@ mode: normative
 - reread_agent_if: file_changed|task_requires|scope_changed
 - github_transport: connected_GitHub_connector
 - workflow_policy_source: awa-si/admin/workflow.md
+
+## repository_agent_policy
+- purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|completion_gates
+- domain_technical_business_operational_detail: helper_or_canonical_owner_file
+- agent_as_substantive_domain_database: prohibited
+- duplicate_helper_content_in_agent: prohibited
+- agent_may_reference_helpers: true
+- helper_loading: only_when_material_to_task
+- helper_or_owner_is_source_of_truth_for_delegated_detail: true
+- agent_changes: only_for_AI_operating_behavior_or_repository_resolution_governance
 
 ## resolution
 - project_instructions: awa-si/admin/projects/<project>/instructions.txt
