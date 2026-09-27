@@ -92,7 +92,8 @@ mode: normative
 
 ## repository
 - source_of_truth: current_repository_state
-- startup: read_repo_agent_once_per_chat_or_workspace_if_derived_and_present
+- startup: read_resolved_repo_agent_once_per_chat_or_workspace_when_repository_context_exists
+- repo_agent_fallback: awa-si/admin/agent.md#fallback_repository_agent
 - reread_agent_if: file_changed|task_requires|scope_changed
 - github_transport: connected_GitHub_connector
 - workflow_policy_source: awa-si/admin/workflow.md
@@ -108,6 +109,7 @@ mode: normative
 - helper_loading: only_when_material_to_task
 - helper_or_owner_is_source_of_truth_for_delegated_detail: true
 - agent_changes: only_for_AI_operating_behavior_or_repository_resolution_governance
+- if_target_repo_agent_missing: use_awa-si/admin/agent.md#fallback_repository_agent
 
 ## resolution
 - project_instructions: awa-si/admin/projects/<project>/instructions.txt
@@ -115,9 +117,10 @@ mode: normative
 - project_workflow: awa-si/admin/projects/<project>/workflow.md
 - project_workflow_required: false
 - repo_agent: derive_from_project_instructions.repository/agent.md
-- repo_agent_required: false
-- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
-- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> task
+- repo_agent_fallback: awa-si/admin/agent.md#fallback_repository_agent
+- repo_agent_resolution: derived_repo_agent_if_present_else_admin_agent_fallback_when_repository_context_exists
+- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> resolved_repo_agent -> task
+- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> admin_agent_fallback_when_repository_context_exists -> task
 - project_child_override: explicit_only
 - workflow_child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
@@ -130,7 +133,7 @@ mode: normative
 - reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
 - reread_if_active_project_exists: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
 - rederive_target_repository_from_current_project_instructions: true
-- reread_if_derived_repo_agent_exists: <derived_repository>/agent.md
+- reread_resolved_repo_agent: <derived_repository>/agent.md_if_present_else_awa-si/admin/agent.md#fallback_repository_agent
 - reread_material_helpers: only_if_required_by_current_task_or_changed_resolution
 - use_current_repository_state_only: true
 - previously_loaded_copy_after_trigger: non_authoritative
