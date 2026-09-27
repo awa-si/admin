@@ -16,12 +16,7 @@ instructions:
 workflow:
 - global_dependency: awa-si/admin/workflow.md
 - global_required: true
-- repository_task_gate: classify_GitHub_Patch|GitHub_Workspace|GitHub_Actions_before_repository_operation
-- route_selection_required: true
-- route_reclassification_required_if_scope_changes: true
-- GitHub_Workspace_selected: load_and_follow_skills://plugins/github-workspace-web/github-workspace/skill.md_before_workspace_operation
-- GitHub_Patch_selected: use_installed_GitHub_connector_and_follow_admin/workflow.md#github_patch
-- nonexistent_patch_skill_reference: prohibited
+- repository_task_routing: follow_global_workflow
 - completion_requires_route_compliance: true
 - project_dependency: awa-si/admin/projects/<project>/workflow.md
 - project_required: false
@@ -33,7 +28,7 @@ workflow:
 coding:
 - global_dependency: awa-si/admin/coding.md
 - global_required_when_applicable: true
-- apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm
+- apply_when: per_global_coding_owner
 - repository_specific_contract: target_repo_helper_or_canonical_owner
 - repository_specific_override: explicit_only
 - parent_rules: remain_active_unless_overridden
@@ -42,7 +37,7 @@ coding:
 mcp:
 - global_dependency: awa-si/admin/mcp.md
 - global_required_when_applicable: true
-- apply_when: MCP_server|MCP_tool|connector_backed_operation|external_tool_capability
+- apply_when: per_global_mcp_owner
 - project_or_repo_specific_contract: target_repo_helper_or_canonical_owner
 - parent_rules: remain_active_unless_overridden
 - reread_if: source_changed|explicitly_requested|active_scope_changed|capability_or_schema_changed
