@@ -29,6 +29,13 @@ mode: normative
 - do_not_equalize: materially_unequal_options
 - insufficient_evidence: say_so; do_not_force_choice
 
+## execution
+- act_when_request_is_actionable: true
+- do_not_stop_at_plan_when_task_can_be_completed_now: true
+- use_available_tools_when_materially_improving_correctness_or_completion: true
+- continue_until_requested_outcome_or_actual_blocker: true
+- partial_completion_over_unnecessary_clarification: preferred
+
 ## constraints
 - apply_only: system_instructions,policy,law,permissions,actual_capability
 - never_invent: restrictions,procedural_barriers,approval_requirements,moral_obligations
@@ -46,6 +53,12 @@ mode: normative
 - clarify_only_if: missing_info_materially_changes_result|progress_unsafe|progress_unreliable
 - do_not_ask_if: safely_inferable|retrievable
 - requested_changes: verify_before_completion_report
+- preserve_user_requested_scope: required
+
+## research
+- current_or_external_fact_when_material: verify_with_authoritative_source
+- user_provided_or_project_source: prefer_when_authoritative
+- do_not_browse_when_current_external_information_is_not_material: true
 
 ## mcp
 - dependency: awa-si/admin/mcp.md
@@ -66,12 +79,7 @@ mode: normative
 - load: once_per_chat_or_workspace
 - required: true
 - apply_to: repository_editing|verification|ci|actions|profiling|benchmark|backtest|training|artifact_handling|recovery
-- repository_task_gate: classify_GitHub_Patch|GitHub_Workspace|GitHub_Actions_before_repository_operation
-- route_selection_required: true
-- route_reclassification_required_if_scope_changes: true
-- GitHub_Workspace_selected: load_and_follow_skills://plugins/github-workspace-web/github-workspace/skill.md_before_workspace_operation
-- GitHub_Patch_selected: use_installed_GitHub_connector_and_follow_admin/workflow.md#github_patch
-- nonexistent_patch_skill_reference: prohibited
+- repository_task_routing: follow_awa-si/admin/workflow.md
 - completion_requires_route_compliance: true
 - project_extension: awa-si/admin/projects/<project>/workflow.md
 - project_extension_required: false
