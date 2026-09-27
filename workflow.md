@@ -28,10 +28,11 @@ github_route_activation:
 - workspace_skill_execution_contract: authoritative_for_all_workspace_mechanics
 - workspace_skill_current_state_over_admin_cached_assumptions: required
 - workspace_protocol_improvisation_when_skill_available: prohibited
-- GitHub_Patch_skill: none_currently_installed
-- when_GitHub_Patch_selected: use_installed_GitHub_connector_and_follow_github_patch_contract_in_this_file
-- patch_protocol_improvisation_outside_connector_and_github_patch_contract: prohibited
-- do_not_invent_or_reference_nonexistent_patch_skill: true
+- GitHub_Patch_skill: discover_current_exposed_github_patch_skill_before_patch_operation
+- when_GitHub_Patch_skill_is_exposed: load_current_skill_before_patch_operation_and_treat_as_authoritative_for_patch_mechanics
+- when_GitHub_Patch_skill_is_not_exposed: use_installed_GitHub_connector_and_follow_github_patch_fallback_contract_in_this_file
+- patch_skill_current_state_over_admin_cached_assumptions: required
+- patch_protocol_improvisation_when_skill_available: prohibited
 - completion_requires_selected_route_execution_contract_followed: true
 
 github_routing:
@@ -45,23 +46,26 @@ github_routing:
 - force_push_or_force_ref_update: prohibited
 
 github_patch:
-- role: precise_remote_patch_path
+- role: route_to_current_GitHub_Patch_skill_when_exposed_else_precise_connector_fallback
 - required_for: small_deterministic_edit|small_docs_edit|known_file_known_change|focused_low_coupling_fix
-- prerequisite: read_current_target_and_current_blob_sha
-- inspect_dependencies_before_patch: when_material
-- patch_scope: smallest_coherent_diff
-- preserve: unrelated_content|formatting|file_mode|newer_remote_state
-- blind_global_replace: prohibited
-- whole_file_rewrite_when_focused_patch_suffices: avoid
-- same_path_writes: sequential
-- multi_file_patch: allowed_only_when_one_coherent_change_and_tool_supports_safe_combined_write
-- before_write: verify_target_content_matches_patch_assumptions
-- before_commit_or_remote_mutation: reread_branch_head_when_concurrency_material
-- after_write: refetch_changed_paths|verify_exact_content|verify_resulting_commit_or_branch_head
-- tests: run_only_when_change_semantics_require_them; docs_only_default_no_ci
-- if_patch_context_stale_or_conflicts: stop_patch -> refresh_current_state -> reapply_intent
+- current_skill_must_be_reread_if: plugin_changed|skill_changed|explicitly_requested|patch_capability_changed
+- if_skill_exposed: skill_is_authoritative_for_patch_mechanics
+- admin_must_not_duplicate_or_override_patch_skill_mechanics_without_explicit_reason: true
+- fallback_only_when_skill_not_exposed:
+  - prerequisite: read_current_target_and_current_blob_sha
+  - inspect_dependencies_before_patch: when_material
+  - patch_scope: smallest_coherent_diff
+  - preserve: unrelated_content|formatting|file_mode|newer_remote_state
+  - blind_global_replace: prohibited
+  - whole_file_rewrite_when_focused_patch_suffices: avoid
+  - same_path_writes: sequential
+  - multi_file_patch: allowed_only_when_one_coherent_change_and_tool_supports_safe_combined_write
+  - before_write: verify_target_content_matches_patch_assumptions
+  - before_commit_or_remote_mutation: reread_branch_head_when_concurrency_material
+  - after_write: refetch_changed_paths|verify_exact_content|verify_resulting_commit_or_branch_head
+  - tests: run_only_when_change_semantics_require_them; docs_only_default_no_ci
+  - if_patch_context_stale_or_conflicts: stop_patch -> refresh_current_state -> reapply_intent
 - if_change_requires_broad_search_or_execution: route_to_GitHub_Workspace
-- if_patch_tool_unavailable: use_precise_contents_API_with_current_blob_sha; do_not_claim_GitHub_Patch_used
 
 github_workspace:
 - role: route_to_installed_hardened_GitHub_Workspace_skill
@@ -87,6 +91,7 @@ awa_mcp:
 
 edit_flow:
 - steps: read_current_target -> inspect_material_dependencies -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
+- patch_route_execution: delegate_to_current_GitHub_Patch_skill_when_exposed_else_github_patch_fallback
 - workspace_route_execution: delegate_to_current_GitHub_Workspace_skill
 - prefer_focused_patch_over_full_file_rewrite: true
 - unrelated_refactors_in_same_change: prohibited
@@ -94,6 +99,7 @@ edit_flow:
 
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
+- patch_verification_mechanics: delegate_to_current_GitHub_Patch_skill_when_exposed_else_github_patch_fallback
 - workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - escalate_only_if: risk|coupling|repo_rules|failure|runner_specific_evidence_needed
 - record: material_commands|results|runtime_limits|coverage_limits
@@ -101,12 +107,12 @@ verification:
 - remote_ci: only_if_material
 
 concurrency:
-- patch_guard: current_blob_sha_or_current_branch_head_when_material
+- patch_concurrency_and_stale_write: delegate_to_current_GitHub_Patch_skill_when_exposed_else_current_blob_sha_or_branch_head_guard
 - workspace_concurrency_and_drift: delegate_to_current_GitHub_Workspace_skill
 - force_overwrite: prohibited
 
 commit_writeback:
-- patch_writeback: follow_github_patch_contract
+- patch_writeback: delegate_to_current_GitHub_Patch_skill_when_exposed_else_github_patch_fallback
 - workspace_writeback: delegate_to_current_GitHub_Workspace_skill
 - one_coherent_change: one_coherent_commit_when_supported
 - commit_message: user_supplied_else_concise_factual
@@ -116,7 +122,7 @@ commit_writeback:
 - force_push: prohibited
 
 remote_verification:
-- patch_route: refetch_changed_paths|verify_commit_or_branch_head|verify_absence_of_unintended_change
+- patch_route: delegate_to_current_GitHub_Patch_skill_when_exposed_else_refetch_changed_paths_and_verify_commit_or_branch_head
 - workspace_route: delegate_to_current_GitHub_Workspace_skill
 - inspect_status_checks_jobs_logs_artifacts: when_material
 - ci_failure: identify_earliest_causal_failure
@@ -167,7 +173,7 @@ workflow_maintenance:
 - execute_remote_workflow_only_if_integration_behavior_materially_needs_runtime_evidence: true
 
 recovery:
-- patch_partial_remote_write: inspect_actual_remote_state_before_repair
+- patch_partial_remote_write: delegate_to_current_GitHub_Patch_skill_when_exposed_else_inspect_actual_remote_state_before_repair
 - workspace_recovery: delegate_to_current_GitHub_Workspace_skill
 - wrong_commit: prefer_revert_or_compensating_commit
 - github_dns_failure: do_not_loop_clone; use_connected_GitHub_transport_or_current_workspace_skill_fallback
