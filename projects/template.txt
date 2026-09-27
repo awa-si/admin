@@ -45,16 +45,18 @@ mcp:
 agent:
 - derive_from: project_instructions.repository
 - path: <derived_repository>/agent.md
-- load: if_project_instructions_exist_and_agent_exists
+- fallback: awa-si/admin/agent.md#fallback_repository_agent
+- load: derived_agent_if_present_else_fallback_when_repository_context_exists
 - read: once_per_chat
 - reread_if: source_changed|explicitly_requested|active_scope_changed
 - source_of_truth: derived_repository_current_state
-- required: false
+- required_when_repository_context_exists: true
 
 resolution:
-- order_if_project_exists: global_user_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> derived_repo_agent_if_exists -> task
-- order_if_project_missing: global_user_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> task
+- order_if_project_exists: global_user_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> resolved_repo_agent -> task
+- order_if_project_missing: global_user_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> admin_agent_fallback_when_repository_context_exists -> task
 - project_instructions_must_define_if_present: repository
+- resolved_repo_agent: derived_repo_agent_if_present_else_awa-si/admin/agent.md#fallback_repository_agent
 - child_override: explicit_only
 - parent_rules: remain_active_unless_overridden
 - admin_project_agent_snapshot: prohibited
@@ -66,7 +68,7 @@ force_reload:
 - reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
 - reread_active_project: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
 - rederive_target_repository_from_current_project_instructions: true
-- reread_derived_repo_agent_if_present: <derived_repository>/agent.md
+- reread_resolved_repo_agent: <derived_repository>/agent.md_if_present_else_awa-si/admin/agent.md#fallback_repository_agent
 - reread_material_helpers: only_if_required_by_current_task_or_changed_resolution
 - use_current_repository_state_only: true
 - previously_loaded_copy_after_trigger: non_authoritative
