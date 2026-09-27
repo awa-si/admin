@@ -16,14 +16,20 @@ capability_resolution:
 - infer_unexposed_capability_from_server_name_or_prior_memory: prohibited
 - current_tool_schema: authoritative_for_invocation
 - current_resource_or_server_state: authoritative_for_availability
+- current_permission_state: authoritative_for_allowed_side_effects
+- current_capability_must_be_rechecked_if: schema_changed|permission_changed|server_changed|plugin_changed|scope_changed|explicitly_requested
+- cached_capability_after_material_change: non_authoritative
 - if_required_capability_missing: use_next_authoritative_source_or_report_limit
 - do_not_simulate_unperformed_MCP_action: true
 
 authority_and_routing:
 - prefer_MCP_when_it_is_authoritative_or_most_direct_owner_for_requested_state_or_operation: true
 - do_not_use_MCP_as_substitute_when_repository_or_other_canonical_owner_is_authoritative: true
+- repository_content_or_repository_write: follow_awa-si/admin/workflow.md_GitHub_routing
+- GitHub_Workspace_repository_flow: connected_GitHub_connector_only
+- custom_MCP_as_GitHub_Workspace_transport_or_proxy: prohibited
+- MCP_runtime_workspace_tools_are_not_GitHub_Workspace: true
 - cross_source_conflict: identify_explicitly_and_prefer_owner_of_fact_or_operation
-- repository_content: follow_admin/workflow.md_GitHub_routing
 - domain_specific_server_contract: follow_when_present
 
 invocation:
@@ -34,18 +40,22 @@ invocation:
 - reuse_exact_identifiers_returned_by_prior_tool_results_when_valid: preferred
 - destructive_or_external_side_effect: require_user_authorization_when_platform_or_tool_contract_requires_it
 - repeated_side_effect_after_ambiguous_failure: inspect_actual_state_before_retry
+- multi_step_operation: verify_material_state_transition_before_next_irreversible_step
 
 state_and_freshness:
 - stale_cached_tool_or_resource_state: do_not_treat_as_current_when_current_state_is_material
 - reread_or_rediscover_if: capability_changed|schema_changed|permission_changed|scope_changed|explicitly_requested
 - do_not_repeat_discovery_when_current_schema_is_already_loaded_and_unchanged: true
 - pagination_or_truncation: inspect_before_claiming_complete_result
+- runtime_state_claim: require_observed_current_state_when_material
 
-workspace_runtime:
-- purpose: bounded_development_execution_via_AWA_MCP_workspace_tools
+runtime_workspace:
+- term: MCP_runtime_workspace
+- purpose: bounded_development_execution_exposed_by_an_MCP_server
+- not_equivalent_to: ChatGPT_GitHub_Workspace_repository_flow
 - preferred_runtime: rootless_podman
 - service_user_namespace: preserve_service_identity_with_podman_--userns_keep-id
-- subordinate_uid_gid_ranges_for_service_user: required
+- subordinate_uid_gid_ranges_for_service_user: required_for_rootless_podman_keep_id
 - persistent_user_runtime_for_supervised_service: required
 - XDG_RUNTIME_DIR_for_rootless_podman: required
 - systemd_user_lingering_for_noninteractive_service: required_when_needed_to_provide_persistent_user_runtime
@@ -55,6 +65,7 @@ workspace_runtime:
 - workspace_mount: /workspace:rw
 - command_invocation: argv_only_no_gateway_shell_interpolation
 - image_policy: exact_allowlist_and_pre_pulled_only
+- configured_image_allowlist_owner: project_or_service_specific_MCP_contract
 - pull_policy: never_at_tool_execution
 - network_default: none
 - network_enablement: explicit_deployment_allow_and_per_call_request_both_required
@@ -63,10 +74,14 @@ workspace_runtime:
 - bounded_resources: pids|memory|cpu|timeout|stdout|stderr|file_size
 - bounded_tmpfs: /tmp
 - runtime_socket_mount_into_execution_container: prohibited
-- current_allowlisted_images: docker.io/library/alpine:3.22|docker.io/library/python:3.14-slim
-- verified_live_path: workspace_create->workspace_write->workspace_exec->workspace_read->workspace_delete
-- verified_python_runtime: python_3.14_slim
-- project_specific_workspace_contract: target_repo_server/_mcp/workspace.md_when_present
+- project_specific_workspace_contract: target_repo/mcp/workspace.md_when_present_else_target_repo_MCP_canonical_owner
+
+runtime_workspace_repository_boundary:
+- repository_code_execution_inside_MCP_runtime_workspace: allowed_only_when_service_contract_explicitly_exposes_it
+- repository_source_of_truth: remains_repository_remote_or_documented_workspace_binding_not_ephemeral_container_state
+- MCP_runtime_workspace_must_not_replace_admin/workflow.md_GitHub_route: true
+- custom_MCP_git_clone_or_push_does_not_count_as_GitHub_Workspace_route_compliance: true
+- repository_writeback_from_custom_MCP_when_admin_workflow_requires_GitHub_Workspace: prohibited
 
 security:
 - least_privilege: required
@@ -75,6 +90,9 @@ security:
 - signed_or_secret_bearing_URLs: treat_as_sensitive
 - private_or_confidential_data: keep_with_authorized_source_and_minimize_propagation
 - tool_output_with_sensitive_data: minimize_in_response_and_never_copy_to_public_repo_without_independent_public_safety_review
+- credential_scope: minimum_required_for_documented_operation
+- credential_persistence_in_workspace_or_logs: prohibited
+- command_or_argument_logging_that_could_expose_secrets: prohibited
 
 failure_and_retry:
 - inspect_structured_error_before_retry: required
@@ -83,14 +101,28 @@ failure_and_retry:
 - authentication_or_permission_error: do_not_loop
 - schema_or_validation_error: correct_arguments_before_retry
 - partial_success: inspect_actual_remote_state_before_followup_action
+- ambiguous_write_result: verify_target_state_before_retry
 - unavailable_server: continue_with_next_authoritative_path_when_one_exists
+- missing_runtime_image_with_pull_never: report_or_restore_image_out_of_band; do_not_retry_execution_loop
 
 verification:
 - read_operation: verify_result_scope_and_completeness_when_material
 - write_operation: verify_resulting_remote_state_before_success_claim
 - multi_step_operation: verify_material_transition_points
-- workspace_runtime_after_deployment_change: verify_registered_tools_and_live_create_write_exec_read_delete_path
+- runtime_workspace_after_deployment_change: verify_registered_tools_and_live_create_write_exec_read_delete_path_when_that_runtime_is_material
+- runtime_workspace_image_availability: verify_current_service_user_image_store_before_execution_claim
+- runtime_workspace_identity: verify_effective_uid_gid_and_workspace_writeability_after_user_namespace_or_service_account_change
+- runtime_workspace_network: verify_disabled_by_default_and_enabled_only_by_both_required_gates_when_network_policy_changed
+- permission_sensitive_external_write: verify_current permission and resulting target state
 - never_claim_action_or_state_not_observed: true
 
+ownership_and_documentation:
+- global_mcp_rules: awa-si/admin/mcp.md
+- repository_workflow_rules: awa-si/admin/workflow.md
+- project_or_service_runtime_detail: target_repo_MCP_canonical_owner
+- runtime_paths|images|uids|ports|service_specific_env|deployment_commands: keep_in_project_or_service_owner_not_global_admin_unless_global_invariant
+- duplicate_service_specific_contract_in_global_admin: prohibited
+- stale_project_path_in_global_admin: correct_to_owner_resolution_rule_not_new_hardcoded_snapshot
+
 completion:
-- requires: authoritative_route_used|current_capability_contract_followed|side_effects_verified_when_material|no_invented_capability|no_secret_leak
+- requires: authoritative_route_used|current_capability_contract_followed|side_effects_verified_when_material|no_invented_capability|no_secret_leak|repository_route_not_bypassed|project_specific_runtime_detail_left_in_canonical_owner
