@@ -17,7 +17,9 @@ projects/<project>/instructions.txt         # optional project behavior/reposito
         ↓
 projects/<project>/workflow.md              # optional workflow delta
         ↓
-<derived-repository>/agent.md               # optional AI repository layer
+<derived-repository>/agent.md               # when present
+        ↓ otherwise
+admin/agent.md#fallback_repository_agent    # default repository AI layer
         ↓
 material helper / canonical owner files     # loaded only when needed
         ↓
@@ -31,12 +33,12 @@ Rules:
 - `coding.md` controls global implementation strategy, reuse/dependency selection, custom-code gates, native/compiled-library preference, refactoring principles, and coding-level correctness/performance expectations.
 - `mcp.md` controls global MCP/tool capability discovery, authority, invocation, freshness, security, retry, and verification behavior.
 - repository `agent.md` is AI-centric: it controls AI behavior, reasoning, routing, source resolution, decision/completion gates, and repository-specific governance needed by the AI.
+- if a resolved target repository has no `agent.md`, use `admin/agent.md#fallback_repository_agent`; Admin-specific control-plane sections do not become target-repository rules in fallback mode.
 - substantive domain, technical, business, runtime, data, model, API, or operational contracts belong in helper or canonical owner files in the target repository.
 - project files are delta-only; parent rules remain active unless explicitly overridden.
-- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow + global coding when applicable + global MCP guidance when applicable.
+- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow + global coding when applicable + global MCP guidance when applicable; when a repository context is otherwise resolved, apply the Admin fallback repository agent.
 - `projects/<project>/workflow.md` is optional and extends/overrides only the global workflow.
-- target `agent.md` is derived from `projects/<project>/instructions.txt.repository` and loaded only when present.
-- helper/owner files are resolved from the repository agent or repository registry and loaded only when material to the task.
+- helper/owner files are resolved from the repository agent, fallback agent, or repository registry and loaded only when material to the task.
 - current target repository state is authoritative for implementation facts.
 
 ## Repository structure
@@ -60,11 +62,11 @@ Target repository:
 
 ```text
 <owner>/<repo>/
-├── agent.md                  # optional AI operating/resolution layer
+├── agent.md                  # optional repository-specific AI layer
 └── <helper-or-owner-files>   # substantive repository/domain contracts
 ```
 
-Admin does not retain `projects/*/agent.md` snapshots. Repository-local `agent.md` is always read from the derived target repository when needed.
+Admin does not retain `projects/*/agent.md` snapshots. Repository-local `agent.md` is read from the target repository when present; otherwise the fallback section in `admin/agent.md` is used.
 
 ## File responsibilities
 
@@ -77,7 +79,7 @@ Use for:
 - project scope and target repository identity;
 - explicit project-level behavioral overrides;
 - workflow, coding, and MCP-policy dependency declarations;
-- global repository-agent content policy.
+- global repository-agent content policy and repository-agent fallback resolution.
 
 Do not duplicate substantive repository contracts, coding details, MCP/tool mechanics, or execution policy here.
 
@@ -140,6 +142,10 @@ Use only for AI-facing repository behavior such as:
 
 Do **not** use `agent.md` as a substantive domain database. Architecture details, model contracts, runtime/data semantics, business rules, API contracts, document standards, and operational procedures belong in their narrowest helper or canonical owner.
 
+### `admin/agent.md#fallback_repository_agent`
+
+Use only when a target repository has no local `agent.md`. It provides generic repository AI routing, inherits global/project workflow/coding/MCP rules, resolves the narrowest target-repository helper/owner, and does not import Admin-repository ownership, visibility, or maintenance semantics into the target repository.
+
 ### helper / canonical owner files
 
 Use for substantive repository truth, including:
@@ -161,7 +167,7 @@ To force an already-open chat to discard cached Admin control-plane copies and r
 reload admin control plane
 ```
 
-The trigger causes the current chat to reread `admin/instructions.txt`, `admin/workflow.md`, `admin/coding.md`, and `admin/mcp.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present. Material helper/owner files are reread only when required by the current task or by changed resolution.
+The trigger causes the current chat to reread `admin/instructions.txt`, `admin/workflow.md`, `admin/coding.md`, and `admin/mcp.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present, otherwise the Admin fallback repository-agent section. Material helper/owner files are reread only when required by the current task or by changed resolution.
 
 This is a per-chat reload. It does not broadcast into other already-open chats; each such chat must receive the trigger independently.
 
@@ -212,13 +218,14 @@ global MCP guidance
 
 A child overrides only when explicit. Otherwise parent rules remain active.
 
-Repository-local `agent.md` does not replace global/project behavior, workflow policy, applicable global coding guidance, or applicable global MCP guidance. It adds repository-specific AI reasoning/routing. Helper/owner files add the substantive contracts required by the task and may explicitly refine coding or MCP rules for their repository scope.
+Repository-local `agent.md`, or the Admin fallback repository-agent section when no local agent exists, does not replace global/project behavior, workflow policy, applicable global coding guidance, or applicable global MCP guidance. It adds repository-specific or fallback AI reasoning/routing. Helper/owner files add the substantive contracts required by the task and may explicitly refine coding or MCP rules for their repository scope.
 
 ## Source-of-truth boundaries
 
-- `awa-si/admin` owns global/project ChatGPT behavior, global workflow policy, global coding guidance, and global MCP/tool guidance.
-- target repositories own their `agent.md`, helper/owner files, implementation state, and repository-specific coding/domain contracts.
+- `awa-si/admin` owns global/project ChatGPT behavior, global workflow policy, global coding guidance, global MCP/tool guidance, and fallback repository-agent behavior.
+- target repositories own their local `agent.md` when present, helper/owner files, implementation state, and repository-specific coding/domain contracts.
 - repository `agent.md` owns AI-facing repository behavior and resolution logic only.
+- the Admin fallback agent applies only when a target repository lacks a local `agent.md` and never becomes substantive owner of target-repository state.
 - helper/canonical owner files own delegated substantive details.
 - project `instructions.txt` owns repository resolution for that project.
 - project `workflow.md` owns only workflow deltas.
