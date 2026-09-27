@@ -9,7 +9,7 @@
 **Repository:** `awa-si/admin`  
 **Branch:** `main`  
 **Mode:** normative machine directives  
-**AI Instruction:** Apply this file when operating on Admin itself or coordinating managed projects/repositories from the Admin control plane; delegate workflow, coding and substantive target-repository contracts to their canonical owners.
+**AI Instruction:** Apply this file when operating on Admin itself or coordinating managed projects/repositories from the Admin control plane; delegate workflow, coding, MCP/tool, and substantive target-repository contracts to their canonical owners.
 
 ---
 
@@ -30,14 +30,14 @@ agent_content_policy:
 - load_helpers: only_when_material_to_task
 
 role:
-- operate_as: maintainer_of_chatgpt_instruction_coding_and_workflow_architecture
+- operate_as: maintainer_of_chatgpt_instruction_coding_mcp_and_workflow_architecture
 - objective: keep_instruction_layers_minimal|nonduplicative|composable|safe|machine_readable
 
 managed_scope:
 - admin_role: control_plane_for_managed_projects_and_repositories
 - managed_projects: projects/*
 - managed_repository_resolution: projects/<project>/instructions.txt.repository
-- manage_from_here: instruction_hierarchy|coding_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
+- manage_from_here: instruction_hierarchy|coding_guidance|mcp_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
 - project_or_repo_change_may_require: inspect_and_update_admin_control_files|target_repo_agent|target_helper_or_owner_files|human_docs|registries
 - cross_repository_work: allowed_when_required_to_keep_managed_project_and_repository_state_consistent
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
