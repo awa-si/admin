@@ -1,6 +1,6 @@
 # GPT Admin
 
-`awa-si/admin` defines the user-controlled ChatGPT instruction, coding-guidance, and workflow hierarchy used across AWA projects.
+`awa-si/admin` defines the user-controlled ChatGPT instruction, coding-guidance, MCP/tool-guidance, and workflow hierarchy used across AWA projects.
 
 ## Canonical resolution
 
@@ -26,14 +26,14 @@ current task
 
 Rules:
 
-- `instructions.txt` controls global ChatGPT behavior, scope, connector/tool preferences, project repository resolution, and the content policy for repository agents.
-- `workflow.md` controls repository execution, editing, verification, CI/Actions, profiling, artifact handling, concurrency, and recovery.
+- `instructions.txt` controls global ChatGPT behavior, scope, project repository resolution, dependency declarations, and the content policy for repository agents.
+- `workflow.md` controls repository execution, editing, verification, GitHub Patch / Workspace / Actions routing, CI/Actions, profiling, artifact handling, concurrency, recovery, and AWA MCP operational routing.
 - `coding.md` controls global implementation strategy, reuse/dependency selection, custom-code gates, native/compiled-library preference, refactoring principles, and coding-level correctness/performance expectations.
 - `mcp.md` controls global MCP/tool capability discovery, authority, invocation, freshness, security, retry, and verification behavior.
 - repository `agent.md` is AI-centric: it controls AI behavior, reasoning, routing, source resolution, decision/completion gates, and repository-specific governance needed by the AI.
 - substantive domain, technical, business, runtime, data, model, API, or operational contracts belong in helper or canonical owner files in the target repository.
 - project files are delta-only; parent rules remain active unless explicitly overridden.
-- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow + global coding when applicable.
+- if `projects/<project>/instructions.txt` does not exist, use global instructions + global workflow + global coding when applicable + global MCP guidance when applicable.
 - `projects/<project>/workflow.md` is optional and extends/overrides only the global workflow.
 - target `agent.md` is derived from `projects/<project>/instructions.txt.repository` and loaded only when present.
 - helper/owner files are resolved from the repository agent or repository registry and loaded only when material to the task.
@@ -74,18 +74,18 @@ Use for:
 
 - communication and decision behavior;
 - accuracy and verification expectations;
-- tool/connector preferences;
 - project scope and target repository identity;
 - explicit project-level behavioral overrides;
-- workflow and coding-policy dependency declarations;
+- workflow, coding, and MCP-policy dependency declarations;
 - global repository-agent content policy.
 
-Do not duplicate substantive repository contracts, coding details, or execution policy here.
+Do not duplicate substantive repository contracts, coding details, MCP/tool mechanics, or execution policy here.
 
 ### `workflow.md`
 
 Use for:
 
+- repository task routing;
 - local/disposable workspace policy;
 - edit/test/commit/writeback flow;
 - GitHub Patch / Workspace / Actions routing;
@@ -212,7 +212,7 @@ global MCP guidance
 
 A child overrides only when explicit. Otherwise parent rules remain active.
 
-Repository-local `agent.md` does not replace global/project behavior, workflow policy, or applicable global coding guidance. It adds repository-specific AI reasoning/routing. Helper/owner files add the substantive contracts required by the task and may explicitly refine coding rules for their repository scope.
+Repository-local `agent.md` does not replace global/project behavior, workflow policy, applicable global coding guidance, or applicable global MCP guidance. It adds repository-specific AI reasoning/routing. Helper/owner files add the substantive contracts required by the task and may explicitly refine coding or MCP rules for their repository scope.
 
 ## Source-of-truth boundaries
 
