@@ -37,7 +37,10 @@ github_route_activation:
 
 github_routing:
 - transport: connected_GitHub_connector
-- separate_mcp_for_github_workspace: not_required
+- GitHub_Workspace_GitHub_transport: connected_GitHub_connector_only
+- custom_MCP_for_GitHub_Workspace: prohibited
+- separate_MCP_for_GitHub_Workspace: prohibited
+- custom_MCP_must_not_proxy_or_intermediate_GitHub_Workspace_repository_operations: true
 - small_deterministic_edit: GitHub_Patch
 - docs_only_small_edit: GitHub_Patch
 - broad_search|repository_wide_inspection|local_execution|repeated_edit_test|multi_file_coupling|build_or_test_required|ci_artifact_analysis: GitHub_Workspace
@@ -63,7 +66,8 @@ github_workspace:
 - load_skill_before_use: required
 - skill_is_authoritative_for: capability_gate|materialization|integrity_verification|runtime_preflight|resource_budgets|local_execution|checkpoints|status|diff|large_repo_search|edit_test_loops|branch_PR_flow|CI_artifacts|drift_conflicts|writeback|remote_verification|failure_recovery
 - admin_must_not_duplicate_or_override_skill_mechanics_without_explicit_reason: true
-- connector_is_sole_GitHub_transport_unless_current_skill_explicitly_says_otherwise: true
+- connector_is_sole_GitHub_transport: required
+- custom_MCP_transport_or_proxy: prohibited
 - local_runtime_is_temporary_and_untrusted: true
 - current_skill_must_be_reread_if: plugin_changed|skill_changed|explicitly_requested|workspace_capability_changed
 - route_fallback: only_as_defined_by_current_skill_and_github_patch_contract
