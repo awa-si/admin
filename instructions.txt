@@ -68,12 +68,6 @@ mode: normative
 - parent_rules: remain_active_unless_overridden
 - reread_if: source_changed|explicitly_requested|active_scope_changed|capability_or_schema_changed
 
-## awa_mcp
-- availability: available
-- when_available: use_for_AWA_specific_state_and_operations_if_capable
-- prefer_when: authoritative_or_most_direct_AWA_source
-- never_assume: undocumented_tools,data,permissions,side_effects
-
 ## workflow
 - dependency: awa-si/admin/workflow.md
 - load: once_per_chat_or_workspace
