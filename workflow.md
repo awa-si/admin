@@ -24,8 +24,8 @@ github_routing_gate:
 - if_required_route_unavailable: use_documented_safe_fallback_only; never_simulate_or_claim_unperformed_workspace_or_patch
 
 github_route_activation:
-- GitHub_Workspace_plugin_release: pluginrel_6ab91dace8a88191ac0eb8ae8f3f3a37
-- GitHub_Workspace_plugin_version: 0.6.0
+- GitHub_Workspace_plugin_release: pluginrel_6aba4e551ef8819197e8950f593068ca
+- GitHub_Workspace_plugin_version: 0.6.1
 - GitHub_Workspace_skill: skills://plugins/github-workspace-web/github-workspace/skill.md
 - when_GitHub_Workspace_selected: load_current_skill_before_workspace_operation
 - workspace_skill_execution_contract: authoritative_for_all_workspace_mechanics
@@ -40,10 +40,14 @@ github_route_activation:
 
 github_routing:
 - transport: connected_GitHub_connector
-- GitHub_Workspace_GitHub_transport: connected_GitHub_connector_only
+- GitHub_Workspace_repository_acquisition: connector_mediated_materialization
+- materialization_definition: reconstruct_required_immutable_repository_snapshot_locally_from_connector_reads
+- shell_git_clone_fetch_pull_push_as_workspace_transport: prohibited
 - custom_MCP_for_GitHub_Workspace: prohibited
 - separate_MCP_for_GitHub_Workspace: prohibited
 - custom_MCP_must_not_proxy_or_intermediate_GitHub_Workspace_repository_operations: true
+- local_git: offline_diff|status|hash_mechanics_only
+- local_git_GitHub_network_IO: prohibited
 - small_deterministic_edit: GitHub_Patch
 - docs_only_small_edit: GitHub_Patch
 - small_coherent_known_multi_file_edit_without_local_execution: GitHub_Patch
@@ -69,19 +73,24 @@ github_workspace:
 - required_for: broad_search|repository_wide_inspection|dependency_discovery|local_execution|scripts|tests|linters|builds|repeated_edit_test|multi_file_coupling|parallelizable_repository_analysis|generated_artifact_analysis|ci_artifact_analysis|uncertain_change_scope
 - skill: skills://plugins/github-workspace-web/github-workspace/skill.md
 - load_skill_before_use: required
-- skill_is_authoritative_for: capability_gate|dependency_and_coupling_analysis|dependency_change_gate|task_DAG|parallel_execution_model|materialization|integrity_verification|runtime_preflight|resource_budgets|local_execution|checkpoints|status|diff|large_repo_search|edit_test_loops|branch_PR_flow|CI_artifacts|drift_conflicts|writeback|remote_verification|failure_recovery
+- skill_is_authoritative_for: capability_gate|connector_mediated_materialization|dependency_and_coupling_analysis|dependency_change_gate|task_DAG|parallel_execution_model|integrity_verification|runtime_preflight|resource_budgets|local_execution|runtime_durability|checkpoints|status|diff|large_repo_search|edit_test_loops|branch_PR_flow|CI_artifacts|drift_conflicts|writeback|remote_verification|failure_recovery
+- repository_remote_reads_for_materialization: GitHub_connector_only
+- git_clone_fetch_pull_push_for_materialization: prohibited
+- local_workspace: connector_materialized_snapshot_not_assumed_clone
 - dependency_closure_before_materialization_when_scope_or_coupling_is_uncertain: required
 - bidirectional_blast_radius_when_material: target_dependencies_and_target_consumers
 - dependency_ledger_for_material_workspace_change: required
-- parallelism: bounded|dependency_aware|DAG_scheduled|join_gated
-- parallel_reads_before_parallel_execution: preferred
+- parallelism: conservative|bounded|dependency_aware|DAG_scheduled|join_gated
+- prefer_parallel_connector_reads_over_parallel_local_processes: true
+- long_or_resource_heavy_local_jobs_default_concurrency: 1
 - overlapping_writes_or_shared_mutable_state: serialize
 - final_diff_reconciliation_commit_and_remote_mutation: serialized
 - incomplete_dependency_coverage_must_limit_completion_claim: true
 - admin_must_not_duplicate_or_override_skill_mechanics_without_explicit_reason: true
-- connector_is_sole_GitHub_transport: required
+- connector_is_sole_GitHub_remote_transport: required
 - custom_MCP_transport_or_proxy: prohibited
 - local_runtime_is_temporary_and_untrusted: true
+- local_runtime_may_stall_cancel_or_recycle: true
 - current_skill_must_be_reread_if: plugin_changed|skill_changed|explicitly_requested|workspace_capability_changed
 - route_fallback: only_as_defined_by_current_skill_and_github_patch_contract
 
@@ -96,10 +105,11 @@ awa_mcp:
 - cross_source_conflict: identify_explicitly; prefer_canonical_owner_for_the_fact_or_operation
 
 edit_flow:
-- steps: read_current_target -> resolve_material_dependency_closure -> materialize_required_scope -> make_smallest_coherent_change -> run_lightest_relevant_checks -> join_parallel_verification_when_used -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
+- steps: read_current_target -> resolve_material_dependency_closure -> connector_materialize_required_scope -> make_smallest_coherent_change -> run_lightest_relevant_checks -> join_parallel_verification_when_used -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
 - patch_route_execution: delegate_to_current_GitHub_Patch_skill
 - workspace_route_execution: delegate_to_current_GitHub_Workspace_skill
 - dependency_analysis_mechanics_for_workspace: delegate_to_current_GitHub_Workspace_skill
+- materialization_mechanics_for_workspace: delegate_to_current_GitHub_Workspace_skill
 - parallel_execution_mechanics_for_workspace: delegate_to_current_GitHub_Workspace_skill
 - prefer_focused_patch_over_full_file_rewrite: true
 - unrelated_refactors_in_same_change: prohibited
@@ -111,8 +121,9 @@ verification:
 - workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - dependency_coverage_verification: required_when_workspace_dependency_analysis_is_material
 - parallel_lane_failures: preserve_independent_evidence_and_never_aggregate_away_failure
+- runtime_recycle_or_workspace_loss: treat_local_state_as_unknown_or_lost_unless_durable_evidence_exists
 - escalate_only_if: risk|coupling|repo_rules|failure|runner_specific_evidence_needed
-- record: material_commands|results|runtime_limits|coverage_limits|dependency_coverage|parallel_join_result_when_used
+- record: material_commands|results|runtime_limits|coverage_limits|dependency_coverage|parallel_join_result_when_used|runtime_loss_when_observed
 - never_claim_unobserved_execution: true
 - remote_ci: only_if_material
 
@@ -120,8 +131,12 @@ concurrency:
 - patch_concurrency_and_stale_write: delegate_to_current_GitHub_Patch_skill
 - workspace_parallelism_and_drift: delegate_to_current_GitHub_Workspace_skill
 - workspace_parallelism_requires_DAG_and_resolved_dependency_edges: true
-- workspace_parallel_groups_must_define: max_concurrency|shared_state|join_condition|failure_policy
-- independent_reads_searches_hashes_and_isolated_checks: may_parallelize_when_bounded
+- workspace_parallel_groups_must_define: max_concurrency|expected_duration|shared_state|join_condition|failure_policy
+- independent_connector_reads_searches_and_short_hashes: may_parallelize_when_bounded
+- local_execution_parallelism: conservative
+- strong_parallelism_for_tests_builds_benchmarks_training_optimization_or_data_processing: avoid
+- long_or_resource_heavy_local_jobs: concurrency_1_by_default
+- detached_jobs_to_increase_parallelism: prohibited
 - same_path_edits|shared_mutable_state|lockfile_mutation|codegen_shared_paths|branch_ref_mutation|commit_construction|writeback: serialize
 - final_coherent_state_before_writeback: required
 - force_overwrite: prohibited
@@ -144,7 +159,7 @@ remote_verification:
 - completion_claim: only_after_remote_verification
 
 ci_actions:
-- use_when: hosted_runner_behavior|workflow_integration|platform_difference|artifact_contract|matrix_execution|long_reproducible_experiment|remote_sha_tied_evidence
+- use_when: hosted_runner_behavior|workflow_integration|platform_difference|artifact_contract|matrix_execution|long_reproducible_experiment|remote_sha_tied_evidence|durable_long_execution_required
 - do_not_use_merely_because_code_changed: true
 - expensive_empirical_workflows_default_trigger: workflow_dispatch
 - temporary_push_trigger_if_dispatch_unavailable:
@@ -155,31 +170,23 @@ ci_actions:
 - old_run_rerun_after_code_change: prohibited; start_new_run_on_new_head
 
 long_running_jobs:
+- local_workspace_runtime: ephemeral_not_durable_job_runner
+- detached_background_as_default_for_long_local_jobs: prohibited
+- detached_or_background_job_survival_across_tool_call|chat_turn|idle_period|runtime_recycle: never_assume
+- high_parallel_fanout_for_long_local_jobs: prohibited
+- foreground_execution: bounded_and_only_when_expected_to_fit_current_runtime_budget
+- split_long_local_work_into_resumable_bounded_stages_when_practical: true
+- long_or_resource_heavy_local_job_concurrency: 1_by_default
 - preserve_partial_evidence: required
-- emit_incremental: progress|stage_timings|logs|counters
-- structure_into_observable_stages: true
-- write_partial_reports_or_checkpoints_when_meaningful: true
-- upload_useful_diagnostics_on_failure_or_cancel_when_possible: true
-- make_last_completed_stage_and_active_bottleneck_obvious: true
-- inspect_existing_partial_logs_and_artifacts_before_rerun: true
-- workspace_checkpoint_mechanics: delegate_to_current_GitHub_Workspace_skill
-- workspace_long_job_default_execution: detached_background_when_supported
-- use_background_when: expected_runtime_exceeds_interactive_foreground_budget|foreground_tool_timeout_risk|analysis_or_script_is_materially_long_running
-- foreground_blocking_wait_for_long_job: prohibited
+- persist_material_intermediate_evidence_before_next_expensive_stage_when_loss_is_material: required
+- local_checkpoint: recovery_aid_not_durable_persistence
+- PID_or_local_status_file: not_proof_of_future_job_availability
+- on_runtime_disappearance: classify_as_unknown_or_lost_runtime_unless_durable_terminal_evidence_exists
 - repeated_long_poll_loop_inside_single_chat_turn: prohibited
 - tool_timeout_must_not_be_used_as_job_lifecycle_controller: true
-- on_background_start_record: pid_or_job_handle|workspace|command_summary|start_time|log_path|status_or_exit_record_path|checkpoint_path_when_available
-- background_stdout_stderr: redirect_to_bounded_workspace_log
-- background_job_status_record: running|completed|failed|cancelled|unknown
-- return_chat_control_after_verified_background_start: required
-- user_status_followup_keyword: status
-- on_user_status: inspect_process_or_job_handle|status_or_exit_record|bounded_log_tail|latest_checkpoint|new_artifacts
-- status_response_must_report: observed_state|last_completed_stage|active_stage_or_exit_code|material_progress|material_error_if_any
+- if_durable_long_execution_is_materially_required: consider_GitHub_Actions_only_when_user_intent_and_repository_policy_allow
 - status_check_must_not_restart_job_unless_explicitly_requested: true
 - status_check_must_not_assume_job_survived_runtime_recycling: true
-- workspace_runtime_non_durable: explicitly_preserve
-- if_background_process_support_or_runtime_continuity_is_unavailable: do_not_fake_background_execution; use_current_skill_safe_alternative_or_report_limit
-- if_durable_long_execution_is_materially_required: consider_GitHub_Actions_only_when_ci_actions_policy_allows
 
 performance:
 - optimize_measured_bottlenecks_first: true
@@ -194,8 +201,9 @@ artifacts_logs:
 - attach_when_relevant: run_or_head_sha|experiment_or_profile|schema_or_version
 - research_output_to_live_location_as_promotion: prohibited
 - failed_run_debug: inspect_exact_failing_step_and_traceback_before_code_change
-- reproduce_locally_first_when_possible: true
+- reproduce_locally_first_when_possible_and_runtime_budget_allows: true
 - workspace_artifact_handling: delegate_to_current_GitHub_Workspace_skill
+- volatile_local_artifact_required_for_resume: insufficient_without_durable_preservation
 
 workflow_maintenance:
 - obsolete_one_off_workflow: remove_unless_intentional_reusable_tool
@@ -207,5 +215,7 @@ workflow_maintenance:
 recovery:
 - patch_partial_remote_write: delegate_to_current_GitHub_Patch_skill
 - workspace_recovery: delegate_to_current_GitHub_Workspace_skill
+- recycled_or_missing_workspace: rematerialize_from_current_connector_state_and_reapply_only_preserved_verified_intent
+- detached_job_missing_after_runtime_change: do_not_infer_success_or_failure_without_durable_terminal_evidence
 - wrong_commit: prefer_revert_or_compensating_commit
-- github_dns_failure: do_not_loop_clone; use_connected_GitHub_transport_or_current_workspace_skill_fallback
+- github_dns_failure: do_not_loop_clone_or_fetch; use_connector_mediated_materialization_or_current_workspace_skill_fallback
