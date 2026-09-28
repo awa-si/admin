@@ -95,14 +95,18 @@ github_workspace:
 - route_fallback: only_as_defined_by_current_skill_and_github_patch_contract
 
 awa_mcp:
-- availability: available
-- scope: AWA_specific_state|operations|authoritative_internal_resolution
-- prefer_when: authoritative_or_most_direct_AWA_source
-- use_before_generic_repository_or_web_path_when_it_owns_the_requested_AWA_state: true
+- lifecycle: development
+- availability_for_normal_tasks: disabled
+- default_route: prohibited
+- authoritative_production_source: false
+- use_only_when: user_explicitly_requests_AWA_MCP_development|testing|validation|debugging
+- do_not_select_merely_because_tools_are_registered_or_reachable: true
+- do_not_prefer_over_canonical_repository_or_production_source: true
+- normal_AWA_task_routing: use_canonical_non_AWA_MCP_owner
+- promotion_to_active_requires: explicit_control_plane_change_after_server_is_declared_ready
+- development_results: non_production_evidence_unless_independently_verified_by_canonical_owner
 - do_not_substitute_for_GitHub_when_repo_content_is_canonical: true
 - never_assume: undocumented_tools|data|permissions|side_effects
-- if_not_capable_for_requested_operation: continue_with_next_authoritative_source
-- cross_source_conflict: identify_explicitly; prefer_canonical_owner_for_the_fact_or_operation
 
 edit_flow:
 - steps: read_current_target -> resolve_material_dependency_closure -> connector_materialize_required_scope -> make_smallest_coherent_change -> run_lightest_relevant_checks -> join_parallel_verification_when_used -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
