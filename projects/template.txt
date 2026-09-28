@@ -62,7 +62,9 @@ resolution:
 - admin_project_agent_snapshot: prohibited
 
 force_reload:
-- trigger_phrase: reload admin control plane
+- trigger_phrase: reload admin plane
+- trigger_aliases: reload admin control plane
+- default_command: reload admin plane
 - semantics: explicit_full_reread_of_active_user_control_plane
 - ignore_cached_copies: true
 - reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
