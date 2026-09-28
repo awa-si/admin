@@ -161,15 +161,21 @@ Use for substantive repository truth, including:
 
 ## Force reload
 
-To force an already-open chat to discard cached Admin control-plane copies and reload the current applicable hierarchy, send exactly:
+The default command to force an already-open chat to discard cached Admin control-plane copies and reload the current applicable hierarchy is:
+
+```text
+reload admin plane
+```
+
+Legacy alias, retained for compatibility:
 
 ```text
 reload admin control plane
 ```
 
-The trigger causes the current chat to reread `admin/instructions.txt`, `admin/workflow.md`, `admin/coding.md`, and `admin/mcp.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present, otherwise the Admin fallback repository-agent section. Material helper/owner files are reread only when required by the current task or by changed resolution.
+Both commands trigger the same full reload: reread `admin/instructions.txt`, `admin/workflow.md`, `admin/coding.md`, and `admin/mcp.md`; reread the active project's instructions/workflow when applicable; rederive the target repository; and reread that repository's `agent.md` when present, otherwise the Admin fallback repository-agent section. Material helper/owner files are reread only when required by the current task or by changed resolution.
 
-This is a per-chat reload. It does not broadcast into other already-open chats; each such chat must receive the trigger independently.
+This is a per-chat reload. It does not broadcast into other already-open chats; each such chat must receive a reload command independently.
 
 ## Instruction language
 
