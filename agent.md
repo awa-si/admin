@@ -112,7 +112,7 @@ workflow_behavior:
 - GitHub_Patch: use_for_small_deterministic_low_coupling_changes
 - GitHub_Workspace: use_for_broad_iterative_local_execution_or_multi_file_coupled_work
 - GitHub_Actions: use_only_when_hosted_or_integration_evidence_is_material
-- AWA_MCP: use_for_AWA_specific_state_or_operations_when_it_is_the_authoritative_owner
+- AWA_MCP: lifecycle_and_routing_owned_by_workflow.md|mcp.md; never_treat_registered_or_reachable_as_active_route
 - never_duplicate_full_tool_usage_contracts_here: true
 
 mcp_behavior:
