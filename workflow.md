@@ -24,18 +24,17 @@ github_routing_gate:
 - if_required_route_unavailable: use_documented_safe_fallback_only; never_simulate_or_claim_unperformed_workspace_or_patch
 
 github_route_activation:
-- GitHub_Workspace_plugin_release: pluginrel_6aba73184da081918fbec837d4543ba5
-- GitHub_Workspace_plugin_version: 0.6.2
 - GitHub_Workspace_skill: skills://plugins/github-workspace-web/github-workspace/skill.md
 - when_GitHub_Workspace_selected: load_current_skill_before_workspace_operation
 - workspace_skill_execution_contract: authoritative_for_all_workspace_mechanics
 - workspace_skill_current_state_over_admin_cached_assumptions: required
 - workspace_protocol_improvisation_when_skill_available: prohibited
-- GitHub_Patch_skill_id: 6aa2f68fcd088191b3da3fa9060be037
-- when_GitHub_Patch_selected: load_current_installed_skill_by_id_before_patch_operation
+- when_GitHub_Patch_selected: load_current_installed_GitHub_Patch_skill_before_patch_operation
 - patch_skill_execution_contract: authoritative_for_all_patch_mechanics
 - patch_skill_current_state_over_admin_cached_assumptions: required
 - patch_protocol_improvisation_outside_current_skill: prohibited
+- plugin_version_or_release_pin_in_admin: prohibited
+- plugin_backend_or_skill_id_pin_in_admin: prohibited
 - completion_requires_selected_route_execution_contract_followed: true
 
 github_routing:
@@ -59,9 +58,8 @@ github_routing:
 
 github_patch:
 - role: route_to_current_GitHub_Patch_skill
-- skill_id: 6aa2f68fcd088191b3da3fa9060be037
 - required_for: small_deterministic_edit|small_docs_edit|known_file_known_change|focused_low_coupling_fix|small_coherent_known_multi_file_edit|known_dependency_followup_edit_without_local_execution
-- load_skill_before_use: required
+- load_current_installed_skill_before_use: required
 - skill_is_authoritative_for_patch_mechanics: true
 - admin_must_not_duplicate_or_override_patch_skill_mechanics_without_explicit_reason: true
 - current_skill_must_be_reread_if: skill_changed|explicitly_requested|patch_capability_changed
