@@ -74,6 +74,7 @@ mode: normative
 - required: true
 - apply_to: repository_editing|verification|ci|actions|profiling|benchmark|backtest|training|artifact_handling|recovery
 - repository_task_routing: follow_awa-si/admin/workflow.md
+- repository_materialization_and_runtime_semantics: owned_by_awa-si/admin/workflow.md
 - completion_requires_route_compliance: true
 - project_extension: awa-si/admin/projects/<project>/workflow.md
 - project_extension_required: false
@@ -95,7 +96,11 @@ mode: normative
 - startup: read_resolved_repo_agent_once_per_chat_or_workspace_when_repository_context_exists
 - repo_agent_fallback: awa-si/admin/agent.md#fallback_repository_agent
 - reread_agent_if: file_changed|task_requires|scope_changed
-- github_transport: connected_GitHub_connector
+- github_remote_transport: connected_GitHub_connector
+- github_workspace_acquisition: connector_mediated_materialization_per_awa-si/admin/workflow.md
+- local_workspace_semantics: temporary_materialized_snapshot_not_assumed_git_clone
+- shell_git_network_transport_for_workspace: prohibited
+- local_git_if_used: offline_local_mechanics_only
 - workflow_policy_source: awa-si/admin/workflow.md
 - coding_policy_source: awa-si/admin/coding.md
 - mcp_policy_source: awa-si/admin/mcp.md
