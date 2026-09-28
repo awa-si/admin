@@ -1,84 +1,24 @@
 bootstrap: project
 
-project_scope:
-- project: <project>
+project:
+- name: <project>
+- instructions: awa-si/admin/projects/<project>/instructions.txt
+- workflow: awa-si/admin/projects/<project>/workflow.md
 
-instructions:
-- dependency: awa-si/admin/projects/<project>/instructions.txt
-- load: once_per_chat
-- required: false
-- apply_with_global_user_instructions: true
-- project_delta_only: true
-- child_override: explicit_only
-- parent_rules: remain_active_unless_overridden
-- missing: use_global_only
+inherit:
+- global_instructions: awa-si/admin/instructions.txt
+- global_workflow: awa-si/admin/workflow.md
+- global_coding: awa-si/admin/coding.md
+- global_mcp: awa-si/admin/mcp.md
+- project_files_are_delta_only: true
+- parent_rules_remain_active_unless_explicitly_overridden: true
 
-workflow:
-- global_dependency: awa-si/admin/workflow.md
-- global_required: true
-- repository_task_routing: follow_global_workflow
-- completion_requires_route_compliance: true
-- project_dependency: awa-si/admin/projects/<project>/workflow.md
-- project_required: false
-- project_semantics: extend_parent_and_explicit_override_only
-- parent_rules: remain_active_unless_overridden
-- load: once_per_chat_or_workspace
-- reread_if: source_changed|explicitly_requested|active_scope_changed
-
-coding:
-- global_dependency: awa-si/admin/coding.md
-- global_required_when_applicable: true
-- apply_when: per_global_coding_owner
-- repository_specific_contract: target_repo_helper_or_canonical_owner
-- repository_specific_override: explicit_only
-- parent_rules: remain_active_unless_overridden
-- reread_if: source_changed|explicitly_requested|active_scope_changed
-
-mcp:
-- global_dependency: awa-si/admin/mcp.md
-- global_required_when_applicable: true
-- apply_when: per_global_mcp_owner
-- project_or_repo_specific_contract: target_repo_helper_or_canonical_owner
-- parent_rules: remain_active_unless_overridden
-- reread_if: source_changed|explicitly_requested|active_scope_changed|capability_or_schema_changed
-
-agent:
-- derive_from: project_instructions.repository
-- path: <derived_repository>/agent.md
+repository:
+- derive_from: project.instructions.repository
+- agent: <derived_repository>/agent.md
 - fallback: awa-si/admin/agent.md#fallback_repository_agent
-- load: derived_agent_if_present_else_fallback_when_repository_context_exists
-- read: once_per_chat
-- reread_if: source_changed|explicitly_requested|active_scope_changed
-- source_of_truth: derived_repository_current_state
-- required_when_repository_context_exists: true
+- current_repository_state_is_authoritative: true
 
-resolution:
-- order_if_project_exists: global_user_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> resolved_repo_agent -> task
-- order_if_project_missing: global_user_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> admin_agent_fallback_when_repository_context_exists -> task
-- project_instructions_must_define_if_present: repository
-- resolved_repo_agent: derived_repo_agent_if_present_else_awa-si/admin/agent.md#fallback_repository_agent
-- child_override: explicit_only
-- parent_rules: remain_active_unless_overridden
-- admin_project_agent_snapshot: prohibited
-
-force_reload:
-- trigger_phrase: reload admin plane
-- trigger_aliases: reload admin control plane
-- default_command: reload admin plane
-- semantics: explicit_full_reread_of_active_user_control_plane
-- ignore_cached_copies: true
-- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
-- reread_active_project: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
-- rederive_target_repository_from_current_project_instructions: true
-- reread_resolved_repo_agent: <derived_repository>/agent.md_if_present_else_awa-si/admin/agent.md#fallback_repository_agent
-- reread_material_helpers: only_if_required_by_current_task_or_changed_resolution
-- use_current_repository_state_only: true
-- previously_loaded_copy_after_trigger: non_authoritative
-- apply_newly_loaded_rules_to_subsequent_work_in_current_chat: true
-- does_not_broadcast_to_other_open_chats: true
-
-safety:
-- admin_repo: public
-- before_copy_to_admin: verify_public_safe
-- never_commit: secrets,keys,tokens,passwords,private_keys,credentials,session_material,secret_bearing_urls,private_or_confidential_data
-- confidential_repo_content: reference_repo_path_only
+reload:
+- command: reload admin plane
+- reread_current_control_plane_and_active_project: true
