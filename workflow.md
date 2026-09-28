@@ -29,10 +29,10 @@ github_route_activation:
 - workspace_skill_execution_contract: authoritative_for_all_workspace_mechanics
 - workspace_skill_current_state_over_admin_cached_assumptions: required
 - workspace_protocol_improvisation_when_skill_available: prohibited
-- when_GitHub_Patch_selected: load_current_installed_GitHub_Patch_skill_before_patch_operation
-- patch_skill_execution_contract: authoritative_for_all_patch_mechanics
-- patch_skill_current_state_over_admin_cached_assumptions: required
-- patch_protocol_improvisation_outside_current_skill: prohibited
+- when_GitHub_Patch_selected: use_connected_GitHub_connector_native_fast_path
+- patch_execution_contract: owned_by_admin_workflow_and_current_connector_schema
+- patch_capability_current_state_over_cached_assumptions: required
+- patch_plugin_or_skill_lookup_in_hot_path: prohibited
 - plugin_version_or_release_pin_in_admin: prohibited
 - plugin_backend_or_skill_id_pin_in_admin: prohibited
 - completion_requires_selected_route_execution_contract_followed: true
@@ -57,13 +57,20 @@ github_routing:
 - force_push_or_force_ref_update: prohibited
 
 github_patch:
-- role: route_to_current_GitHub_Patch_skill
+- role: native_connected_GitHub_connector_fast_path
 - required_for: small_deterministic_edit|small_docs_edit|known_file_known_change|focused_low_coupling_fix|small_coherent_known_multi_file_edit|known_dependency_followup_edit_without_local_execution
-- load_current_installed_skill_before_use: required
-- skill_is_authoritative_for_patch_mechanics: true
-- admin_must_not_duplicate_or_override_patch_skill_mechanics_without_explicit_reason: true
-- current_skill_must_be_reread_if: skill_changed|explicitly_requested|patch_capability_changed
-- if_skill_unavailable: report_execution_limit_or_use_only_fallback_explicitly_defined_by_current_skill
+- remote_transport: connected_GitHub_connector
+- known_existing_file_fast_path: fetch_file_once_for_content_and_blob_sha -> local_edit -> guarded_update_file_with_observed_sha -> one_remote_verification
+- known_new_file_fast_path: create_file -> one_remote_verification
+- known_delete_file_fast_path: fetch_file_once_for_blob_sha -> guarded_delete_file -> one_remote_verification
+- avoid_when_target_path_known: repository_search|plugin_discovery|skill_lookup|dependency_discovery|workspace_materialization|tree_reconstruction|redundant_head_reads
+- update_or_delete_requires_observed_current_blob_sha: true
+- same_path_remote_writes: serialize
+- stale_write_or_ambiguous_write: inspect_actual_remote_state_before_retry
+- remote_verification: minimum_sufficient_single_read_of_result_or_commit
+- CI_or_status_polling: only_when_material_to_task_or_repo_contract
+- connector_schema_is_authoritative_for_available_patch_operations: true
+- reread_connector_capability_if: connector_schema_changed|permission_changed|explicitly_requested
 - if_change_requires_broad_search|local_execution|test_or_build|dependency_discovery|uncertain_coupling: route_to_GitHub_Workspace
 
 github_workspace:
@@ -114,7 +121,7 @@ awa_mcp:
 edit_flow:
 - steps: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> make_smallest_coherent_change -> run_lightest_relevant_checks -> join_parallel_verification_when_used -> inspect_status_and_complete_diff -> correct_unintended_changes -> commit -> verify_remote_result
 - if_new_dependency_evidence_after_freeze: stop_dependent_work -> reopen_dependency_resolution -> add_evidence_backed_edges -> refreeze_scope -> fetch_only_new_required_paths -> rejoin_integrity
-- patch_route_execution: delegate_to_current_GitHub_Patch_skill
+- patch_route_execution: use_native_GitHub_connector_fast_path
 - workspace_route_execution: delegate_to_current_GitHub_Workspace_skill
 - dependency_analysis_mechanics_for_workspace: delegate_to_current_GitHub_Workspace_skill
 - materialization_mechanics_for_workspace: delegate_to_current_GitHub_Workspace_skill
@@ -125,7 +132,7 @@ edit_flow:
 
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
-- patch_verification_mechanics: delegate_to_current_GitHub_Patch_skill
+- patch_verification_mechanics: one_minimum_sufficient_remote_result_or_commit_read
 - workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - dependency_coverage_verification: required_when_workspace_dependency_analysis_is_material
 - fetch_integrity_join_required_before_local_execution_or_edit: true
@@ -137,7 +144,7 @@ verification:
 - remote_ci: only_if_material
 
 concurrency:
-- patch_concurrency_and_stale_write: delegate_to_current_GitHub_Patch_skill
+- patch_concurrency_and_stale_write: same_path_serialized|observed_blob_sha_guard|required_state_check_before_retry
 - workspace_parallelism_and_drift: delegate_to_current_GitHub_Workspace_skill
 - workspace_parallelism_requires_DAG_and_resolved_dependency_edges: true
 - dependency_resolution_join_precedes_parallel_fetch: required
@@ -153,7 +160,7 @@ concurrency:
 - force_overwrite: prohibited
 
 commit_writeback:
-- patch_writeback: delegate_to_current_GitHub_Patch_skill
+- patch_writeback: direct_guarded_GitHub_connector_contents_write
 - workspace_writeback: delegate_to_current_GitHub_Workspace_skill
 - one_coherent_change: one_coherent_commit_when_supported
 - commit_message: user_supplied_else_concise_factual
@@ -163,7 +170,7 @@ commit_writeback:
 - force_push: prohibited
 
 remote_verification:
-- patch_route: delegate_to_current_GitHub_Patch_skill
+- patch_route: verify_result_once_with_minimum_sufficient_connector_read
 - workspace_route: delegate_to_current_GitHub_Workspace_skill
 - inspect_status_checks_jobs_logs_artifacts: when_material
 - ci_failure: identify_earliest_causal_failure
@@ -224,7 +231,7 @@ workflow_maintenance:
 - execute_remote_workflow_only_if_integration_behavior_materially_needs_runtime_evidence: true
 
 recovery:
-- patch_partial_remote_write: delegate_to_current_GitHub_Patch_skill
+- patch_partial_remote_write: inspect_actual_remote_state_then_continue_or_compensate_without_blind_retry
 - workspace_recovery: delegate_to_current_GitHub_Workspace_skill
 - recycled_or_missing_workspace: rematerialize_from_current_connector_state_and_reapply_only_preserved_verified_intent
 - detached_job_missing_after_runtime_change: do_not_infer_success_or_failure_without_durable_terminal_evidence
