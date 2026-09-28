@@ -1,18 +1,5 @@
 # ADMIN — AGENT
 
-> AI self-directive for operating and governing the Admin control plane and its managed project/repository instruction architecture.
-
-**File:** `agent.md`  
-**Owner:** Admin AI repository operating rules  
-**Scope:** AI behavior, control-plane reasoning, source resolution, managed-project routing and completion gates  
-**Status:** Canonical  
-**Repository:** `awa-si/admin`  
-**Branch:** `main`  
-**Mode:** normative machine directives  
-**AI Instruction:** Apply this file when operating on Admin itself or coordinating managed projects/repositories from the Admin control plane; when used as fallback for a target repository without its own `agent.md`, apply only `fallback_repository_agent` plus inherited global/project rules.
-
----
-
 scope: repository_agent
 repository: awa-si/admin
 branch: main
@@ -21,7 +8,7 @@ mode: normative_machine_directives
 fallback_repository_agent:
 - activate_when: target_repository_context_exists_and_target_repository/agent.md_is_missing
 - scope: repository_specific_AI_fallback_only
-- inherit: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md_when_applicable|awa-si/admin/mcp.md_when_applicable|applicable_project_delta
+- inherit: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md_when_applicable|applicable_project_delta
 - target_repository_current_state: authoritative
 - target_repository_branch: use_resolved_current_branch
 - target_repository_visibility: do_not_assume_public_or_private
@@ -36,7 +23,6 @@ agent_content_policy:
 - purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|self_governance
 - substantive_workflow_detail: delegate_to_workflow.md
 - global_coding_detail: delegate_to_coding.md
-- global_mcp_detail: delegate_to_mcp.md
 - global_behavior_detail: delegate_to_instructions.txt
 - project_specific_behavior: delegate_to_projects/<project>/instructions.txt
 - project_specific_workflow: delegate_to_projects/<project>/workflow.md
@@ -44,7 +30,7 @@ agent_content_policy:
 - load_helpers: only_when_material_to_task
 
 role:
-- operate_as: maintainer_of_chatgpt_instruction_coding_mcp_and_workflow_architecture
+- operate_as: maintainer_of_chatgpt_instruction_coding_and_workflow_architecture
 - objective: keep_instruction_layers_minimal|nonduplicative|composable|safe|machine_readable
 
 managed_scope:
@@ -52,21 +38,17 @@ managed_scope:
 - admin_role: control_plane_for_managed_projects_and_repositories
 - managed_projects: projects/*
 - managed_repository_resolution: projects/<project>/instructions.txt.repository
-- manage_from_here: instruction_hierarchy|coding_guidance|mcp_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
-- project_or_repo_change_may_require: inspect_and_update_admin_control_files|target_repo_agent|target_helper_or_owner_files|human_docs|registries
+- manage_from_here: instruction_hierarchy|coding_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
 - cross_repository_work: allowed_when_required_to_keep_managed_project_and_repository_state_consistent
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
 - target_repository_remains_authoritative_for: implementation|domain_state|technical_contracts|business_state|repo_local_helpers
 - managed_repo_agent_remains_authoritative_for: repository_specific_AI_behavior|routing|source_resolution|decision_gates
-- control_plane_change_must_review_affected_managed_projects_and_repositories: true
 
 source_resolution:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - current_repository_state: authoritative
 - global_behavior_owner: instructions.txt
 - global_workflow_owner: workflow.md
 - global_coding_owner: coding.md
-- global_mcp_owner: mcp.md
 - human_orientation_owner: README.md
 - project_behavior_owner: projects/<project>/instructions.txt
 - project_workflow_owner: projects/<project>/workflow.md
@@ -74,27 +56,23 @@ source_resolution:
 - repository_agent_policy_owner: instructions.txt#repository_agent_policy
 
 startup:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - read: agent.md
-- then_if_material: instructions.txt|workflow.md|coding.md|mcp.md|README.md|projects/template.txt
+- then_if_material: instructions.txt|workflow.md|coding.md|README.md|projects/template.txt
 - for_project_change: read_only_target_projects/<project>/instructions.txt_and_workflow.md_when_present
 - for_managed_repo_change: resolve_target_repository_from_project_instructions -> read_target_agent_if_present_else_fallback_repository_agent -> load_material_helpers_or_owners
 - avoid_loading_unrelated_project_files: true
 
 reasoning:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - preserve_single_owner_per_rule: required
 - identify_before_edit: owner|consumers|precedence|inheritance|public_safety_impact
-- distinguish: global_behavior|global_workflow|global_coding|global_mcp|project_delta|repo_agent_policy|human_documentation
+- distinguish: global_behavior|global_workflow|global_coding|project_delta|repo_agent_policy|human_documentation
 - move_rule_to_narrowest_correct_owner_when_misplaced: true
 - do_not_preserve_duplication_for_compatibility: true
 - semantic_consistency_over_textual_similarity: true
-- when_refactoring: compare_old_and_new_semantics_and_restore_material_invariants
 - when_admin_change_affects_managed_projects_or_repositories: inspect_downstream_semantic_impact
 
 layering:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
-- resolution_order: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> resolved_repo_agent -> material_helpers_or_canonical_owners -> task
+- resolution_order: global_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> resolved_repo_agent -> material_helpers_or_canonical_owners -> task
 - resolved_repo_agent: derived_repo_agent_if_present_else_fallback_repository_agent
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
@@ -112,13 +90,7 @@ workflow_behavior:
 - GitHub_Patch: use_for_small_deterministic_low_coupling_changes
 - GitHub_Workspace: use_for_broad_iterative_local_execution_or_multi_file_coupled_work
 - GitHub_Actions: use_only_when_hosted_or_integration_evidence_is_material
-- AWA_MCP: lifecycle_and_routing_owned_by_workflow.md|mcp.md; never_treat_registered_or_reachable_as_active_route
 - never_duplicate_full_tool_usage_contracts_here: true
-
-mcp_behavior:
-- follow_when_applicable: mcp.md
-- project_or_repo_specific_MCP_contract: target_repo_helper_or_canonical_owner
-- never_duplicate_full_MCP_contracts_here: true
 
 coding_behavior:
 - follow_when_applicable: coding.md
@@ -135,7 +107,6 @@ public_safety:
 - sensitive_reference: symbolic_name|placeholder|authoritative_private_reference
 
 edit_behavior:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - smallest_coherent_change: preferred
 - preserve_unrelated_valid_content: true
 - update_consumers_when_semantics_or_resolution_changes: required
@@ -144,11 +115,9 @@ edit_behavior:
 - docs_only_ci: avoid_unless_machine_checked_or_executable_contract_changed
 
 verification:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - after_material_change: refetch_changed_files|verify_owner_boundaries|verify_resolution_order|check_for_stale_cross_references|verify_public_safety
 - when_rule_moved: search_for_old_owner_claims_and_stale_paths
 - completion_claim_requires_verified_remote_state: true
 
 completion:
-- applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - requires: requested_change_applied|no_material_rule_loss|no_active_duplicate_owner|references_consistent|remote_state_verified

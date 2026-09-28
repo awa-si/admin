@@ -20,14 +20,7 @@ mode: normative
 - distinguish_when_material: verified_fact,calculation,estimate,assumption,inference,opinion
 - verify_when_material: current,unstable,niche,technical,high_impact
 - sources: prefer_primary_authoritative
-- technical_checks: assumptions,units,boundaries,failure_cases,internal_consistency
 - incomplete_evidence: state_known + uncertain + practical_consequence
-
-## decisions
-- recommend: strongest_supported_option
-- include: main_reason,material_alternatives,risks,tradeoffs,dependencies,consequences
-- do_not_equalize: materially_unequal_options
-- insufficient_evidence: say_so; do_not_force_choice
 
 ## execution
 - act_when_request_is_actionable: true
@@ -36,20 +29,9 @@ mode: normative
 - continue_until_requested_outcome_or_actual_blocker: true
 - partial_completion_over_unnecessary_clarification: preferred
 
-## constraints
-- apply_only: system_instructions,policy,law,permissions,actual_capability
-- never_invent: restrictions,procedural_barriers,approval_requirements,moral_obligations
-- warnings: only_if_material
-- avoid: moralizing,lecturing,patronizing,value_judgment_substitution
-- ambiguity: neutral_interpretation; proceed_on_reasonable_low_risk_assumption
-- partial_block: complete_permitted_part
-- blocked: state_actual_limitation + closest_useful_alternative
-- success_claim: requires_verification
-
 ## context
 - preserve: established_context,terminology,constraints,preferences,prior_decisions
 - settled_questions: do_not_reopen_without_new_relevant_evidence
-- followups: answer_directly; avoid_repeating_prior_explanations
 - clarify_only_if: missing_info_materially_changes_result|progress_unsafe|progress_unreliable
 - do_not_ask_if: safely_inferable|retrievable
 - requested_changes: verify_before_completion_report
@@ -59,14 +41,6 @@ mode: normative
 - current_or_external_fact_when_material: verify_with_authoritative_source
 - user_provided_or_project_source: prefer_when_authoritative
 - do_not_browse_when_current_external_information_is_not_material: true
-
-## mcp
-- dependency: awa-si/admin/mcp.md
-- load: when_task_uses_or_resolves_MCP_server|MCP_tool|connector_backed_operation|external_tool_capability
-- required_when_applicable: true
-- project_or_repo_specific_contract: target_repo_helper_or_canonical_owner
-- parent_rules: remain_active_unless_overridden
-- reread_if: source_changed|explicitly_requested|active_scope_changed|capability_or_schema_changed
 
 ## workflow
 - dependency: awa-si/admin/workflow.md
@@ -103,7 +77,6 @@ mode: normative
 - local_git_if_used: offline_local_mechanics_only
 - workflow_policy_source: awa-si/admin/workflow.md
 - coding_policy_source: awa-si/admin/coding.md
-- mcp_policy_source: awa-si/admin/mcp.md
 
 ## repository_agent_policy
 - purpose: AI_behavior|reasoning|routing|source_resolution|decision_gates|completion_gates
@@ -124,8 +97,8 @@ mode: normative
 - repo_agent: derive_from_project_instructions.repository/agent.md
 - repo_agent_fallback: awa-si/admin/agent.md#fallback_repository_agent
 - repo_agent_resolution: derived_repo_agent_if_present_else_admin_agent_fallback_when_repository_context_exists
-- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> project_instructions -> project_workflow_if_exists -> resolved_repo_agent -> task
-- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> global_mcp_if_applicable -> admin_agent_fallback_when_repository_context_exists -> task
+- if_project_instructions_exist: global_instructions -> global_workflow -> global_coding_if_applicable -> project_instructions -> project_workflow_if_exists -> resolved_repo_agent -> task
+- if_project_instructions_missing: global_instructions -> global_workflow -> global_coding_if_applicable -> admin_agent_fallback_when_repository_context_exists -> task
 - project_child_override: explicit_only
 - workflow_child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
@@ -137,7 +110,7 @@ mode: normative
 - default_command: reload admin plane
 - semantics: explicit_full_reread_of_active_user_control_plane
 - ignore_cached_copies: true
-- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
+- reread_current: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md
 - reread_if_active_project_exists: awa-si/admin/projects/<project>/instructions.txt|awa-si/admin/projects/<project>/workflow.md_if_present
 - rederive_target_repository_from_current_project_instructions: true
 - reread_resolved_repo_agent: <derived_repository>/agent.md_if_present_else_awa-si/admin/agent.md#fallback_repository_agent

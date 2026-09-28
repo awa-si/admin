@@ -6,15 +6,16 @@ project:
 - workflow: awa-si/admin/projects/<project>/workflow.md
 
 inherit:
-- global: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md|awa-si/admin/mcp.md
+- global: awa-si/admin/instructions.txt|awa-si/admin/workflow.md|awa-si/admin/coding.md
 - project_files_are_delta_only: true
 - parent_rules_remain_active_unless_explicitly_overridden: true
 
 repository:
-- source: project.instructions.repository
-- agent: <repository>/agent.md
+- derive_from: project.instructions.repository
+- agent: <derived_repository>/agent.md
 - fallback: awa-si/admin/agent.md#fallback_repository_agent
 - current_repository_state_is_authoritative: true
 
 reload:
 - command: reload admin plane
+- reread_current_control_plane_and_active_project: true
