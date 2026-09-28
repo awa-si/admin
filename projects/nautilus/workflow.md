@@ -17,8 +17,18 @@ historical_ml_validation:
   - report_stage_coverage_deficits: true
 
 empirical_progression:
-- order: local_contract_unit -> local_short_historical_smoke_if_practical -> committed_remote_state -> runner_integration_if_required -> medium_representative_window -> long_full_empirical_run
+- order: local_contract_unit -> local_short_historical_smoke_if_practical -> committed_remote_state -> runner_integration_if_required -> durable_medium_representative_window -> durable_long_full_empirical_run
 - insufficient_data: fail_closed; do_not_silently_change_model_or_causal_contract
+
+runtime_durability:
+- local_runtime_role: bounded_contract_unit|short_historical_smoke|focused_profile
+- detached_or_background_medium_long_empirical_local_runs: prohibited
+- long_or_resource_heavy_local_empirical_parallelism: concurrency_1_by_default
+- medium_representative_window|long_full_empirical_run: durable_hosted_execution_when_materially_exceeds_interactive_runtime_budget
+- preferred_durable_hosted_route: GitHub_Actions_when_authorized_and_repository_policy_allows
+- preserve_causal_dataset_and_fold_contract_across_execution_route: required
+- persist_material_intermediate_results_or_artifacts_between_expensive_stages: required_when_loss_is_material
+- runtime_recycle_or_workspace_loss: treat_local_state_as_unknown_or_lost_unless_durable_terminal_evidence_exists
 
 multi_timeframe_ablation:
 - workflow_role: integration_and_empirical_harness_not_default_dev_loop

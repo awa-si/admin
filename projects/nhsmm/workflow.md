@@ -6,14 +6,20 @@ extends: awa-si/admin/workflow.md
 mode: extend_parent_and_explicit_override_only
 
 local_execution:
-- performance_work: prefer_local_workspace
-- preferred_workspace: /tmp/nhsmm
+- performance_work: prefer_local_workspace_for_bounded_profile_edit_measure_cycles
+- preferred_workspace_root: /tmp/nhsmm
+- workspace_acquisition: connector_mediated_materialization_per_global_workflow
+- git_clone_fetch_pull_for_workspace_acquisition: prohibited
 - editable_install: preferred
 - normal_install: python -m pip install -e .
 - offline_or_dependency_preinstalled_install: python -m pip install -e . --no-deps --no-build-isolation
 - no_deps_install_claim: must_not_be_described_as_dependency_resolution_or_clean_environment_validation
-- local_edit_profile_measure_cycles_before_remote_write: required_when_practical
+- local_edit_profile_measure_cycles_before_remote_write: required_when_practical_and_bounded
+- long_or_resource_heavy_local_jobs: concurrency_1_by_default
+- detached_background_for_long_local_jobs: prohibited
 - github_actions_as_performance_edit_loop: prohibited
+- durable_long_execution: GitHub_Actions_when_authorized_and_material
+- runtime_recycle_or_workspace_loss: treat_local_state_as_unknown_or_lost_unless_durable_terminal_evidence_exists
 
 performance_method:
 - profile_current_head_before_optimization: required
@@ -42,6 +48,7 @@ benchmarking:
 - artifact_loaded_runtime_measurement: preferred_for_production_reference
 - allocation_measurement: separate_pass
 - local_profile_may_use_focused_harness: true
+- representative_long_benchmark_exceeding_interactive_budget: durable_hosted_runner_when_authorized
 - retain_workload_dimensions_in_report: K|F|D|batch_size|steps|warmup
 - cross_environment_comparison: label_as_non_direct_when_runtime_or_host_differs
 
