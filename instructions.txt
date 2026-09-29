@@ -72,8 +72,8 @@ mode: normative
 - reread_agent_if: file_changed|task_requires|scope_changed
 - repository_route_transport_and_workspace_semantics: owned_by_awa-si/admin/workflow.md
 - GitHub_Patch_remote_transport: connected_GitHub_connector
-- AWA_MCP_Workspace: latest_workspace_route_when_available
-- GitHub_Workspace: independent_fallback_when_AWA_MCP_Workspace_unavailable
+- GitHub_Workspace: default_workspace_route
+- AWA_MCP_Workspace: fallback_workspace_route_when_GitHub_Workspace_is_unavailable_or_explicitly_selected
 - shell_git_network_transport_from_workspace: prohibited
 - workflow_policy_source: awa-si/admin/workflow.md
 - coding_policy_source: awa-si/admin/coding.md
