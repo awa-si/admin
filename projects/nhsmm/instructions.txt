@@ -9,7 +9,7 @@ inheritance:
 
 repository:
 - source_of_truth: awa-si/nhsmm@develop
-- agent: agent.md
+- agent: AGENTS.md
 
 project_delta:
 - default_branch: develop
