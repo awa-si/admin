@@ -9,7 +9,7 @@ inheritance:
 
 repository:
 - source_of_truth: awa-si/private@main
-- agent: agent.md
+- agent: AGENTS.md
 
 project_delta:
 - language: de
