@@ -9,9 +9,12 @@ resolution:
 - parent_rules_remain_active_unless_overridden: true
 
 github_routing_gate:
-- before_any_repository_read_write_or_execution_task: classify_route_as_GitHub_Patch|GitHub_Workspace|GitHub_Actions
+- before_any_repository_read_write_or_execution_task: classify_route_as_GitHub_Patch|AWA_MCP_Workspace|GitHub_Workspace|GitHub_Actions
 - default_for_known_small_deterministic_low_coupling_change: GitHub_Patch
 - mandatory_workspace_if_any: broad_search|repository_wide_inspection|local_execution|script_execution|test_or_lint_required|build_required|repeated_edit_test_cycle|dependency_discovery|high_or_uncertain_multi_file_coupling|generated_artifact_analysis|ci_artifact_analysis|change_scope_uncertain
+- workspace_route_latest_when_available: AWA_MCP_Workspace
+- workspace_route_fallback_if_AWA_MCP_Workspace_unavailable: GitHub_Workspace
+- GitHub_Workspace_fallback_must_remain_independent_of_AWA_MCP: true
 - github_actions: only_if_runtime_or_hosted_integration_evidence_required
 - reclassify_route_when_scope_changes_materially: required
 - completion_requires_route_compliance: true
@@ -30,7 +33,24 @@ github_patch:
 - remote_verification: minimum_sufficient_single_read_of_result_or_commit
 - CI_or_status_polling: only_when_material_to_task_or_repo_contract
 - connector_schema_is_authoritative_for_available_patch_operations: true
-- if_change_requires_broad_search|local_execution|test_or_build|dependency_discovery|uncertain_coupling: route_to_GitHub_Workspace
+- if_change_requires_broad_search|local_execution|test_or_build|dependency_discovery|uncertain_coupling: route_to_workspace_classification
+
+awa_mcp_workspace:
+- role: latest_workspace_route_when_available
+- availability_gate: required_before_selection
+- unavailable_or_unhealthy: route_to_GitHub_Workspace
+- fallback_dependency_on_AWA_MCP: prohibited
+- repository_remote_transport: AWA_MCP_repository_credential_boundary
+- workspace_lifecycle: workspace_create -> workspace_repository_import -> workspace_exec -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
+- repository_acquisition: workspace_repository_import
+- repository_refresh: workspace_repository_fetch_to_FETCH_HEAD_without_implicit_HEAD_change
+- repository_writeback: local_git_commit_then_workspace_repository_push
+- local_git: full_local_Git_mechanics_via_workspace_exec
+- shell_git_network_transport_from_workspace: prohibited
+- credentials_inside_workspace: prohibited
+- workspace_runtime: isolated_bounded_ephemeral
+- runtime_and_repository_contract: use_current_AWA_MCP_tool_schema_and_target_repository_canonical_MCP_workspace_docs
+- do_not_duplicate_target_repository_runtime_detail_in_admin: true
 
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
@@ -61,14 +81,16 @@ github_actions:
 
 edit_flow:
 - patch: read_current_target -> smallest_coherent_change -> guarded_write -> minimum_remote_verification
-- workspace: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> editable_install_if_required -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> fast_writeback -> verify_remote_result
+- AWA_MCP_Workspace: create -> repository_import -> inspect_and_edit_with_workspace_exec_and_local_git -> verify -> local_commit -> repository_fetch_and_reconcile_if_needed -> repository_push -> verify_remote_result -> delete
+- GitHub_Workspace: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> editable_install_if_required -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> fast_writeback -> verify_remote_result
 - if_new_dependency_evidence_after_freeze: stop_dependent_work -> reopen_dependency_resolution -> add_evidence_backed_edges -> refreeze_scope -> fetch_only_new_required_paths -> rejoin_integrity
 - unrelated_refactors_in_same_change: prohibited
 - docs_only_ci: avoid_unless_executable_examples_or_machine_checked_contracts_changed
 
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
-- workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
+- AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_then_remote_state_verification
+- GitHub_Workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - never_claim_unobserved_execution: true
 - remote_ci: only_if_material
 - completion_claim: only_after_remote_verification
@@ -83,7 +105,8 @@ concurrency:
 
 commit_writeback:
 - patch_writeback: direct_guarded_GitHub_connector_contents_write
-- workspace_writeback: delegate_to_current_GitHub_Workspace_skill
+- AWA_MCP_Workspace_writeback: local_git_commit_then_workspace_repository_push
+- GitHub_Workspace_writeback: delegate_to_current_GitHub_Workspace_skill
 - one_coherent_change: one_coherent_commit_when_supported
 - commit_message: user_supplied_else_concise_factual
 - split_commits_only_if: user_requests|repo_requires|independent_rollback_boundary
@@ -116,6 +139,8 @@ artifacts_logs:
 
 recovery:
 - patch_partial_remote_write: inspect_actual_remote_state_then_continue_or_compensate_without_blind_retry
-- workspace_recovery: delegate_to_current_GitHub_Workspace_skill
-- recycled_or_missing_workspace: restore_per_current_GitHub_Workspace_skill
+- AWA_MCP_Workspace_unavailable: route_to_independent_GitHub_Workspace
+- AWA_MCP_Workspace_recycled_or_missing: recreate_and_reimport_from_verified_remote_state_then_reapply_only_preserved_intent
+- GitHub_Workspace_recovery: delegate_to_current_GitHub_Workspace_skill
+- GitHub_Workspace_recycled_or_missing: restore_per_current_GitHub_Workspace_skill
 - wrong_commit: prefer_revert_or_compensating_commit
