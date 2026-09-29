@@ -42,7 +42,7 @@ awa_mcp_workspace:
 - unavailable_or_unhealthy: surface_actual_blocker
 - independent_from_GitHub_Workspace_contract: true
 - repository_remote_transport: AWA_MCP_repository_credential_boundary
-- workspace_lifecycle: workspace_create -> workspace_repository_import -> workspace_exec -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
+- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
 - repository_acquisition: workspace_repository_import
 - repository_refresh: workspace_repository_fetch_to_FETCH_HEAD_without_implicit_HEAD_change
 - repository_writeback: local_git_commit_then_workspace_repository_push
@@ -52,6 +52,20 @@ awa_mcp_workspace:
 - workspace_runtime: isolated_bounded_ephemeral
 - runtime_and_repository_contract: use_current_AWA_MCP_tool_schema_and_target_repository_canonical_MCP_workspace_docs
 - do_not_duplicate_target_repository_runtime_detail_in_admin: true
+- workspace_create_resources: capture_returned_resources_immediately
+- workspace_create_resource_report_in_chat: required_before_resource_sensitive_followup_operations
+- workspace_create_resource_report_fields: workspace_id|cpu|memory_mb|storage_mb|pids|tmp_mb
+- workspace_create_resource_semantics: initial_policy_from_deployment_defaults_plus_explicit_create_values
+- repository_import_may_change_effective_resources_from_workspace_ini: true
+- post_import_effective_resources: use_repository_import_profile.resources_when_present
+- post_import_resource_report_in_chat: required_when_effective_resources_differ_or_before_first_resource_sensitive_operation
+- post_import_resource_report_fields: workspace_id|cpu|memory_mb|storage_mb|pids|tmp_mb
+- effective_resources_after_import: authoritative_for_subsequent_workspace_execution_planning
+- never_plan_from_assumed_defaults_when_observed_effective_resources_are_available: true
+- resource_aware_planning_required_for: dependency_install|build|test|lint|benchmark|profiling|data_processing|parallel_execution|long_running_command
+- resource_aware_planning_considers: cpu_for_concurrency|memory_mb_for_process_and_worker_count|storage_mb_for_dependencies_artifacts_and_caches|pids_for_worker_processes|tmp_mb_for_build_and_test_temporary_usage
+- if_resource_policy_is_materially_tight: reduce_concurrency_or_split_work_before_execution
+- if_required_operation_cannot_fit_effective_resources: surface_limit_before_starting_operation
 
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
@@ -82,7 +96,7 @@ github_actions:
 
 edit_flow:
 - patch: read_current_target -> smallest_coherent_change -> guarded_write -> minimum_remote_verification
-- AWA_MCP_Workspace: create -> repository_import -> inspect_and_edit_with_workspace_exec_and_local_git -> verify -> local_commit -> repository_fetch_and_reconcile_if_needed -> repository_push -> verify_remote_result -> delete
+- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_local_git -> verify -> local_commit -> repository_fetch_and_reconcile_if_needed -> repository_push -> verify_remote_result -> delete
 - GitHub_Workspace: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> editable_install_if_required -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> fast_writeback -> verify_remote_result
 - if_new_dependency_evidence_after_freeze: stop_dependent_work -> reopen_dependency_resolution -> add_evidence_backed_edges -> refreeze_scope -> fetch_only_new_required_paths -> rejoin_integrity
 - unrelated_refactors_in_same_change: prohibited
@@ -91,6 +105,7 @@ edit_flow:
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
 - AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_then_remote_state_verification
+- AWA_MCP_Workspace_resource_verification: observed_create_resources_and_post_import_effective_resources_are_reported_before_resource_sensitive_execution
 - GitHub_Workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - never_claim_unobserved_execution: true
 - remote_ci: only_if_material
