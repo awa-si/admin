@@ -75,7 +75,6 @@ awa_mcp_workspace:
 - one_active_execution_per_workspace: preserve
 - async_execution_not_for_parallelism: true
 
-
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
 - skill: skills://plugins/github-workspace-web/github-workspace/skill.md
@@ -95,6 +94,9 @@ github_workspace:
 - dependency_scope_reopen_only_on_new_material_evidence_or_scope_change: required
 - incomplete_dependency_coverage_must_limit_completion_claim: true
 - local_runtime_is_ephemeral: true
+- detached_or_background_jobs: prohibited
+- detached_jobs_to_increase_parallelism: prohibited
+- long_or_resource_heavy_local_jobs_default_concurrency: 1
 - current_skill_must_be_reread_if: plugin_changed|skill_changed|explicitly_requested|workspace_capability_changed
 
 github_actions:
@@ -124,9 +126,10 @@ verification:
 concurrency:
 - conservative|bounded|dependency_aware: required
 - immutable_connector_reads: parallelize_when_bounded_and_independent
-- long_or_resource_heavy_local_jobs_default_concurrency: 1
-- async_workspace_job_may_replace_synchronous_wait_for_foreseeable_long_command: true
-- async_workspace_jobs_to_increase_parallelism: prohibited
+- AWA_MCP_Workspace_async_job_may_replace_synchronous_wait_for_foreseeable_long_command: true
+- AWA_MCP_Workspace_async_jobs_to_increase_parallelism: prohibited
+- GitHub_Workspace_detached_jobs: prohibited
+- GitHub_Workspace_long_or_resource_heavy_local_jobs_default_concurrency: 1
 - same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
 - force_overwrite: prohibited
 
@@ -143,16 +146,18 @@ commit_writeback:
 
 long_running_jobs:
 - local_workspace_runtime: ephemeral_not_durable_job_runner
-- foreseeable_long_AWA_MCP_Workspace_command: start_with_workspace_exec_start_and_follow_with_workspace_exec_status
-- foreseeable_long_AWA_MCP_Workspace_command_must_not_use_sync_workspace_exec_when_async_boundary_is_available: true
-- async_start_must_return_before_terminal_completion: expected
-- async_job_identity: preserve_workspace_id_and_job_id_for_followup
-- async_job_progress_followup: workspace_exec_status
-- async_job_polling: bounded_and_purposeful_not_busy_loop
-- async_job_terminal_state_required_before_using_result: true
-- async_job_state_is_process_local_and_not_durable_across_MCP_restart: true
-- async_background_execution_does_not_authorize_parallel_job_in_same_workspace: true
-- synchronous_foreground_execution: use_for_short_commands_expected_to_fit_request_budget
+- AWA_MCP_Workspace_foreseeable_long_command: start_with_workspace_exec_start_and_follow_with_workspace_exec_status
+- AWA_MCP_Workspace_foreseeable_long_command_must_not_use_sync_workspace_exec_when_async_boundary_is_available: true
+- AWA_MCP_Workspace_async_start_must_return_before_terminal_completion: expected
+- AWA_MCP_Workspace_async_job_identity: preserve_workspace_id_and_job_id_for_followup
+- AWA_MCP_Workspace_async_job_progress_followup: workspace_exec_status
+- AWA_MCP_Workspace_async_job_polling: bounded_and_purposeful_not_busy_loop
+- AWA_MCP_Workspace_async_job_terminal_state_required_before_using_result: true
+- AWA_MCP_Workspace_async_job_state_is_process_local_and_not_durable_across_MCP_restart: true
+- AWA_MCP_Workspace_async_background_execution_does_not_authorize_parallel_job_in_same_workspace: true
+- AWA_MCP_Workspace_synchronous_foreground_execution: use_for_short_commands_expected_to_fit_request_budget
+- GitHub_Workspace_detached_or_background_jobs: prohibited
+- GitHub_Workspace_foreground_execution: bounded_and_only_when_expected_to_fit_current_runtime_budget
 - split_long_local_work_into_resumable_bounded_stages_when_practical: true
 - preserve_partial_evidence: required
 - persist_material_intermediate_evidence_before_next_expensive_stage_when_loss_is_material: required
