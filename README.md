@@ -10,8 +10,8 @@ admin/instructions.txt
 → admin/coding.md                  # when coding is material
 → projects/<project>/instructions.txt   # optional project delta
 → projects/<project>/workflow.md        # optional workflow delta
-→ <derived-repository>/agent.md         # if present
-→ admin/agent.md#fallback_repository_agent
+→ <derived-repository>/AGENTS.md        # if present
+→ admin/AGENTS.md#fallback_repository_agent
 → material helper / canonical owner files
 → current task
 ```
@@ -21,7 +21,7 @@ Rules:
 - project files are delta-only; parent rules remain active unless explicitly overridden;
 - project `instructions.txt` resolves the target repository;
 - project `workflow.md` contains only workflow deltas;
-- repository `agent.md` is AI-centric and must not become a substantive domain database;
+- repository `AGENTS.md` is AI-centric and must not become a substantive domain database;
 - substantive technical, runtime, model, API, business, and operational contracts stay in the target repository's narrowest helper/canonical owner;
 - current repository state is authoritative.
 
@@ -32,7 +32,7 @@ admin/
 ├── instructions.txt
 ├── workflow.md
 ├── coding.md
-├── agent.md
+├── AGENTS.md
 ├── README.md
 └── projects/
     ├── template.txt
