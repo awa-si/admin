@@ -44,10 +44,11 @@ admin/
 ## Workflow routes
 
 - `GitHub_Patch`: native connected GitHub-connector fast path for known small deterministic changes.
-- `GitHub_Workspace`: connector-materialized local workspace for search, dependency discovery, local execution, tests/builds, repeated edit/test cycles, or uncertain coupling.
+- `AWA_MCP_Workspace`: latest workspace route when available; uses the AWA MCP isolated workspace, real local Git, and MCP-controlled repository credential boundary.
+- `GitHub_Workspace`: independent connector-materialized fallback/recovery workspace when AWA MCP is unavailable.
 - `GitHub_Actions`: only when durable hosted or runner-specific evidence is materially required.
 
-GitHub Workspace repository transport is the connected GitHub connector. The local workspace runtime is temporary execution space, not an alternative repository transport.
+For workspace-class tasks, use `AWA_MCP_Workspace` when available and healthy; otherwise use the independent `GitHub_Workspace` skill. GitHub Workspace remains connector-mediated and does not depend on AWA MCP, preserving a repair path when AWA MCP is unavailable.
 
 ## Force reload
 
