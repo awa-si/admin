@@ -12,8 +12,8 @@ inherit:
 
 repository:
 - derive_from: project.instructions.repository
-- agent: <derived_repository>/agent.md
-- fallback: awa-si/admin/agent.md#fallback_repository_agent
+- agent: <derived_repository>/AGENTS.md
+- fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
 - current_repository_state_is_authoritative: true
 
 reload:
