@@ -42,7 +42,7 @@ awa_mcp_workspace:
 - unavailable_or_unhealthy: surface_actual_blocker
 - independent_from_GitHub_Workspace_contract: true
 - repository_remote_transport: AWA_MCP_repository_credential_boundary
-- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
+- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec_or_workspace_exec_start -> workspace_exec_status_for_async_jobs -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
 - repository_acquisition: workspace_repository_import
 - repository_refresh: workspace_repository_fetch_to_FETCH_HEAD_without_implicit_HEAD_change
 - repository_writeback: local_git_commit_then_workspace_repository_push
@@ -66,6 +66,15 @@ awa_mcp_workspace:
 - resource_aware_planning_considers: cpu_for_concurrency|memory_mb_for_process_and_worker_count|storage_mb_for_dependencies_artifacts_and_caches|pids_for_worker_processes|tmp_mb_for_build_and_test_temporary_usage
 - if_resource_policy_is_materially_tight: reduce_concurrency_or_split_work_before_execution
 - if_required_operation_cannot_fit_effective_resources: surface_limit_before_starting_operation
+- foreseeable_long_command: use_workspace_exec_start_instead_of_synchronous_workspace_exec
+- async_job_start_report_in_chat: required
+- async_job_start_report_fields: workspace_id|job_id|command_purpose|timeout_seconds
+- async_job_followup: workspace_exec_status_until_terminal_state
+- async_job_status_report_in_chat: report_running_or_terminal_state_and_material_result
+- async_job_terminal_result: authoritative_execution_evidence_for_that_job
+- one_active_execution_per_workspace: preserve
+- async_execution_not_for_parallelism: true
+
 
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
@@ -96,7 +105,7 @@ github_actions:
 
 edit_flow:
 - patch: read_current_target -> smallest_coherent_change -> guarded_write -> minimum_remote_verification
-- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_local_git -> verify -> local_commit -> repository_fetch_and_reconcile_if_needed -> repository_push -> verify_remote_result -> delete
+- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_local_git -> for_foreseeable_long_command_workspace_exec_start_then_status_followup -> verify -> local_commit -> repository_fetch_and_reconcile_if_needed -> repository_push -> verify_remote_result -> delete
 - GitHub_Workspace: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> editable_install_if_required -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> fast_writeback -> verify_remote_result
 - if_new_dependency_evidence_after_freeze: stop_dependent_work -> reopen_dependency_resolution -> add_evidence_backed_edges -> refreeze_scope -> fetch_only_new_required_paths -> rejoin_integrity
 - unrelated_refactors_in_same_change: prohibited
@@ -104,8 +113,9 @@ edit_flow:
 
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
-- AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_then_remote_state_verification
+- AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_or_terminal_workspace_exec_status_then_remote_state_verification
 - AWA_MCP_Workspace_resource_verification: observed_create_resources_and_post_import_effective_resources_are_reported_before_resource_sensitive_execution
+- AWA_MCP_Workspace_async_verification: terminal_workspace_exec_status_required_before_claiming_async_job_result
 - GitHub_Workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - never_claim_unobserved_execution: true
 - remote_ci: only_if_material
@@ -115,7 +125,8 @@ concurrency:
 - conservative|bounded|dependency_aware: required
 - immutable_connector_reads: parallelize_when_bounded_and_independent
 - long_or_resource_heavy_local_jobs_default_concurrency: 1
-- detached_jobs_to_increase_parallelism: prohibited
+- async_workspace_job_may_replace_synchronous_wait_for_foreseeable_long_command: true
+- async_workspace_jobs_to_increase_parallelism: prohibited
 - same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
 - force_overwrite: prohibited
 
@@ -132,8 +143,16 @@ commit_writeback:
 
 long_running_jobs:
 - local_workspace_runtime: ephemeral_not_durable_job_runner
-- detached_background_as_default_for_long_local_jobs: prohibited
-- foreground_execution: bounded_and_only_when_expected_to_fit_current_runtime_budget
+- foreseeable_long_AWA_MCP_Workspace_command: start_with_workspace_exec_start_and_follow_with_workspace_exec_status
+- foreseeable_long_AWA_MCP_Workspace_command_must_not_use_sync_workspace_exec_when_async_boundary_is_available: true
+- async_start_must_return_before_terminal_completion: expected
+- async_job_identity: preserve_workspace_id_and_job_id_for_followup
+- async_job_progress_followup: workspace_exec_status
+- async_job_polling: bounded_and_purposeful_not_busy_loop
+- async_job_terminal_state_required_before_using_result: true
+- async_job_state_is_process_local_and_not_durable_across_MCP_restart: true
+- async_background_execution_does_not_authorize_parallel_job_in_same_workspace: true
+- synchronous_foreground_execution: use_for_short_commands_expected_to_fit_request_budget
 - split_long_local_work_into_resumable_bounded_stages_when_practical: true
 - preserve_partial_evidence: required
 - persist_material_intermediate_evidence_before_next_expensive_stage_when_loss_is_material: required
