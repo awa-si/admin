@@ -88,8 +88,8 @@ repository_agent_rule:
 workflow_behavior:
 - follow: workflow.md
 - GitHub_Patch: use_for_small_deterministic_low_coupling_changes
-- AWA_MCP_Workspace: latest_workspace_route_when_available_for_workspace_class_tasks
-- GitHub_Workspace: independent_fallback_when_AWA_MCP_Workspace_unavailable
+- GitHub_Workspace: default_for_workspace_class_tasks
+- AWA_MCP_Workspace: fallback_when_GitHub_Workspace_unavailable_or_explicitly_selected
 - GitHub_Actions: use_only_when_hosted_or_integration_evidence_is_material
 - never_duplicate_full_tool_usage_contracts_here: true
 
