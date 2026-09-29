@@ -41,13 +41,19 @@ awa_mcp_workspace:
 - availability_gate: required_before_selection
 - unavailable_or_unhealthy: surface_actual_blocker
 - independent_from_GitHub_Workspace_contract: true
-- repository_remote_transport: AWA_MCP_repository_credential_boundary
+- repository_remote_transport: AWA_MCP_repository_credential_boundary_only
 - workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec_or_workspace_exec_start -> workspace_exec_status_for_async_jobs -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
 - repository_acquisition: workspace_repository_import
 - repository_refresh: workspace_repository_fetch_to_FETCH_HEAD_without_implicit_HEAD_change
 - repository_writeback: local_git_commit_then_workspace_repository_push
-- local_git: full_local_Git_mechanics_via_workspace_exec
+- local_git_capability: full_local_git_cli
+- local_git_scope: worktree|index|history|branching|checkout_or_switch|merge|rebase|reset|restore|stash|tag|add|commit|diff|status|log|show|rev_parse|merge_base
+- local_git_is_canonical_for: worktree_state|index_state|local_history|branch_state|conflict_resolution|local_review
+- local_git_commands: execute_via_workspace_exec_or_workspace_exec_start
 - shell_git_network_transport_from_workspace: prohibited
+- git_clone_fetch_pull_push_inside_workspace: prohibited_as_authenticated_remote_transport
+- authenticated_remote_import_fetch_push: only_through_AWA_MCP_repository_boundary
+- workspace_repository_fetch_semantics: update_FETCH_HEAD_only_then_use_full_local_git_to_compare_or_integrate
 - credentials_inside_workspace: prohibited
 - workspace_runtime: isolated_bounded_ephemeral
 - runtime_and_repository_contract: use_current_AWA_MCP_tool_schema_and_target_repository_canonical_MCP_workspace_docs
@@ -107,7 +113,7 @@ github_actions:
 
 edit_flow:
 - patch: read_current_target -> smallest_coherent_change -> guarded_write -> minimum_remote_verification
-- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_local_git -> for_foreseeable_long_command_workspace_exec_start_then_status_followup -> verify -> local_commit -> repository_fetch_and_reconcile_if_needed -> repository_push -> verify_remote_result -> delete
+- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_full_local_git -> for_foreseeable_long_command_workspace_exec_start_then_status_followup -> verify -> local_commit -> repository_fetch_and_reconcile_with_local_git_if_needed -> repository_push -> verify_remote_result -> delete
 - GitHub_Workspace: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> editable_install_if_required -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> fast_writeback -> verify_remote_result
 - if_new_dependency_evidence_after_freeze: stop_dependent_work -> reopen_dependency_resolution -> add_evidence_backed_edges -> refreeze_scope -> fetch_only_new_required_paths -> rejoin_integrity
 - unrelated_refactors_in_same_change: prohibited
@@ -116,6 +122,7 @@ edit_flow:
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
 - AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_or_terminal_workspace_exec_status_then_remote_state_verification
+- AWA_MCP_Workspace_local_git_review_before_push: status|diff|diff_cached|commit_or_branch_state_as_material
 - AWA_MCP_Workspace_resource_verification: observed_create_resources_and_post_import_effective_resources_are_reported_before_resource_sensitive_execution
 - AWA_MCP_Workspace_async_verification: terminal_workspace_exec_status_required_before_claiming_async_job_result
 - GitHub_Workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
@@ -135,7 +142,7 @@ concurrency:
 
 commit_writeback:
 - patch_writeback: direct_guarded_GitHub_connector_contents_write
-- AWA_MCP_Workspace_writeback: local_git_commit_then_workspace_repository_push
+- AWA_MCP_Workspace_writeback: full_local_git_commit_then_workspace_repository_push
 - GitHub_Workspace_writeback: delegate_to_current_GitHub_Workspace_skill
 - one_coherent_change: one_coherent_commit_when_supported
 - commit_message: user_supplied_else_concise_factual
