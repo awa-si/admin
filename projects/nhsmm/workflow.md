@@ -1,25 +1,15 @@
 scope: project_workflow_delta
 project: nhsmm
-repository: awa-si/nhsmm
-branch: develop
-extends: awa-si/admin/workflow.md
 mode: extend_parent_and_explicit_override_only
 
-local_execution:
-- performance_work: prefer_local_workspace_for_bounded_profile_edit_measure_cycles
-- preferred_workspace_root: /tmp/nhsmm
-- workspace_acquisition: connector_mediated_materialization_per_global_workflow
-- git_clone_fetch_pull_for_workspace_acquisition: prohibited
-- editable_install: preferred
-- normal_install: python -m pip install -e .
-- offline_or_dependency_preinstalled_install: python -m pip install -e . --no-deps --no-build-isolation
-- no_deps_install_claim: must_not_be_described_as_dependency_resolution_or_clean_environment_validation
-- local_edit_profile_measure_cycles_before_remote_write: required_when_practical_and_bounded
-- long_or_resource_heavy_local_jobs: concurrency_1_by_default
-- detached_background_for_long_local_jobs: prohibited
-- github_actions_as_performance_edit_loop: prohibited
-- durable_long_execution: GitHub_Actions_when_authorized_and_material
-- runtime_recycle_or_workspace_loss: treat_local_state_as_unknown_or_lost_unless_durable_terminal_evidence_exists
+inherit:
+- awa-si/admin/workflow.md
+- override_only_if_explicit: true
+
+local_performance_cycle:
+- performance_work: prefer_bounded_local_profile_edit_measure_cycles_when_representative
+- local_edit_profile_measure_cycle_before_remote_write: required_when_practical_and_bounded
+- dependency_install_workspace_transport_and_async_mechanics: inherit_global_workflow_and_selected_workspace_route
 
 performance_method:
 - profile_current_head_before_optimization: required
