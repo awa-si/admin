@@ -88,7 +88,8 @@ repository_agent_rule:
 workflow_behavior:
 - follow: workflow.md
 - GitHub_Patch: use_for_small_deterministic_low_coupling_changes
-- GitHub_Workspace: use_for_broad_iterative_local_execution_or_multi_file_coupled_work
+- AWA_MCP_Workspace: latest_workspace_route_when_available_for_workspace_class_tasks
+- GitHub_Workspace: independent_fallback_when_AWA_MCP_Workspace_unavailable
 - GitHub_Actions: use_only_when_hosted_or_integration_evidence_is_material
 - never_duplicate_full_tool_usage_contracts_here: true
 
