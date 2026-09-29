@@ -36,10 +36,11 @@ github_patch:
 - if_change_requires_broad_search|local_execution|test_or_build|dependency_discovery|uncertain_coupling: route_to_workspace_classification
 
 awa_mcp_workspace:
-- role: latest_workspace_route_when_available
+- role: fallback_workspace_route
+- select_when: GitHub_Workspace_unavailable|explicit_user_selection
 - availability_gate: required_before_selection
-- unavailable_or_unhealthy: route_to_GitHub_Workspace
-- fallback_dependency_on_AWA_MCP: prohibited
+- unavailable_or_unhealthy: surface_actual_blocker
+- independent_from_GitHub_Workspace_contract: true
 - repository_remote_transport: AWA_MCP_repository_credential_boundary
 - workspace_lifecycle: workspace_create -> workspace_repository_import -> workspace_exec -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
 - repository_acquisition: workspace_repository_import
@@ -139,7 +140,8 @@ artifacts_logs:
 
 recovery:
 - patch_partial_remote_write: inspect_actual_remote_state_then_continue_or_compensate_without_blind_retry
-- AWA_MCP_Workspace_unavailable: route_to_independent_GitHub_Workspace
+- GitHub_Workspace_unavailable: AWA_MCP_Workspace_may_be_used_as_fallback
+- AWA_MCP_Workspace_unavailable_when_selected: surface_actual_blocker
 - AWA_MCP_Workspace_recycled_or_missing: recreate_and_reimport_from_verified_remote_state_then_reapply_only_preserved_intent
 - GitHub_Workspace_recovery: delegate_to_current_GitHub_Workspace_skill
 - GitHub_Workspace_recycled_or_missing: restore_per_current_GitHub_Workspace_skill
