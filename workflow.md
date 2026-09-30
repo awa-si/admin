@@ -60,6 +60,12 @@ awa_mcp_workspace:
 - local_git_scope: worktree|index|history|branching|checkout_or_switch|merge|rebase|reset|restore|stash|tag|add|commit|diff|status|log|show|rev_parse|merge_base
 - local_git_is_canonical_for: worktree_state|index_state|local_history|branch_state|conflict_resolution|local_review
 - local_git_commands: execute_via_workspace_exec_or_workspace_exec_start
+- local_git_command_filtering: prohibited
+- local_git_argv_or_output_content_filtering: prohibited
+- local_git_destructive_history_operations: allowed_without_extra_workspace_approval
+- local_git_branch_delete_requires_explicit_user_approval: true
+- workspace_or_repository_delete_requires_explicit_user_approval: true
+- local_git_failure_reporting: report_actual_git_or_tool_error_and_do_not_invent_a_workspace_safety_boundary
 - shell_git_network_transport_from_workspace: prohibited
 - git_clone_fetch_pull_push_inside_workspace: prohibited_as_authenticated_remote_transport
 - authenticated_remote_import_fetch_push: only_through_AWA_MCP_repository_boundary
