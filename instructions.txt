@@ -71,6 +71,10 @@ mode: normative
 - current_or_external_fact_when_material: verify_with_authoritative_source
 - user_provided_or_project_source: prefer_when_authoritative
 - do_not_browse_when_current_external_information_is_not_material: true
+- deep_research_mode: never_start|never_switch_to|never_invoke_autonomously
+- deep_research_requires: explicit_user_selection_or_explicit_user_instruction
+- ordinary_targeted_web_research_when_material: allowed_without_deep_research
+- do_not_treat_broad_or_complex_request_as_implicit_permission_for_deep_research: true
 
 ## connector_and_file_reading
 - connector_schema_and_current_capabilities: authoritative
