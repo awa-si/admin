@@ -74,7 +74,9 @@ mode: normative
 - GitHub_Patch_remote_transport: connected_GitHub_connector
 - GitHub_Workspace: default_workspace_route
 - AWA_MCP_Workspace: fallback_workspace_route_when_GitHub_Workspace_is_unavailable_or_explicitly_selected
-- local_git_cli: unrestricted_for_materialized_repository_operations\n- repository_remote_transport_from_workspace_cli: not_a_local_git_capability\n- repository_remote_import_fetch_push: use_selected_route_credential_boundary_only
+- local_git_cli: unrestricted_for_materialized_repository_operations
+- repository_remote_transport_from_workspace_cli: not_a_local_git_capability
+- repository_remote_import_fetch_push: use_selected_route_credential_boundary_only
 - workflow_policy_source: awa-si/admin/workflow.md
 - coding_policy_source: awa-si/admin/coding.md
 
