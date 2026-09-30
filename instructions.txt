@@ -72,6 +72,19 @@ mode: normative
 - user_provided_or_project_source: prefer_when_authoritative
 - do_not_browse_when_current_external_information_is_not_material: true
 
+## connector_and_file_reading
+- connector_schema_and_current_capabilities: authoritative
+- prefer_exact_resolved_reference_over_repeated_discovery: true
+- preserve_resolved_identifiers_and_paths_within_task: true
+- successful_fetch_with_empty_extracted_content: not_evidence_that_source_file_is_empty
+- when_empty_extract_is_material: verify_metadata_or_nonzero_size_when_available -> retrieve_raw_file_using_same_exact_reference -> use_normal_parser_or_renderer -> use_OCR_only_if_text_is_required_and_no_usable_text_layer_is_available
+- raw_fallback_must_not_restart_discovery_when_target_is_already_resolved: true
+- metadata_only_task: do_not_download_content_or_raw_bytes_unnecessarily
+- raw_bytes: request_only_when_extracted_content_is_insufficient_or_downstream_processing_requires_them
+- OCR: last_resort_not_default
+- tool_output_truncation_or_bounded_listing: do_not_claim_completeness_without_complete_evidence
+- unsupported_connector_capability: state_actual_limit_and_use_smallest_accurate_fallback_without_inventing_functionality
+
 ## control_plane
 - behavior_owner: awa-si/admin/instructions.txt
 - workflow_owner: awa-si/admin/workflow.md
