@@ -52,7 +52,7 @@ awa_mcp_workspace:
 - unavailable_or_unhealthy: surface_actual_blocker
 - independent_from_GitHub_Workspace_contract: true
 - repository_remote_transport: AWA_MCP_repository_credential_boundary_only
-- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec_or_workspace_exec_start -> workspace_exec_status_until_terminal_for_async_jobs -> workspace_exec_result_for_terminal_async_output -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
+- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec_or_workspace_exec_start -> workspace_exec_status_for_each_async_job -> workspace_exec_terminate_when_needed -> workspace_exec_result_for_terminal_async_output -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
 - repository_acquisition: workspace_repository_import
 - repository_refresh: workspace_repository_fetch_to_FETCH_HEAD_without_implicit_HEAD_change
 - repository_writeback: local_git_commit_then_workspace_repository_push
@@ -99,8 +99,15 @@ awa_mcp_workspace:
 - async_job_result_followup: workspace_exec_result_after_terminal_state
 - async_job_result_contract: explicit_bounded_terminal_stdout_stderr_boundary
 - async_job_terminal_result: workspace_exec_result_is_authoritative_execution_output_evidence_for_that_job
-- one_active_execution_per_workspace: preserve
-- async_execution_not_for_parallelism: true
+- workspace_execution_concurrency: read_shared|write_exclusive
+- workspace_exec_default_worktree_access: write
+- parallel_read_executions: allowed_and_preferred_when_independent_and_resource_appropriate
+- read_execution_worktree_mount: read_only
+- write_execution_excludes: all_other_read_and_write_executions
+- read_execution_excludes: write_execution
+- parallel_write_executions_same_worktree: prohibited
+- async_job_termination: workspace_exec_terminate_by_job_id
+- async_execution_parallelism: allowed_for_read_access_jobs
 
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
@@ -155,7 +162,7 @@ concurrency:
 - conservative|bounded|dependency_aware: required
 - immutable_connector_reads: parallelize_when_bounded_and_independent
 - AWA_MCP_Workspace_async_job_may_replace_synchronous_wait_for_foreseeable_long_command: true
-- AWA_MCP_Workspace_async_jobs_to_increase_parallelism: prohibited
+- AWA_MCP_Workspace_parallel_async_jobs: allowed_only_with_worktree_access_read_and_when_independent_and_resource_appropriate
 - GitHub_Workspace_detached_jobs: prohibited
 - GitHub_Workspace_long_or_resource_heavy_local_jobs_default_concurrency: 1
 - same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
@@ -184,7 +191,9 @@ long_running_jobs:
 - AWA_MCP_Workspace_async_job_terminal_state_required_before_workspace_exec_result: true
 - AWA_MCP_Workspace_async_job_output_followup: workspace_exec_result_once_terminal
 - AWA_MCP_Workspace_async_job_state_is_process_local_and_not_durable_across_MCP_restart: true
-- AWA_MCP_Workspace_async_background_execution_does_not_authorize_parallel_job_in_same_workspace: true
+- AWA_MCP_Workspace_async_job_termination: workspace_exec_terminate_targets_one_job_without_stopping_unrelated_jobs
+- AWA_MCP_Workspace_write_job_parallelism: prohibited_on_same_worktree
+- AWA_MCP_Workspace_read_job_parallelism: allowed_within_runtime_concurrency_and_resource_limits
 - AWA_MCP_Workspace_synchronous_foreground_execution: use_for_short_commands_expected_to_fit_request_budget
 - GitHub_Workspace_detached_or_background_jobs: prohibited
 - GitHub_Workspace_foreground_execution: bounded_and_only_when_expected_to_fit_current_runtime_budget
