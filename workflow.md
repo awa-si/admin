@@ -52,7 +52,7 @@ awa_mcp_workspace:
 - unavailable_or_unhealthy: surface_actual_blocker
 - independent_from_GitHub_Workspace_contract: true
 - repository_remote_transport: AWA_MCP_repository_credential_boundary_only
-- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec_or_workspace_exec_start -> workspace_exec_status_for_async_jobs -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
+- workspace_lifecycle: workspace_create -> report_create_resources -> workspace_repository_import -> report_effective_import_resources -> plan_resource_sensitive_operations -> workspace_exec_or_workspace_exec_start -> workspace_exec_status_until_terminal_for_async_jobs -> workspace_exec_result_for_terminal_async_output -> workspace_repository_fetch_when_needed -> workspace_repository_push_when_authorized -> workspace_delete
 - repository_acquisition: workspace_repository_import
 - repository_refresh: workspace_repository_fetch_to_FETCH_HEAD_without_implicit_HEAD_change
 - repository_writeback: local_git_commit_then_workspace_repository_push
@@ -86,8 +86,11 @@ awa_mcp_workspace:
 - async_job_start_report_in_chat: required
 - async_job_start_report_fields: workspace_id|job_id|command_purpose|timeout_seconds
 - async_job_followup: workspace_exec_status_until_terminal_state
-- async_job_status_report_in_chat: report_running_or_terminal_state_and_material_result
-- async_job_terminal_result: authoritative_execution_evidence_for_that_job
+- async_job_status_contract: lifecycle_metadata_only_no_process_controlled_stdout_stderr_or_live_output_tails
+- async_job_status_report_in_chat: report_running_or_terminal_lifecycle_state
+- async_job_result_followup: workspace_exec_result_after_terminal_state
+- async_job_result_contract: explicit_bounded_terminal_stdout_stderr_boundary
+- async_job_terminal_result: workspace_exec_result_is_authoritative_execution_output_evidence_for_that_job
 - one_active_execution_per_workspace: preserve
 - async_execution_not_for_parallelism: true
 
@@ -123,7 +126,7 @@ github_actions:
 
 edit_flow:
 - patch: read_current_target -> smallest_coherent_change -> guarded_write -> minimum_remote_verification
-- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_full_local_git -> for_foreseeable_long_command_workspace_exec_start_then_status_followup -> verify -> local_commit -> repository_fetch_and_reconcile_with_local_git_if_needed -> repository_push -> verify_remote_result -> delete
+- AWA_MCP_Workspace: create -> report_initial_resources_in_chat -> repository_import -> report_effective_resources_in_chat -> plan_followup_ops_against_effective_resources -> inspect_and_edit_with_workspace_exec_and_full_local_git -> for_foreseeable_long_command_workspace_exec_start_then_status_until_terminal_then_result_followup -> verify -> local_commit -> repository_fetch_and_reconcile_with_local_git_if_needed -> repository_push -> verify_remote_result -> delete
 - GitHub_Workspace: read_current_target -> resolve_material_dependency_closure_once -> dependency_join_and_freeze_scope -> bounded_parallel_connector_fetch -> fetch_integrity_join -> editable_install_if_required -> make_smallest_coherent_change -> run_lightest_relevant_checks -> inspect_status_and_complete_diff -> fast_writeback -> verify_remote_result
 - if_new_dependency_evidence_after_freeze: stop_dependent_work -> reopen_dependency_resolution -> add_evidence_backed_edges -> refreeze_scope -> fetch_only_new_required_paths -> rejoin_integrity
 - unrelated_refactors_in_same_change: prohibited
@@ -131,10 +134,10 @@ edit_flow:
 
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
-- AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_or_terminal_workspace_exec_status_then_remote_state_verification
+- AWA_MCP_Workspace_verification_mechanics: local_execution_via_workspace_exec_or_workspace_exec_start_then_terminal_workspace_exec_status_then_workspace_exec_result_then_remote_state_verification
 - AWA_MCP_Workspace_local_git_review_before_push: status|diff|diff_cached|commit_or_branch_state_as_material
 - AWA_MCP_Workspace_resource_verification: observed_create_resources_and_post_import_effective_resources_are_reported_before_resource_sensitive_execution
-- AWA_MCP_Workspace_async_verification: terminal_workspace_exec_status_required_before_claiming_async_job_result
+- AWA_MCP_Workspace_async_verification: terminal_workspace_exec_status_then_workspace_exec_result_required_before_claiming_async_job_output
 - GitHub_Workspace_verification_mechanics: delegate_to_current_GitHub_Workspace_skill
 - never_claim_unobserved_execution: true
 - remote_ci: only_if_material
@@ -163,13 +166,15 @@ commit_writeback:
 
 long_running_jobs:
 - local_workspace_runtime: ephemeral_not_durable_job_runner
-- AWA_MCP_Workspace_foreseeable_long_command: start_with_workspace_exec_start_and_follow_with_workspace_exec_status
+- AWA_MCP_Workspace_foreseeable_long_command: start_with_workspace_exec_start_follow_with_workspace_exec_status_until_terminal_then_workspace_exec_result
 - AWA_MCP_Workspace_foreseeable_long_command_must_not_use_sync_workspace_exec_when_async_boundary_is_available: true
 - AWA_MCP_Workspace_async_start_must_return_before_terminal_completion: expected
 - AWA_MCP_Workspace_async_job_identity: preserve_workspace_id_and_job_id_for_followup
 - AWA_MCP_Workspace_async_job_progress_followup: workspace_exec_status
 - AWA_MCP_Workspace_async_job_polling: bounded_and_purposeful_not_busy_loop
-- AWA_MCP_Workspace_async_job_terminal_state_required_before_using_result: true
+- AWA_MCP_Workspace_async_job_status_output: prohibited
+- AWA_MCP_Workspace_async_job_terminal_state_required_before_workspace_exec_result: true
+- AWA_MCP_Workspace_async_job_output_followup: workspace_exec_result_once_terminal
 - AWA_MCP_Workspace_async_job_state_is_process_local_and_not_durable_across_MCP_restart: true
 - AWA_MCP_Workspace_async_background_execution_does_not_authorize_parallel_job_in_same_workspace: true
 - AWA_MCP_Workspace_synchronous_foreground_execution: use_for_short_commands_expected_to_fit_request_budget
