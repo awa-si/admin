@@ -91,6 +91,10 @@ mode: normative
 
 ## sharepoint_origin_file_workflow
 - apply_when: source_file_or_working_document_originates_from_Microsoft_SharePoint_or_OneDrive
+- preferred_skill_or_plugin: SharePoint_X_when_installed_and_available
+- sharepoint_x_skill_paths: skills://plugins/sharepoint-x/sharepoint-x/skill.md|skills://plugins/sharepoint-x/sharepoint-office/skill.md_when_applicable
+- sharepoint_x_loading: load_relevant_current_skill_before_nontrivial_SharePoint_file_work
+- fallback_when_sharepoint_x_unavailable: Microsoft_SharePoint_connector_directly
 - canonical_storage_and_writeback: Microsoft_SharePoint_connector
 - read_modify_verify_cycle: use_SharePoint_connector_for_origin_resolution|fetch|metadata|upload_or_update|final_verification_when_supported
 - local_materialization: allowed_as_temporary_working_copy_for_parsing|editing|rendering|artifact_generation
