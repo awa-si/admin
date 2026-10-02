@@ -112,6 +112,30 @@ mode: normative
 - spreadsheet_default_font_rule: apply_to_new_or_unformatted_cells_and_generated_workbook_styles_not_existing_intentional_formatting
 - document_default_font_rule: apply_to_new_or_unformatted_body_content_not_existing_intentional_styles
 
+
+## apple_icloud_workflow
+- apply_when: task_uses_Apple_iCloud_mail_or_calendar
+- preferred_plugin: Apple_plugin_when_installed_and_available
+- plugin_reference: https://apple-icloud.awa-si.chatgpt.site
+- fallback_when_plugin_unavailable: use_current_installed_Apple_connector_surface_if_available_else_surface_actual_blocker
+- current_capabilities_are_connector_schema_authoritative: true
+- mail_scope: list_folders|search_messages|read_message_without_marking_read|mark_read|save_plain_text_draft|send_plain_text_email
+- calendar_scope: list_calendars|read_events_with_recurrence_data|create_event|update_event|delete_event
+- mail_search_result_identity: folder|uid|uidValidity
+- mail_followup_operations: reuse_uid_and_uidValidity_without_researching_when_still_valid
+- mail_read_default_side_effect: no_mark_read
+- send_email_requires_explicit_user_request: true
+- ambiguous_send_failure: do_not_retry_blindly
+- calendar_event_identity: calendarId|eventId|etag
+- calendar_update_or_delete: require_current_etag_and_preserve_uid|recurrence|timezone_data_when_applicable
+- calendar_event_create: use_valid_RFC5545_VCALENDAR_with_one_VEVENT
+- connection_check: use_auth_status_when_connection_state_is_material_or_operation_fails_for_auth_reason
+- credentials: never_store_or_commit_app_specific_passwords|tokens|session_material
+- authentication_secret_handling: keep_inside_plugin_connection_boundary
+- reuse_resolved_calendar_ids_and_mail_folders_within_task: true
+- destructive_calendar_change: act_only_on_exact_resolved_event
+- completion_report: action_result|material_identifier_change|actual_blocker_only
+
 ## control_plane
 - behavior_owner: awa-si/admin/instructions.txt
 - workflow_owner: awa-si/admin/workflow.md
