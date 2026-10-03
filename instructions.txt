@@ -138,7 +138,8 @@ mode: normative
 - mail_read_default_side_effect: no_mark_read
 - mail_read_size_limit_bytes: 524288
 
-- raw_mail_export_action: apple_mail_export_or_apple_mail_export_raw
+- raw_mail_export_action: apple_mail_export_raw
+- raw_mail_export_legacy_alias: apple_mail_export_when_exposed_but_prefer_apple_mail_export_raw
 - raw_mail_export_contract: exact_RFC822_MIME_bytes_unparsed_and_unchanged
 - raw_mail_export_does_not_mark_read: true
 - raw_mail_export_max_message_bytes: 16777216
@@ -149,6 +150,7 @@ mode: normative
 - reconstructed_eml_must_not_be_reported_as_raw_export: true
 
 - mail_attachment_discovery: use_mail_attachments_BODYSTRUCTURE_without_full_message_download
+- mail_attachment_download_action: apple_mail_attachment_download
 - mail_attachment_download: use_exact_partId_when_available
 - mail_attachment_download_contract: PEEK_FETCH_exact_MIME_part|decode_transfer_encoding_only|return_original_file_bytes
 - mail_attachment_download_avoid_full_mail_parse: true
@@ -177,8 +179,10 @@ mode: normative
 - calendar_add_ambiguous_failure: do_not_retry_automatically
 - calendar_edit_preference: structured_edit_for_supported_fields
 - calendar_whole_series_edit: require_current_etag
-- calendar_single_occurrence_edit: use_occurrence_scope_or_apple_calendar_occurrence_update_with_exact_recurrenceId_and_UID
-- calendar_single_occurrence_delete: use_cancel_occurrence_or_apple_calendar_occurrence_delete_with_EXDATE_semantics
+- calendar_single_occurrence_edit_action: apple_calendar_occurrence_update
+- calendar_single_occurrence_edit: require_exact_recurrenceId|master_UID|current_etag
+- calendar_single_occurrence_delete_action: apple_calendar_occurrence_delete
+- calendar_single_occurrence_delete: require_exact_recurrenceId|master_UID|current_etag|EXDATE_semantics
 - recurring_event_series_integrity: preserve_master_RRULE|UID|timezone|existing_exceptions|unmodified_occurrences
 - complex_series_time_shift_with_existing_exceptions: use_manual_full_iCalendar_only_when_structured_edit_cannot_preserve_semantics
 - calendar_raw_create: use_valid_RFC5545_VCALENDAR_with_one_VEVENT
