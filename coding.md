@@ -32,6 +32,16 @@ implementation_strategy:
 - prefer_modern_battle_tested_implementation_over_custom_code: true
 - prefer_current_supported_API_over_deprecated_or_legacy_API: true
 
+async_io:
+- priority: async_native_non_blocking_io
+- apply_when: new_io_path|materially_changed_io_path|network_io|remote_api|database|streaming
+- synchronous_blocking_io_on_event_loop: prohibited
+- thread_offload_for_blocking_io: fallback_only
+- prefer: mature_native_async_client|bounded_async_concurrency|connection_reuse
+- preserve: timeout|cancellation|backpressure|resource_cleanup|failure_semantics
+- existing_sync_paths: migrate_when_touched_and_material
+- do_not_add_async_dependency_blindly: verify_maintenance|security|compatibility|runtime_cost
+
 async_and_concurrency:
 - when_contract_equivalent_prefer: non_blocking_async_IO|bounded_concurrency|concurrent_independent_waits|fewer_round_trips
 - default_for_many_independent_IO_operations: bounded_parallel_execution
