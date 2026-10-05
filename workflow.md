@@ -55,6 +55,15 @@ awa_mcp_workspace:
 - native_workspace_contract: authoritative_for_AWA_workspace_mechanics
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_workspace_capabilities
 - existing_workspace_resolution_before_create: required
+- chat_workspace_identity:
+  - create_once_per_chat_on_first_AWA_workspace_use: required
+  - identifier: stable_opaque_chat_workspace_id
+  - lifetime: entire_chat
+  - reuse_same_identifier_for_all_AWA_workspace_operations_in_chat: required
+  - do_not_regenerate_within_same_chat: true
+  - purpose: cross_chat_ownership|write_coordination|state_attribution
+  - include_in_workspace_state_or_coordination_metadata_when_supported_by_current_AWA_workspace_contract: required
+  - other_chat_identity: distinct_even_when_same_repository_and_same_workspace
 - existing_workspace_scan: inspect_current_managed_workspaces_and_relevant_repository_binding_or_state_before_creating_new_workspace
 - reuse_existing_workspace_when: target_repository_or_task_context_matches|workspace_is_healthy|state_is_current_or_safely_refreshable|no_conflicting_active_write_execution
 - reuse_preference: suitable_existing_workspace > create_new_workspace
