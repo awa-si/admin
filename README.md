@@ -1,37 +1,34 @@
 # GPT Admin
 
-`awa-si/admin` defines the user-controlled ChatGPT behavior, coding guidance, repository workflow, project deltas, and repository-agent resolution used across managed projects.
+`awa-si/admin` is the control plane for ChatGPT behavior, repository workflow, coding guidance, project deltas, and repository-agent resolution across managed projects.
 
 ## Canonical owners
 
 ```text
-admin/instructions.txt                  global behavior + resolution
-admin/workflow.md                      repository execution/workflow
-admin/coding.md                        coding/design/performance guidance
-admin/AGENTS.md                        Admin repo agent + fallback repo agent
-projects/<project>/instructions.txt    project behavior/repository delta
-projects/<project>/workflow.md         optional project workflow delta
-<repository>/AGENTS.md                 repository-specific AI behavior
-<repository>/<helper>                  substantive technical/domain contracts
+instructions.txt                       global behavior + resolution
+workflow.md                           repository execution/workflow
+coding.md                             coding/design/performance guidance
+AGENTS.md                             Admin repository agent + fallback repository agent
+projects/<project>/instructions.txt   project behavior/repository delta
+projects/<project>/workflow.md        optional project workflow delta
+<repository>/AGENTS.md                repository-specific AI behavior
+<repository>/<helper>                 substantive technical/domain contracts
 ```
 
-Each active rule should have one canonical owner. References are preferred over duplicated rule text. Consolidation must preserve information flow and semantics.
+Each active rule has one canonical owner. Project files are delta-only, parent rules remain active unless explicitly overridden, and current repository state is authoritative.
 
 ## Resolution order
 
 ```text
-admin/instructions.txt
-→ admin/workflow.md
-→ admin/coding.md                         # when applicable
-→ projects/<project>/instructions.txt    # when active project exists
-→ projects/<project>/workflow.md         # when present
-→ <resolved-repository>/AGENTS.md        # when present
-  otherwise admin/AGENTS.md#fallback_repository_agent
-→ material helper / canonical owner files
+instructions.txt
+→ workflow.md
+→ coding.md                              # when applicable
+→ projects/<project>/instructions.txt   # when active
+→ projects/<project>/workflow.md        # when present
+→ <resolved-repository>/AGENTS.md       # otherwise AGENTS.md#fallback_repository_agent
+→ material helper / canonical owner
 → current task
 ```
-
-Project files are delta-only; parent rules remain active unless explicitly overridden. Current repository state is authoritative.
 
 ## Repository structure
 
@@ -51,22 +48,22 @@ admin/
 
 ## Workflow routes
 
-- `GitHub_Patch`: connected GitHub fast path for known small deterministic changes.
-- `GitHub_Workspace`: default workspace route for workspace-class repository tasks.
-- `AWA_MCP_Workspace`: fallback when GitHub Workspace is unavailable, or when explicitly selected; isolated workspace with full local Git and MCP-owned repository credential boundary.
-- `GitHub_Actions`: only when hosted, durable, or runner-specific evidence is materially required.
+- `GitHub_Patch`: small deterministic repository changes without local execution.
+- `GitHub_Workspace`: default for light-to-medium repository inspection and coding.
+- `AWA_MCP_Workspace`: default for heavy or long-running work, custom runtime needs, or explicit selection; also the defined fallback when GitHub Workspace is unavailable.
+- `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
-Route mechanics are owned only by `workflow.md`.
+`workflow.md` is the canonical owner of route selection and mechanics.
 
-## Force reload
+## Reload
 
 ```text
 reload admin plane
 ```
 
-Legacy alias: `reload admin control plane`.
+Alias: `reload admin control plane`.
 
-A reload rereads the three global owners, the active project delta when present, and the resolved repository agent. Previously cached copies become non-authoritative for that chat.
+A reload rereads the global owners, active project delta, and resolved repository agent. Previously loaded copies become non-authoritative for that chat.
 
 ## Public repository safety
 
