@@ -1,27 +1,15 @@
-bootstrap: project
+scope:
+- project: <project>
+- repository: <owner>/<repository>
+- branch: <branch>
 
-project:
-- name: <project>
-- instructions: awa-si/admin/projects/<project>/instructions.txt
-- workflow: awa-si/admin/projects/<project>/workflow.md_if_present
-
-inherit:
-- global_behavior: awa-si/admin/instructions.txt
-- global_workflow: awa-si/admin/workflow.md
-- global_coding_when_applicable: awa-si/admin/coding.md
-- project_files_are_delta_only: true
-- parent_rules_remain_active_unless_explicitly_overridden: true
+inheritance:
+- parent: global
+- mode: delta_only
 
 repository:
-- derive_from: project.instructions.repository
-- agent: <derived_repository>/AGENTS.md_if_present
-- fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
-- current_repository_state_is_authoritative: true
+- source_of_truth: <owner>/<repository>@<branch>
+- agent: AGENTS.md
 
-resolution:
-- order: global_behavior -> global_workflow -> global_coding_when_applicable -> project_instructions -> project_workflow_if_present -> resolved_repo_agent -> material_helpers -> task
-- substantive_domain_contracts: stay_in_derived_repository_canonical_owner
-
-reload:
-- command: reload admin plane
-- reread_current_control_plane_and_active_project: true
+project_delta:
+- none
