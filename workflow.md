@@ -61,9 +61,19 @@ awa_mcp_workspace:
   - lifetime: entire_chat
   - reuse_same_identifier_for_all_AWA_workspace_operations_in_chat: required
   - do_not_regenerate_within_same_chat: true
-  - purpose: cross_chat_ownership|write_coordination|state_attribution
-  - include_in_workspace_state_or_coordination_metadata_when_supported_by_current_AWA_workspace_contract: required
-  - other_chat_identity: distinct_even_when_same_repository_and_same_workspace
+  - resolve_before_create: workspace_resolve(chat_workspace_id)
+  - create_only_if_unresolved: workspace_create(id=chat_workspace_id)
+  - after_resolve_or_create_capture: chat_workspace_id|workspace_id|effective_resources|repository_binding|branch_when_present
+  - first_AWA_workspace_use_chat_output: chat_workspace_id|workspace_id|effective_resources
+  - resource_output_fields: cpu|memory_mb|storage_mb|pids|tmp_mb|parallelism_when_exposed
+  - report_resource_source_when_material: deployment_default|workspace_profile|explicit_override
+  - retained_chat_session_state: chat_workspace_id|workspace_id|effective_resources|repository_binding|branch
+  - retained_state_lifetime: entire_chat
+  - retained_state_is_authoritative_until: workspace_deleted|workspace_recycled|native_contract_reports_state_change|repository_binding_changes|explicit_user_switch
+  - do_not_repeat_identity_or_resources_every_turn: true
+  - repeat_when: first_AWA_workspace_use|workspace_or_resources_change|explicit_user_request
+  - purpose: stable_chat_ownership|workspace_resolution|resource_aware_execution|state_attribution
+  - other_chat_identity: distinct
 - repository_temp_data_boundary:
   - apply_when: AWA_workspace_contains_or_imports_GitHub_repository
   - repository_worktree_contains_only: source|tracked_project_files|intentional_untracked_project_files
