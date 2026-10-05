@@ -46,52 +46,45 @@ github_patch:
 - route_to_workspace_if: local_execution|test_or_build|dependency_discovery|broad_search|uncertain_coupling
 
 awa_mcp_workspace:
-- role: fallback_or_explicit_workspace_route
+- role: heavy_or_explicit_workspace_route
 - independent_from_GitHub_Workspace_contract: true
-- select_when: GitHub_Workspace_unavailable|explicit_user_selection
+- selection_owner: github_routing_gate
 - availability_gate: required_before_selection
 - native_instruction_source: mcp_instructions(topic="workspace")
 - load_current_native_workspace_instructions_before_use: required
 - native_workspace_contract: authoritative_for_AWA_workspace_mechanics
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_workspace_capabilities
-- existing_workspace_resolution_before_create: required
-- chat_workspace_identity:
-  - create_once_per_chat_on_first_AWA_workspace_use: required
-  - identifier: stable_opaque_chat_workspace_id
-  - lifetime: entire_chat
-  - reuse_same_identifier_for_all_AWA_workspace_operations_in_chat: required
-  - do_not_regenerate_within_same_chat: true
-  - resolve_before_create: workspace_resolve(chat_workspace_id)
-  - create_only_if_unresolved: workspace_create(id=chat_workspace_id)
-  - after_resolve_or_create_capture: chat_workspace_id|workspace_id|effective_resources|repository_binding|branch_when_present
-  - first_AWA_workspace_use_chat_output: chat_workspace_id|workspace_id|effective_resources
-  - resource_output_fields: cpu|memory_mb|storage_mb|pids|tmp_mb|parallelism_when_exposed
-  - report_resource_source_when_material: deployment_default|workspace_profile|explicit_override
-  - retained_chat_session_state: chat_workspace_id|workspace_id|effective_resources|repository_binding|branch
-  - retained_state_lifetime: entire_chat
-  - retained_state_is_authoritative_until: workspace_deleted|workspace_recycled|native_contract_reports_state_change|repository_binding_changes|explicit_user_switch
-  - do_not_repeat_identity_or_resources_every_turn: true
-  - repeat_when: first_AWA_workspace_use|workspace_or_resources_change|explicit_user_request
-  - purpose: stable_chat_ownership|workspace_resolution|resource_aware_execution|state_attribution
+- chat_workspace_lifecycle:
+  - create_stable_opaque_id_once_on_first_AWA_workspace_use: required
+  - first_workspace_action: workspace_create(id=chat_workspace_id)
+  - workspace_create_once_per_chat_lifecycle: required
+  - capture_from_create_result: chat_workspace_id|workspace_id|effective_resources|parallelism
+  - first_AWA_workspace_use_chat_output: chat_workspace_id|workspace_id|effective_resources|parallelism
+  - resource_output_fields: cpu|memory_mb|storage_mb|pids|tmp_mb
+  - retain_in_chat_state_for_entire_chat: chat_workspace_id|workspace_id|effective_resources|parallelism|repository_binding|branch
+  - retained_workspace_id_is_authoritative: true
+  - do_not_resolve_before_create: true
+  - do_not_scan_for_alternative_workspace: true
+  - do_not_call_workspace_create_again_while_retained_workspace_exists: true
+  - do_not_switch_workspace_id_silently: true
+  - do_not_replace_missing_or_unhealthy_workspace_automatically: true
+  - missing_or_unhealthy_retained_workspace: surface_blocker_and_keep_identity
+  - replacement_allowed_only_after: explicit_user_approved_workspace_delete_then_subsequent_workspace_create
+  - replacement_reuses_same_chat_workspace_id: true
+  - after_replacement_create: capture_and_report_new_workspace_id|effective_resources|parallelism
+  - workspace_resolve_role: diagnostic_only_for_same_chat_id_when_needed_not_selection_or_replacement
   - other_chat_identity: distinct
 - repository_temp_data_boundary:
   - apply_when: AWA_workspace_contains_or_imports_GitHub_repository
-  - repository_worktree_contains_only: source|tracked_project_files|intentional_untracked_project_files
-  - temporary_runtime_or_working_data_location: workspace_persistent_data_or_work_state_outside_repository_worktree
-  - temp_data_in_repository_worktree: prohibited
-  - examples_outside_repo: logs|replay_outputs|benchmarks|downloads|caches|generated_intermediate_data|large_datasets|scratch_files|runtime_state
+  - temporary_runtime_data_must_not_be_repository_content_or_commit_candidate: true
+  - prefer_workspace_data_or_work_state_for: logs|replay_outputs|benchmarks|downloads|large_datasets|scratch_files|runtime_state|generated_intermediate_data
+  - native_workspace_internal_paths_allowed_when_contract_defined: .venv|.awa-mcp
+  - native_internal_paths_must_remain_git_excluded: true
   - do_not_stage_or_commit_temporary_data: true
-  - if_tool_requires_local_temp_path: use_workspace_owned_non_repo_data_or_work_path
   - repository_artifact_exception: only_when_artifact_is_explicitly_part_of_repository_contract_or_user_requests_commit
   - before_commit: verify_temporary_runtime_data_is_not_in_git_status
-- existing_workspace_scan: inspect_current_managed_workspaces_and_relevant_repository_binding_or_state_before_creating_new_workspace
-- reuse_existing_workspace_when: target_repository_or_task_context_matches|workspace_is_healthy|state_is_current_or_safely_refreshable|no_conflicting_active_write_execution
-- reuse_preference: suitable_existing_workspace > create_new_workspace
-- existing_workspace_refresh: use_current_native_workspace_contract_for_status|repository_fetch|state_reconciliation_as_needed
-- do_not_reuse_when: wrong_repository_or_branch|unsafe_or_unknown_state|cleanup_failed|resource_profile_incompatible|conflicting_active_write|explicit_user_requests_fresh_workspace
-- create_new_workspace_only_when: no_suitable_existing_workspace_exists
 - admin_local_workspace_mechanics: fallback_only_if_native_workspace_instruction_source_is_unavailable
-- admin_owns_only: route_selection|fallback_policy|cross_route_precedence|completion_requirement
+- admin_owns_only: route_selection|chat_lifecycle_policy|fallback_policy|cross_route_precedence|completion_requirement
 - unavailable_or_unhealthy: surface_actual_blocker
 - remote_completion_claim_requires: verification_required_by_current_native_workspace_contract
 
@@ -151,7 +144,7 @@ long_running_and_recovery:
 - patch_partial_remote_write: inspect_actual_remote_state_then_continue_or_compensate_without_blind_retry
 - GitHub_Workspace_unavailable: AWA_MCP_Workspace_may_be_used_as_fallback
 - AWA_MCP_Workspace_unavailable_when_selected: surface_actual_blocker
-- AWA_MCP_Workspace_recycled_or_missing: recreate_and_reimport_from_verified_remote_state_then_reapply_only_preserved_intent
+- AWA_MCP_Workspace_recycled_or_missing: surface_blocker_and_do_not_create_replacement_automatically
 - GitHub_Workspace_recovery: delegate_to_current_GitHub_Workspace_skill
 - wrong_commit: prefer_revert_or_compensating_commit
 
