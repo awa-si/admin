@@ -1,0 +1,15 @@
+scope:
+- project: trading
+- repository: awa-si/trader
+- branch: master
+
+inheritance:
+- parent: global
+- mode: delta_only
+
+repository:
+- source_of_truth: awa-si/trader@master
+- agent: AGENTS.md
+
+project_delta:
+- none
