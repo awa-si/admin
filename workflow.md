@@ -73,7 +73,20 @@ awa_mcp_workspace:
   - replacement_reuses_same_chat_workspace_id: true
   - after_replacement_create: capture_and_report_new_workspace_id|effective_resources|parallelism
   - workspace_resolve_role: diagnostic_only_for_same_chat_id_when_needed_not_selection_or_replacement
-  - other_chat_identity: distinct
+  - other_chat_identity: distinct_unless_initialized_from_explicit_handoff
+  - handoff_initialized_chat:
+    - default_behavior: inherit_handoff_workspace
+    - required_handoff_fields: chat_workspace_id|workspace_id
+    - inherit_when_present: effective_resources|parallelism|repository_binding|branch|active_jobs|artifacts|checkpoint|resume_point
+    - first_AWA_workspace_action: workspace_resolve(id=handoff_chat_workspace_id)
+    - require_resolved_workspace_match: handoff_workspace_id
+    - do_not_call_workspace_create_when_inherited_workspace_resolves: true
+    - do_not_generate_new_chat_workspace_id_when_inherited_workspace_resolves: true
+    - inherited_workspace_becomes_authoritative_for_new_chat: true
+    - inherited_workspace_missing_or_mismatch: surface_blocker_do_not_replace_automatically
+    - replacement_after_handoff: explicit_user_approved_workspace_delete_then_workspace_create_using_same_handoff_chat_workspace_id
+    - repository_and_branch_from_handoff: working_context_only_until_current_remote_state_verified_when_material
+    - job_or_artifact_from_handoff: verify_current_workspace_state_before_resume
 - repository_temp_data_boundary:
   - apply_when: AWA_workspace_contains_or_imports_GitHub_repository
   - temporary_runtime_data_must_not_be_repository_content_or_commit_candidate: true
