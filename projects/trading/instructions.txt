@@ -1,15 +1,33 @@
 scope:
 - project: trading
-- repository: awa-si/trader
-- branch: master
+- repositories:
+  - awa-si/nautilus@main
+  - awa-si/nhsmm@develop
+  - awa-si/nhsmm-interfaces@dev
 
 inheritance:
 - parent: global
 - mode: delta_only
 
-repository:
-- source_of_truth: awa-si/trader@master
-- agent: AGENTS.md
+repository_resolution:
+- nautilus:
+  - source_of_truth: awa-si/nautilus@main
+  - agent: AGENTS.md
+  - owns: trading_runtime|strategy_integration|market_data|execution_harness
+- nhsmm:
+  - source_of_truth: awa-si/nhsmm@develop
+  - agent: AGENTS.md
+  - owns: probabilistic_model_core|state_modeling|training_and_inference_semantics
+- nhsmm-interfaces:
+  - source_of_truth: awa-si/nhsmm-interfaces@dev
+  - agent: AGENTS.md
+  - owns: runtime_adapters|host_facing_contracts|walk_forward_orchestration
+
+cross_repository:
+- resolve_owner_before_change: true
+- current_state_of_each_repository: authoritative
+- duplicate_domain_contracts_across_repositories: prohibited
+- cross_repository_change: verify_each_affected_repository_independently
 
 project_delta:
 - none
