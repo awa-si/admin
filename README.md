@@ -17,6 +17,8 @@ projects/<project>/workflow.md        optional project workflow delta
 
 Each active rule has one canonical owner. Project files are delta-only, parent rules remain active unless explicitly overridden, and current repository state is authoritative.
 
+Project repository resolution is defined by `projects/<project>/instructions.txt`: single-repository projects use `repository.source_of_truth`; multi-repository projects use `repository_resolution`, with the active target selected from the current task/project owner context before loading that repository's `AGENTS.md`.
+
 ## Resolution order
 
 ```text
