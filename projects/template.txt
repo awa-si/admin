@@ -1,15 +1,37 @@
-scope:
-- project: <project>
-- repository: <owner>/<repository>
-- branch: <branch>
+bootstrap: project
 
-inheritance:
-- parent: global
-- mode: delta_only
+project:
+- name: <project>
+- instructions: awa-si/admin/projects/<project>/instructions.txt
+- workflow: awa-si/admin/projects/<project>/workflow.md_if_present
+
+inherit:
+- global_instructions: awa-si/admin/instructions.txt
+- global_workflow: awa-si/admin/workflow.md
+- global_coding: awa-si/admin/coding.md
+- project_files_are_delta_only: true
+- parent_rules_remain_active_unless_explicitly_overridden: true
 
 repository:
-- source_of_truth: <owner>/<repository>@<branch>
-- agent: AGENTS.md
+- derive_from: project.instructions
+- single_repository:
+  - source: repository.source_of_truth
+- multi_repository:
+  - source: repository_resolution
+  - resolve_target_from: current_task|active_owner|active_repository
+  - do_not_guess_when_materially_ambiguous: true
+- agent: <resolved_repository>/AGENTS.md
+- fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
+- current_repository_state_is_authoritative: true
 
-project_delta:
-- none
+loading:
+- order: global_instructions -> global_workflow -> global_coding_if_applicable -> project.instructions -> project.workflow_if_present -> resolved_repository.AGENTS.md_or_fallback -> material_helpers -> current_task
+- missing_optional_project_workflow: continue_with_parent_layer
+- reread_if: active_project_changed|resolved_repository_changed|source_changed|explicitly_requested
+
+reload:
+- command: reload admin plane
+- aliases: reload admin control plane
+- reread_current_control_plane_and_active_project: true
+- rederive_resolved_repository: true
+- reread_resolved_repository_agent: true
