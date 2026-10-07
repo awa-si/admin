@@ -26,7 +26,7 @@ managed_scope:
 - applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
 - admin_role: control_plane_for_managed_projects_and_repositories
 - managed_projects: projects/*
-- managed_repository_resolution: projects/<project>/instructions.txt.repository
+- managed_repository_resolution: projects/<project>/instructions.txt -> repository.source_of_truth_for_single_repo|repository_resolution_for_multi_repo
 - manage_from_here: instruction_hierarchy|coding_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
 - cross_repository_work: allowed_when_required_to_keep_managed_project_and_repository_state_consistent
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
