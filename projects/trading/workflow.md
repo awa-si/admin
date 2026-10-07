@@ -29,3 +29,18 @@ chat_handoff:
   - preserve_existing_repo_specific_branch: true
   - verify_each_affected_repository_independently: true
 - do_not_duplicate_subproject_contracts_in_handoff: true
+
+parallel_chat:
+- apply_when: multiple_active_chats_work_on_trading_project_independently
+- workspace_policy: separate_workspace_id_per_active_chat_or_workstream
+- branch_policy: separate_working_branch_per_repository_per_independent_workstream
+- same_workspace_reuse: handoff_only_unless_explicit_user_instruction
+- cross_repository_parallelism:
+  - different_repositories_may_progress_concurrently: true
+  - same_repository_requires_independent_branch: true
+  - active_owner_remains_repo_specific_per_chat: true
+  - cross_repository_integration_requires_current_heads_for_all_affected_repositories: true
+- integration:
+  - shared_remote: GitHub
+  - preserve_expected_remote_head_guard: true
+  - integrate_explicitly_before_shared_branch_push: merge|rebase|cherry_pick|pull_request
