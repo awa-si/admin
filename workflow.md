@@ -55,36 +55,45 @@ awa_mcp_workspace:
 - native_workspace_contract: authoritative_for_AWA_workspace_mechanics
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_workspace_capabilities
 - chat_workspace_lifecycle:
-  - create_stable_opaque_workspace_id_once_on_first_AWA_workspace_use: required
-  - first_workspace_action: workspace_create(id=workspace_id)
-  - workspace_create_once_per_chat_lifecycle: required
-  - capture_from_create_result: workspace_id|effective_resources|parallelism
-  - first_AWA_workspace_use_chat_output: workspace_id|effective_resources|parallelism
+  - workspace_identity_exposed_to_chat_and_handoff: workspace_id
+  - creator_key:
+    - native_parameter: workspace_create.id
+    - admin_name: creator_id
+    - purpose: opaque_stable_client_key_for_create_and_resolve_only
+    - do_not_conflate_with_workspace_id: true
+    - do_not_expose_as_primary_workspace_identity: true
+  - first_AWA_workspace_use:
+    - generate_stable_opaque_creator_id: required
+    - first_workspace_action: workspace_create(id=creator_id)
+    - capture_from_create_result: workspace_id|effective_resources|parallelism
+    - first_AWA_workspace_use_chat_output: workspace_id|effective_resources|parallelism
+    - retain_for_lifecycle: creator_id|workspace_id|effective_resources|parallelism|repository_binding|branch
   - resource_output_fields: cpu|memory_mb|storage_mb|pids|tmp_mb
-  - retain_in_chat_state_for_entire_chat: workspace_id|effective_resources|parallelism|repository_binding|branch
   - retained_workspace_id_is_authoritative: true
-  - do_not_resolve_before_create: true
   - do_not_scan_for_alternative_workspace: true
   - do_not_call_workspace_create_again_while_retained_workspace_exists: true
   - do_not_switch_workspace_id_silently: true
   - do_not_replace_missing_or_unhealthy_workspace_automatically: true
   - missing_or_unhealthy_retained_workspace: surface_blocker_and_keep_identity
-  - replacement_allowed_only_after: explicit_user_approved_workspace_delete_then_subsequent_workspace_create
-  - replacement_reuses_same_workspace_id: true
+  - workspace_resolve_role: diagnostic_by_creator_id_only_not_workspace_selection
+  - replacement_allowed_only_after: explicit_user_approved_workspace_delete_then_workspace_create_with_same_creator_id
   - after_replacement_create: capture_and_report_workspace_id|effective_resources|parallelism
-  - workspace_resolve_role: diagnostic_for_retained_or_handoff_workspace_id_when_needed
   - other_chat_workspace: distinct_unless_initialized_from_explicit_handoff
   - handoff_initialized_chat:
     - default_behavior: inherit_handoff_workspace
     - required_handoff_fields: workspace_id
-    - inherit_when_present: effective_resources|parallelism|repository_binding|branch|active_jobs|artifacts|checkpoint|resume_point
-    - first_AWA_workspace_action: workspace_resolve(id=handoff_workspace_id)
-    - require_resolved_workspace_id: handoff_workspace_id
-    - do_not_call_workspace_create_when_inherited_workspace_resolves: true
-    - do_not_generate_new_workspace_id_when_inherited_workspace_resolves: true
+    - preserve_when_available: creator_id|effective_resources|parallelism|repository_binding|branch|active_jobs|artifacts|checkpoint|resume_point
+    - first_AWA_workspace_action: workspace_context(workspace_id=handoff_workspace_id)
+    - require_context_workspace_id: handoff_workspace_id
+    - do_not_call_workspace_create_when_inherited_workspace_context_is_valid: true
+    - do_not_generate_new_workspace_id_when_inherited_workspace_context_is_valid: true
     - inherited_workspace_becomes_authoritative_for_new_chat: true
     - inherited_workspace_missing_or_mismatch: surface_blocker_do_not_replace_automatically
-    - replacement_after_handoff: explicit_user_approved_workspace_delete_then_workspace_create_using_same_workspace_id
+    - replacement_after_handoff:
+      - requires_explicit_user_approved_workspace_delete: true
+      - requires_original_creator_id: true
+      - missing_creator_id: surface_blocker_for_replacement_not_for_existing_workspace_use
+      - recreate_with: workspace_create(id=creator_id)
     - repository_and_branch_from_handoff: working_context_only_until_current_remote_state_verified_when_material
     - job_or_artifact_from_handoff: verify_current_workspace_state_before_resume
   - parallel_chat:
