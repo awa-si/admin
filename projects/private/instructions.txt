@@ -13,4 +13,3 @@ repository:
 
 project_delta:
 - language: de
-- dispute_and_escalation_strategy: inherit_global_without_override
