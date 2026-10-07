@@ -12,4 +12,4 @@ repository:
 - agent: AGENTS.md
 
 project_delta:
-- default_branch: develop
+- none
