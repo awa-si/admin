@@ -107,6 +107,18 @@ awa_mcp_workspace:
     - remote_head_changed: fetch_integrate_reverify_before_push
     - automatic_force_push_or_silent_branch_overwrite: prohibited
     - integration_to_shared_branch: explicit_merge|rebase|cherry_pick|pull_request_as_task_requires
+- repository_remote_transport:
+  - applies_when: AWA_MCP_Workspace_with_GitHub_bound_repository
+  - workspace_exec_git_scope: local_only
+  - allowed_local_git: status|diff|add|commit|checkout|switch|merge|rebase|cherry_pick|reset|restore|stash|tag|log|show
+  - prohibited_from_workspace_exec: git_fetch|git_pull|git_push|git_clone|other_GitHub_remote_transport
+  - reason: workspace_exec_containers_do_not_receive_GitHub_credentials
+  - authenticated_remote_read: workspace_repository_fetch
+  - authenticated_remote_write: workspace_repository_push
+  - initial_materialization: workspace_repository_import
+  - credential_failure_from_direct_workspace_git_remote: classify_as_wrong_transport_path_not_missing_user_credentials
+  - on_direct_git_remote_failure: retry_via_corresponding_workspace_repository_boundary_tool
+  - do_not_ask_user_for_GitHub_username_or_token_when_bound_repository_tool_is_available: true
 - repository_temp_data_boundary:
   - apply_when: AWA_workspace_contains_or_imports_GitHub_repository
   - temporary_runtime_data_must_not_be_repository_content_or_commit_candidate: true
