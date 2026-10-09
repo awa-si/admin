@@ -27,7 +27,11 @@ awa_workspace:
   - normal_sync: workspace_repository_fetch -> integrate_FETCH_HEAD -> verify_clean_state
   - allowed_integration: rebase|merge|cherry_pick
   - reset_plus_cherry_pick: recovery_only_not_normal_sync
+  - remote_transport_from_workspace_exec: prohibited
+  - direct_git_fetch_pull_push_clone_from_workspace_exec: prohibited
+  - remote_read: workspace_repository_fetch
   - remote_write: workspace_repository_push
+  - direct_remote_credential_error: wrong_transport_path_not_missing_credentials
   - force_push: prohibited
   - existing_branch_push_requires_expected_remote_head: true
 
