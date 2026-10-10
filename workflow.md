@@ -107,6 +107,27 @@ awa_mcp_workspace:
     - remote_head_changed: fetch_integrate_reverify_before_push
     - automatic_force_push_or_silent_branch_overwrite: prohibited
     - integration_to_shared_branch: explicit_merge|rebase|cherry_pick|pull_request_as_task_requires
+- execution_orchestration:
+  - default_workspace_create_parallelism: 1
+  - expand_slots_only_when_real_parallel_work_requires_it: workspace_expand_slots
+  - speculative_slot_allocation: prohibited
+  - slot_expansion_is_monotonic_for_workspace_lifetime: true
+  - dependency_sensitive_execution:
+    - repository_import_does_not_imply_compute_ready: true
+    - before_first_compute: resolve_repository_instructions_and_workload_manifests
+    - install_only_required_dependencies: true
+    - dependency_setup_job: workspace_exec_start(shared_env_access="write",network=true)_when_external_retrieval_required
+    - subsequent_compute_default: shared_env_access="read"
+    - network_after_setup: false_unless_workload_itself_requires_network
+    - dependency_source_changed: re_evaluate_shared_environment_before_compute
+  - asynchronous_jobs:
+    - use_start_status_result_flow: required
+    - timeout_remaining_seconds_is_not_ETA: true
+    - extend_running_job_when_more_budget_is_justified: workspace_exec_extend
+    - extension_requires_process_local_running_job: true
+    - completed_status_and_result_history_survives_MCP_restart: true
+    - detached_after_restart: inspect_then_terminate_or_restart_not_extend
+    - do_not_classify_restart_recovered_terminal_result_as_lost_without_checking_persisted_result: true
 - repository_remote_transport:
   - applies_when: AWA_MCP_Workspace_with_GitHub_bound_repository
   - workspace_exec_git_scope: local_only
