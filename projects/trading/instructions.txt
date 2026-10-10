@@ -4,6 +4,7 @@ scope:
   - awa-si/nautilus@main
   - awa-si/nhsmm@develop
   - awa-si/nhsmm-interfaces@dev
+  - awa-si/gbm@main
 
 inheritance:
 - parent: global
@@ -22,6 +23,13 @@ repository_resolution:
   - source_of_truth: awa-si/nhsmm-interfaces@dev
   - agent: AGENTS.md
   - owns: runtime_adapters|host_facing_contracts|walk_forward_orchestration
+- gbm:
+  - source_of_truth: awa-si/gbm@main
+  - agent: AGENTS.md
+  - status: candidate
+  - candidate_for: extracted_predictive_model_core
+  - current_scope: predictive_model_core
+  - integration_boundary: historical_replay|nautilus_dataactors|order_execution_remain_in_nautilus
 
 cross_repository:
 - resolve_owner_before_change: true
