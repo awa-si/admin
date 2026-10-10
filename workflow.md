@@ -15,7 +15,7 @@ branch_resolution:
 - make_explicit_when: selected_branch_is_not_main|context_could_be_ambiguous
 
 github_routing_gate:
-- classify_before_repository_read_write_or_execution: Chat_Light|GitHub_Patch|GitHub_Workspace|AWA_MCP_Workspace|GitHub_Actions
+- classify_before_repository_read_write_or_execution: Chat_Light|GitHub_Patch|GitHub_Workspace|AWA_MCP_Workspace|AWA_Work|GitHub_Actions
 - Chat_Light: use_for_non_coding_or_light_chat_work_without_repository_execution_or_workspace_need
 - GitHub_Patch: default_for_known_small_deterministic_low_coupling_repository_change
 - GitHub_Workspace: use_for_repository_coding_or_inspection_when_GitHub_access_is_needed_and_no_custom_system_packages_or_heavy_runtime_requirements_are_material
@@ -28,6 +28,10 @@ github_routing_gate:
 - AWA_MCP_Workspace_select_when: dependency_installation_or_runtime_modification_is_required|heavy_or_long_execution_is_material|custom_system_packages_or_repository_workspace_profile_is_required|GitHub_Workspace_runtime_is_insufficient|explicit_user_selection
 - default_workspace_route_for_light_to_medium_repo_work: GitHub_Workspace
 - default_workspace_route_for_heavy_or_long_work: AWA_MCP_Workspace
+- AWA_Work: use_for_durable_multi_step_AWA_MCP_orchestration_when_checkpointing|approval_resume|retained_evidence|interruption_recovery_materially_help
+- AWA_Work_do_not_use_for: trivial_single_read|simple_single_capability_call|ordinary_workspace_edit_test_commit_flow_without_durability_need
+- AWA_Work_execution_boundary: all_real_actions_must_remain_governed_AWA_MCP_capabilities
+- AWA_Work_semantic_completion_owner: GPT
 - GitHub_Actions_select_when: hosted_runner_or_durable_integration_evidence_material
 - reclassify_when_scope_or_runtime_requirements_change_materially: required
 - completion_requires_route_compliance: true
@@ -153,6 +157,49 @@ awa_mcp_workspace:
 - admin_owns_only: route_selection|chat_lifecycle_policy|fallback_policy|cross_route_precedence|completion_requirement
 - unavailable_or_unhealthy: surface_actual_blocker
 - remote_completion_claim_requires: verification_required_by_current_native_workspace_contract
+
+awa_work:
+- role: durable_goal_and_task_orchestration_over_AWA_MCP
+- native_instruction_source: awa-si/awa/work/workflow.md
+- load_current_native_work_instructions_before_nontrivial_use: required
+- native_work_contract: authoritative_for_work_*_mechanics
+- current_AWA_MCP_tool_schema: authoritative_for_exposed_work_capabilities
+- use_when: durable_state|multiple_ordered_steps|approval_resume|retained_compact_evidence|recovery_after_interruption
+- avoid_when: persistence_adds_no_value|single_simple_read|single_simple_capability_call
+- identity:
+  - retain_exact_work_id: required
+  - replacement_work_item_for_pause_or_restart: prohibited
+- execution:
+  - GPT_owns: intent|plan|completion_criteria|semantic_completion_judgment|user_communication
+  - Work_owns: durable_workflow_state|checkpoint|position|approval_interrupt|resume|compact_evidence
+  - AWA_MCP_owns: executable_capabilities|validation|credentials|security_gates|provider_and_workspace_boundaries
+  - recursive_work_calls: prohibited
+  - step_tool_names_must_resolve_to_live_AWA_MCP_capabilities: true
+  - actual_actions_bypass_AWA_MCP: prohibited
+- approvals:
+  - approval_interrupt_is_additional_gate_not_replacement_for_MCP_policy: true
+  - never_resume_with_approval_without_required_user_approval: true
+- completion:
+  - work_status_completed_means_supplied_steps_completed_without_execution_exception_only: true
+  - require_work_result_before_semantic_completion_when_result_material: true
+  - semantic_user_goal_completion_requires_GPT_evaluation_of_completion_criteria_against_evidence: true
+- long_jobs:
+  - work_start_of_async_capability_is_not_job_completion: true
+  - explicit_status_and_result_steps_required_when_underlying_completion_matters: true
+  - current_MVP_has_no_generic_wait_or_poll_node: true
+- retry:
+  - generic_automatic_retry: prohibited
+  - before_retrying_mutation: inspect_current_state_for_partial_success
+- persistence:
+  - checkpoint_state_keep_compact: true
+  - large_logs_files_datasets_artifacts: remain_with_owning_subsystem_and_reference_by_stable_id_or_path
+- current_MVP_limits:
+  - serial_steps_only: true
+  - no_autonomous_planner: true
+  - no_parallel_branches: true
+  - no_generic_retry_backoff: true
+  - no_background_worker: true
+  - do_not_claim_durable_background_execution: true
 
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
