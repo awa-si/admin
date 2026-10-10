@@ -35,6 +35,25 @@ awa_workspace:
   - force_push: prohibited
   - existing_branch_push_requires_expected_remote_head: true
 
+compute_readiness:
+- repository_import_state: source_ready_not_automatically_compute_ready
+- profile_system_packages: deferred_until_first_execution_using_profile_image
+- dependency_owner: repository_instructions_and_workload_manifests_or_lockfiles
+- shared_environment:
+  - canonical_reuse_scope: workspace
+  - setup_access: shared_env_access_write
+  - normal_compute_access: shared_env_access_read
+  - setup_network: enable_only_when_package_retrieval_required
+- parallel_slots:
+  - initial_parallelism: 1
+  - expand_lazily_with: workspace_expand_slots
+  - extra_slots_require_real_parallel_work: true
+  - dependency_setup_is_workspace_wide_exclusive: true
+- jobs:
+  - running_timeout_extension: workspace_exec_extend_when_material
+  - completed_result_history_after_MCP_restart: reusable_evidence
+  - detached_job: cannot_extend_requires_inspect_terminate_or_restart
+
 parallel_chat:
 - inherit_global_parallel_chat_policy: true
 - independent_AWA_workstreams: separate_workspace_id_and_working_branch
