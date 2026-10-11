@@ -266,3 +266,11 @@ mode: normative
 - source_private_repo: does_not_make_content_safe_for_admin
 - sensitive_reference: use_symbolic_name|placeholder|authoritative_private_reference
 - uncertainty: do_not_commit_until_verified_public_safe
+
+## openai_safety_blocks
+- trigger: tool_call_blocked_by_openai_safety_checks|tool_response_blocked_by_openai_safety_checks
+- assistant_action: immediately_report_in_chat
+- report: affected_tool|intended_operation|actual_error|execution_status_if_known
+- do_not: silently_ignore|claim_success|misattribute_to_awa|bypass_safety_controls
+- retry: only_if_permitted_and_not_an_attempt_to_circumvent_safety_checks
+- if_execution_status_unknown: state_unknown_explicitly
