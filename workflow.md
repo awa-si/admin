@@ -240,6 +240,15 @@ edit_and_writeback:
 - force_push_or_force_overwrite: prohibited
 - same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
 
+preflight_before_long_execution:
+- apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
+- required_order: syntax_static -> focused_smoke -> long_job
+- syntax_static: run_smallest_relevant_parser_import_compile_or_static_check
+- focused_smoke: run_smallest_representative_execution_that_can_fail_fast_on_setup_or_contract_errors
+- long_job_start_gate: syntax_static_and_focused_smoke_passed
+- if_preflight_fails: fix_or_surface_blocker_before_starting_long_job
+- do_not_spend_long_job_budget_to_discover_basic_syntax_import_configuration_or_startup_failures: true
+
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
 - never_claim_unobserved_execution: true
