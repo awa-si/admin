@@ -80,6 +80,12 @@ mcp_runtime_change:
 - do_not_claim_runtime_active_from_repository_commit_alone: true
 - post_restart_or_redeploy: verify_live_MCP_capability_when_material
 
+long_job_preflight:
+- before_long_workspace_job: syntax_static_then_focused_smoke
+- examples: compile_or_import_check -> minimal_runtime_smoke -> full_test|replay|benchmark|training
+- start_long_job_only_after_preflight_passes: true
+- smoke_should_use_same_material_runtime_profile_when_practical: true
+
 verification:
 - workspace_or_GitHub_boundary_change:
   - focused_tests_first: mcp/tests/test_github_workspace.py|mcp/tests/test_workspace_interface.py_as_affected
