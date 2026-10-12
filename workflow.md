@@ -55,8 +55,13 @@ awa_mcp_workspace:
 - selection_owner: github_routing_gate
 - availability_gate: required_before_selection
 - native_instruction_source: mcp_instructions(topic="workspace")
-- load_current_native_workspace_instructions_before_use: required
+- load_native_workspace_instructions_once_before_first_AWA_workspace_use_in_active_scope: required
 - native_workspace_contract: authoritative_for_AWA_workspace_mechanics
+- native_workspace_instruction_cache:
+  - reuse_within_same_active_scope_and_tool_surface: required
+  - do_not_reresolve_on_each_prompt_or_each_workspace_action: true
+  - invalidate_when: workspace_tool_surface_changed|workspace_contract_changed|explicit_reload|active_scope_changed
+  - contract_version_or_source_change_when_observed: reread_before_next_material_workspace_action
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_workspace_capabilities
 - chat_workspace_lifecycle:
   - workspace_identity_exposed_to_chat_and_handoff: workspace_id
@@ -161,8 +166,13 @@ awa_mcp_workspace:
 awa_work:
 - role: durable_goal_and_task_orchestration_over_AWA_MCP
 - native_instruction_source: awa-si/awa/work/workflow.md
-- load_current_native_work_instructions_before_nontrivial_use: required
+- load_native_work_instructions_once_before_first_nontrivial_AWA_Work_use_in_active_scope: required
 - native_work_contract: authoritative_for_work_*_mechanics
+- native_work_instruction_cache:
+  - reuse_within_same_active_scope_and_tool_surface: required
+  - do_not_reresolve_on_each_prompt_or_each_work_action: true
+  - invalidate_when: work_tool_surface_changed|work_contract_changed|explicit_reload|active_scope_changed
+  - contract_version_or_source_change_when_observed: reread_before_next_material_work_action
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_work_capabilities
 - use_when: durable_state|multiple_ordered_steps|approval_resume|retained_compact_evidence|recovery_after_interruption
 - avoid_when: persistence_adds_no_value|single_simple_read|single_simple_capability_call
