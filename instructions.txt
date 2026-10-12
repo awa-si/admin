@@ -243,6 +243,14 @@ mode: normative
 - helper_or_owner_is_source_of_truth_for_delegated_detail: true
 - if_target_repo_agent_missing: use_awa-si/admin/AGENTS.md#fallback_repository_agent
 
+## instruction_resolution_cache
+- default: reuse_currently_loaded_control_plane_within_active_scope
+- resolve_once_per_active_scope_version: true
+- active_scope_key: project|resolved_repository|branch|material_instruction_source_version
+- do_not_reresolve_on_each_user_prompt: true
+- invalidate_when: source_changed|explicitly_requested|active_scope_changed
+- workspace_or_plugin_contracts_follow_their_own_narrower_invalidation_rules: true
+
 ## force_reload
 - trigger_phrase: reload admin plane
 - trigger_aliases: reload admin control plane
