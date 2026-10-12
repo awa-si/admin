@@ -11,6 +11,12 @@ repository:
 - branch: main
 - agent: AGENTS.md
 
+instruction_resolution:
+- inherit_global_cache_semantics: true
+- awa_workspace_contract: load_once_then_reuse_until_invalidated
+- awa_work_contract: load_once_then_reuse_until_invalidated
+- per_prompt_reresolution: prohibited
+
 awa_workspace:
 - preferred_heavy_execution_route: AWA_MCP_Workspace
 - repository_slot_default: 1
