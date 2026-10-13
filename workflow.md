@@ -259,6 +259,14 @@ edit_and_writeback:
 - force_push_or_force_overwrite: prohibited
 - same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
 
+long_running_job_mode:
+- entry_gate: syntax_static_passed_and_short_smoke_passed
+- required_sequence: syntax_static -> short_smoke_test -> long_running_job
+- syntax_failure: do_not_start_long_running_job
+- smoke_failure: do_not_start_long_running_job
+- short_smoke_test: smallest_representative_runtime_check_using_same_material_code_path_and_runtime_profile_when_practical
+- long_running_job_must_not_be_used_as_first_validation_step: true
+
 preflight_before_long_execution:
 - apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
 - required_order: syntax_static -> focused_smoke -> long_job
