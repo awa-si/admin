@@ -19,11 +19,16 @@ chatgpt_work_mode:
 - role: native_ChatGPT_Work_execution_policy
 - precedence:
   - overrides_AWA_MCP_workspace_or_project_preferences: true
-  - AWA_MCP_use: prohibited
-  - prohibited_routes: AWA_MCP_Workspace|AWA_Work
-  - prohibited_tool_family: awa_MCP_tools_including_workspace_*|work_*|github_*_through_AWA
-  - fallback_to_AWA_MCP: prohibited
-  - allowed_execution_surface: native_ChatGPT_Work_capabilities_and_other_non_AWA_connected_tools_allowed_by_current_product_context
+  - AWA_MCP_default: disabled_unless_explicit_current_user_command
+  - routes_without_explicit_current_user_command: AWA_MCP_Workspace|AWA_Work_disabled
+  - tool_family_without_explicit_current_user_command: awa_MCP_tools_including_workspace_*|work_*|github_*_through_AWA_disabled
+  - fallback_to_AWA_MCP_without_explicit_current_user_command: disabled
+  - explicit_AWA_MCP_command_exception:
+    - trigger: explicit_current_user_instruction_to_use_AWA_MCP
+    - scope: specifically_requested_operation_or_workflow_only
+    - implicit_inference_from_complexity_or_prior_usage: disabled
+    - later_unrelated_prompts_require_new_explicit_authorization: true
+  - allowed_execution_surface: native_ChatGPT_Work_capabilities_and_other_non_AWA_connected_tools_allowed_by_current_product_context|explicitly_authorized_AWA_MCP_scope
 - planning_and_execution:
   - decompose_into_material_stages_when_multistep_or_long_running: required
   - preserve_dependency_order: required
