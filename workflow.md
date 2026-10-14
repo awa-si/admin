@@ -14,29 +14,44 @@ branch_resolution:
 - once_selected_for_task: keep_stable_until_user_or_material_repository_evidence_changes_it
 - make_explicit_when: selected_branch_is_not_main|context_could_be_ambiguous
 
-chatgpt_product_mode_guard:
+chatgpt_work_mode:
 - apply_when: active_ChatGPT_product_mode_is_Work
-- AWA_MCP_use: prohibited
-- prohibited_routes: AWA_MCP_Workspace|AWA_Work
-- prohibited_tool_family: awa_MCP_tools_including_workspace_*|work_*|github_*_through_AWA
-- do_not_fallback_to_AWA_MCP_when_native_Work_capability_is_insufficient: true
-- use_only_capabilities_available_to_ChatGPT_Work_and_other_non_AWA_connected_tools_allowed_by_current_product_context: true
-- this_guard_overrides_repository_or_project_preferences_for_AWA_MCP: true
-- execution_discipline:
-  - checkpoints:
-    - mandatory_when: multistep|long_running|expensive|interruptible|material_partial_progress_exists
-    - use_native_Work_checkpoint_or_progress_persistence_when_available: required
-    - checkpoint_before: long_or_expensive_stage|destructive_or_high_impact_transition|dependency_boundary
-    - checkpoint_after: completed_material_stage|validated_intermediate_result
-    - checkpoint_content: completed_scope|current_state|material_evidence|remaining_work|resume_point
-    - do_not_repeat_completed_expensive_work_when_checkpoint_can_resume: true
-  - parallelism:
-    - mandatory_when_independent_work_can_run_concurrently: true
-    - parallelize: independent_reads|independent_analysis|independent_validation|independent_repository_or_file_scopes
-    - serialize_when: dependency_order|shared_mutable_state|same_path_write|branch_ref_mutation|approval_gate|destructive_side_effect|resource_contention_requires_it
-    - prefer_bounded_parallelism_over_unbounded_fanout: true
-    - join_and_validate_parallel_results_before_dependent_stage: required
-  - checkpoints_and_parallelism_are_default_requirements_where_capability_and_task_semantics_allow: true
+- role: native_ChatGPT_Work_execution_policy
+- precedence:
+  - overrides_AWA_MCP_workspace_or_project_preferences: true
+  - AWA_MCP_use: prohibited
+  - prohibited_routes: AWA_MCP_Workspace|AWA_Work
+  - prohibited_tool_family: awa_MCP_tools_including_workspace_*|work_*|github_*_through_AWA
+  - fallback_to_AWA_MCP: prohibited
+  - allowed_execution_surface: native_ChatGPT_Work_capabilities_and_other_non_AWA_connected_tools_allowed_by_current_product_context
+- planning_and_execution:
+  - decompose_into_material_stages_when_multistep_or_long_running: required
+  - preserve_dependency_order: required
+  - checkpoints_and_parallelism_are_mandatory_where_capability_and_task_semantics_allow: true
+  - avoid_redundant_research_or_execution_when_valid_checkpoint_evidence_exists: true
+- checkpoints:
+  - mandatory_when: multistep|long_running|expensive|interruptible|material_partial_progress_exists
+  - use_native_Work_checkpoint_or_progress_persistence_when_available: required
+  - checkpoint_before: long_or_expensive_stage|destructive_or_high_impact_transition|dependency_boundary
+  - checkpoint_after: completed_material_stage|validated_intermediate_result
+  - checkpoint_content: completed_scope|current_state|material_evidence|remaining_work|resume_point
+  - resume_from_latest_valid_checkpoint: required
+  - do_not_repeat_completed_expensive_work_when_checkpoint_can_resume: true
+- parallelism:
+  - mandatory_when_independent_work_can_run_concurrently: true
+  - parallelize: independent_reads|independent_analysis|independent_validation|independent_repository_or_file_scopes
+  - prefer_bounded_parallelism_over_unbounded_fanout: true
+  - serialize_when: dependency_order|shared_mutable_state|same_path_write|branch_ref_mutation|approval_gate|destructive_side_effect|resource_contention_requires_it
+  - join_and_validate_parallel_results_before_dependent_stage: required
+- long_running_jobs:
+  - required_preflight: syntax_static -> short_smoke_test -> long_running_job
+  - syntax_or_smoke_failure_blocks_long_job: true
+  - short_smoke_should_use_same_material_code_path_and_runtime_profile_when_practical: true
+  - long_running_job_must_not_be_first_validation_step: true
+- completion:
+  - do_not_claim_completion_from_started_or_scheduled_work_alone: true
+  - require_observed_result_or_valid_checkpoint_evidence_for_completed_stages: true
+  - surface_actual_blocker_when_native_Work_cannot_continue: true
 
 github_routing_gate:
 - classify_before_repository_read_write_or_execution: Chat_Light|GitHub_Patch|GitHub_Workspace|AWA_MCP_Workspace|AWA_Work|GitHub_Actions
