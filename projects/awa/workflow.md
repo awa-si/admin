@@ -11,12 +11,6 @@ repository:
 - branch: main
 - agent: AGENTS.md
 
-instruction_resolution:
-- inherit_global_cache_semantics: true
-- awa_workspace_contract: load_once_then_reuse_until_invalidated
-- awa_work_contract: load_once_then_reuse_until_invalidated
-- per_prompt_reresolution: prohibited
-
 awa_workspace:
 - preferred_heavy_execution_route: AWA_MCP_Workspace
 - repository_slot_default: 1
@@ -85,12 +79,6 @@ mcp_runtime_change:
 - WorkspaceInterface_constructor_policy_change: normal_MCP_process_restart_or_redeploy_required
 - do_not_claim_runtime_active_from_repository_commit_alone: true
 - post_restart_or_redeploy: verify_live_MCP_capability_when_material
-
-long_job_preflight:
-- before_long_workspace_job: syntax_static_then_focused_smoke
-- examples: compile_or_import_check -> minimal_runtime_smoke -> full_test|replay|benchmark|training
-- start_long_job_only_after_preflight_passes: true
-- smoke_should_use_same_material_runtime_profile_when_practical: true
 
 verification:
 - workspace_or_GitHub_boundary_change:
