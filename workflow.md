@@ -22,6 +22,21 @@ chatgpt_product_mode_guard:
 - do_not_fallback_to_AWA_MCP_when_native_Work_capability_is_insufficient: true
 - use_only_capabilities_available_to_ChatGPT_Work_and_other_non_AWA_connected_tools_allowed_by_current_product_context: true
 - this_guard_overrides_repository_or_project_preferences_for_AWA_MCP: true
+- execution_discipline:
+  - checkpoints:
+    - mandatory_when: multistep|long_running|expensive|interruptible|material_partial_progress_exists
+    - use_native_Work_checkpoint_or_progress_persistence_when_available: required
+    - checkpoint_before: long_or_expensive_stage|destructive_or_high_impact_transition|dependency_boundary
+    - checkpoint_after: completed_material_stage|validated_intermediate_result
+    - checkpoint_content: completed_scope|current_state|material_evidence|remaining_work|resume_point
+    - do_not_repeat_completed_expensive_work_when_checkpoint_can_resume: true
+  - parallelism:
+    - mandatory_when_independent_work_can_run_concurrently: true
+    - parallelize: independent_reads|independent_analysis|independent_validation|independent_repository_or_file_scopes
+    - serialize_when: dependency_order|shared_mutable_state|same_path_write|branch_ref_mutation|approval_gate|destructive_side_effect|resource_contention_requires_it
+    - prefer_bounded_parallelism_over_unbounded_fanout: true
+    - join_and_validate_parallel_results_before_dependent_stage: required
+  - checkpoints_and_parallelism_are_default_requirements_where_capability_and_task_semantics_allow: true
 
 github_routing_gate:
 - classify_before_repository_read_write_or_execution: Chat_Light|GitHub_Patch|GitHub_Workspace|AWA_MCP_Workspace|AWA_Work|GitHub_Actions
