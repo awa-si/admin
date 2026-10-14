@@ -11,11 +11,6 @@ repository:
 - branch: main
 - agent: AGENTS.md
 
-chatgpt_work_mode_boundary:
-- active_ChatGPT_product_mode_Work: prohibit_AWA_MCP
-- prohibited_in_Work_mode: AWA_MCP_Workspace|AWA_Work|direct_AWA_MCP_tools
-- awa_workspace_and_awa_work_rules_below_apply_only_outside_ChatGPT_Work_mode: true
-
 instruction_resolution:
 - inherit_global_cache_semantics: true
 - awa_workspace_contract: load_once_then_reuse_until_invalidated
