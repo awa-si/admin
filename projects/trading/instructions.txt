@@ -31,7 +31,15 @@ repository_resolution:
   - current_scope: predictive_model_core
   - integration_boundary: historical_replay|nautilus_dataactors|order_execution_remain_in_nautilus
 
-cross_repository:
+cross_global_semantics:
+- execution_workflow: inherit_awa-si/admin/workflow.md
+- chatgpt_work_mode: inherit_without_override
+- instruction_resolution_cache: inherit_without_override
+- long_running_execution: inherit_without_override
+- routing_and_tool_boundaries: inherit_without_override
+- project_file_must_not_duplicate_global_workflow_detail: true
+
+repository:
 - resolve_owner_before_change: true
 - current_state_of_each_repository: authoritative
 - duplicate_domain_contracts_across_repositories: prohibited
