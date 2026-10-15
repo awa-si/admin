@@ -321,6 +321,11 @@ long_running_execution:
 
 verification:
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
+- missing_validation_dependency:
+  - declared_dev_or_test_dependency_missing: install_then_rerun_same_check
+  - do_not_stop_before_install_and_rerun_when_current_route_allows_it: true
+  - if_current_route_cannot_install_dependencies: reclassify_to_an_allowed_route_when_permitted
+  - undeclared_or_unsafe_dependency_source: surface_actual_blocker
 - long_running_execution_preflight_applies_before_expensive_stage: true
 - never_claim_unobserved_execution: true
 - remote_ci: only_if_material
