@@ -181,6 +181,15 @@ awa_mcp_workspace:
     - completed_status_and_result_history_survives_MCP_restart: true
     - detached_after_restart: inspect_then_terminate_or_restart_not_extend
     - do_not_classify_restart_recovered_terminal_result_as_lost_without_checking_persisted_result: true
+- workspace_git_preference:
+  - applies_when: actively_working_inside_AWA_MCP_Workspace_with_a_repository
+  - prefer: local_Git_CLI_via_workspace_exec_start_for_repository_inspection_and_mutations
+  - local_operations: status|diff|log|show|branch|add|commit|switch|checkout|merge|rebase|cherry_pick|stash|tag
+  - prefer_local_repository_files_and_metadata_over_redundant_GitHub_connector_reads: true
+  - authenticated_remote_transport: workspace_repository_import|workspace_repository_fetch|workspace_repository_push
+  - ChatGPT_GitHub_connector: use_only_when_operation_is_unavailable_or_unsuitable_through_existing_AWA_workspace_and_repository_tools
+  - never_run_direct_GitHub_remote_transport_from_workspace_exec: true
+  - does_not_change_routing_outside_an_active_AWA_MCP_Workspace: true
 - repository_remote_transport:
   - applies_when: AWA_MCP_Workspace_with_GitHub_bound_repository
   - workspace_exec_git_scope: local_only
