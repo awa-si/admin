@@ -251,6 +251,18 @@ mode: normative
 - invalidate_when: source_changed|explicitly_requested|active_scope_changed
 - workspace_or_plugin_contracts_follow_their_own_narrower_invalidation_rules: true
 
+## mcp_instruction_reload
+- trigger_phrase: reload mcp
+- semantics: reread_current_AWA_mcp_instructions_contract
+- execution_mode: read_only
+- action: mcp_instructions
+- topic_resolution: use_current_active_mcp_topic_when_unambiguous_else_workspace
+- replace_cached_mcp_instruction_contract_with_latest_result: true
+- side_effects: prohibited
+- prohibited_during_reload: workspace_create|workspace_delete|workspace_mutation|work_start|work_resume|repository_write|branch_mutation|background_job
+- do_not_treat_reload_as_authorization_for_other_AWA_MCP_actions: true
+- apply_reloaded_contract_to_subsequent_mcp_work_in_current_chat: true
+
 ## force_reload
 - trigger_phrase: reload admin plane
 - trigger_aliases: reload admin control plane
