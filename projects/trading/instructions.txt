@@ -2,8 +2,7 @@ scope:
 - project: trading
 - repositories:
   - awa-si/nautilus@main
-  - awa-si/nhsmm@develop
-  - awa-si/nhsmm-interfaces@dev
+  - awa-si/nhsmm@v3
   - awa-si/gbm@main
 
 inheritance:
@@ -16,13 +15,9 @@ repository_resolution:
   - agent: AGENTS.md
   - owns: trading_runtime|strategy_integration|market_data|execution_harness
 - nhsmm:
-  - source_of_truth: awa-si/nhsmm@develop
+  - source_of_truth: awa-si/nhsmm@v3
   - agent: AGENTS.md
   - owns: probabilistic_model_core|state_modeling|training_and_inference_semantics
-- nhsmm-interfaces:
-  - source_of_truth: awa-si/nhsmm-interfaces@dev
-  - agent: AGENTS.md
-  - owns: runtime_adapters|host_facing_contracts|walk_forward_orchestration
 - gbm:
   - source_of_truth: awa-si/gbm@main
   - agent: AGENTS.md

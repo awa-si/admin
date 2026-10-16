@@ -34,7 +34,7 @@ streaming_optimization:
 - artifact_schema_change_for_pure_runtime_fast_path: avoid
 
 benchmarking:
-- canonical_runtime_benchmark: scripts/benchmark_runtime.py
+- canonical_runtime_benchmark: awa-si/nautilus@main/adapter/qlib/nhsmm_research/benchmark_runtime.py
 - artifact_loaded_runtime_measurement: preferred_for_production_reference
 - allocation_measurement: separate_pass
 - local_profile_may_use_focused_harness: true

@@ -9,14 +9,14 @@ scope:
 - project_file_must_not_duplicate_global_workflow_detail: true
 
 repository: awa-si/nhsmm
-- branch: develop
+- branch: v3
 
 inheritance:
 - parent: global
 - mode: delta_only
 
 repository:
-- source_of_truth: awa-si/nhsmm@develop
+- source_of_truth: awa-si/nhsmm@v3
 - agent: AGENTS.md
 
 project_delta:

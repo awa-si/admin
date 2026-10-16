@@ -12,15 +12,14 @@ chat_handoff:
 - required_project_context:
   - repositories:
     - awa-si/nautilus@main
-    - awa-si/nhsmm@develop
-    - awa-si/nhsmm-interfaces@dev
+    - awa-si/nhsmm@v3
     - awa-si/gbm@main
   - active_owner
   - active_repository
   - active_branch
   - resume_point
 - preserve_when_available: repository_heads|workspace_slot_bindings|active_jobs|artifacts|checkpoints|validation_state|pending_next_step
-- active_owner_values: nautilus|nhsmm|nhsmm-interfaces|gbm|cross_repository
+- active_owner_values: nautilus|nhsmm|gbm|cross_repository
 - active_repository_must_match_active_owner: true
 - handoff_repository_heads: evidence_only_until_current_remote_heads_verified_when_material
 - inherited_workspace_binding: do_not_reimport_repository_if_existing_verified_slot_binding_matches
