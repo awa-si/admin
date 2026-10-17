@@ -1,14 +1,6 @@
 scope:
 - project: oreon
-- global_semantics:
-- execution_workflow: inherit_awa-si/admin/workflow.md
-- chatgpt_work_mode: inherit_without_override
-- instruction_resolution_cache: inherit_without_override
-- long_running_execution: inherit_without_override
-- routing_and_tool_boundaries: inherit_without_override
-- project_file_must_not_duplicate_global_workflow_detail: true
-
-repository: awa-si/oreon
+- repository: awa-si/oreon
 - branch: main
 
 inheritance:
