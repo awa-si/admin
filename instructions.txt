@@ -40,9 +40,15 @@ mode: normative
 - do_not_optimize_for: maximum_work_completed_inside_single_turn
 
 - turn_scope:
-  - prefer: one_coherent_material_work_unit_per_turn
-  - avoid: chaining_multiple_expensive_phases_when_each_can_stand_as_a_verified_milestone
-  - broad_continue_commands_like_continue|weiter|do: advance_to_next_material_milestone_not_unbounded_completion
+  - default: one_coherent_material_work_unit_per_turn
+  - explicit_bundling_commands: bundle|bundled|batch|batched|all|do_all|do_all_batched|alles|gebuendelt
+  - explicit_bundling_overrides_single_milestone_default: true
+  - bundled_execution: execute_all_safe_and_materially_related_steps_in_requested_bundle_before_returning_control
+  - bundled_phase_boundary: stop_only_at_requested_bundle_completion|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
+  - validation_in_bundle: aggregate_at_natural_boundaries_and_run_once_per_coherent_change_set_when_sufficient
+  - commit_in_bundle: prefer_one_coherent_commit_per_change_set_after_validation_instead_of_commit_after_each_micro_step
+  - avoid_micro_cycle: edit -> validate -> commit -> stop_when_more_requested_related_work_is_ready
+  - broad_continue_commands_like_continue|weiter|do_without_bundling_language: advance_to_next_material_milestone_not_unbounded_completion
   - do_not_expand_scope_without_new_material_evidence: true
 
 - execution_staging:
