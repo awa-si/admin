@@ -259,9 +259,9 @@ mode: normative
 
 ## mcp_instruction_reload
 - trigger_phrase: reload mcp
-- semantics: reread_current_AWA_mcp_instructions_contract
-- execution_mode: read_only
-- action: mcp_instructions
+- semantics: reload_AWA_MCP_all_then_reread_current_mcp_instructions_contract
+- execution_mode: controlled_reload
+- sequence: mcp_reload(scope="all") -> mcp_instructions
 - topic_resolution: use_current_active_mcp_topic_when_unambiguous_else_workspace
 - replace_cached_mcp_instruction_contract_with_latest_result: true
 - side_effects: prohibited
