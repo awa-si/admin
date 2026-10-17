@@ -291,6 +291,21 @@ github_actions:
 - old_run_rerun_after_code_change: prohibited
 - start_new_run_on_new_head: required
 
+bundled_execution:
+- apply_when: explicit_user_bundle_or_batch_instruction
+- scope: all_safe_materially_related_steps_requested_in_current_bundle
+- prefer_fewer_larger_coherent_phases_over_micro_iterations: true
+- do_not_return_after_each_edit_validate_commit_cycle_when_requested_bundle_has_ready_followup_work: true
+- validation:
+  - run_at_natural_change_set_boundaries: true
+  - avoid_repeating_equivalent_checks_after_each_micro_edit: true
+  - final_bundle_validation_must_cover_all_material_changes: true
+- commits:
+  - prefer_one_coherent_commit_per_independent_change_set: true
+  - do_not_commit_every_micro_step_unless_repository_contract_or_recovery_boundary_requires_it: true
+- stop_only_when: bundle_complete|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
+- explicit_bundle_request_takes_precedence_over_default_single_milestone_turn_scope: true
+
 edit_and_writeback:
 - smallest_coherent_change: required
 - unrelated_refactor_in_same_change: prohibited
