@@ -52,10 +52,14 @@ admin/
 
 - `GitHub_Patch`: small deterministic repository changes without local execution.
 - `GitHub_Workspace`: default for light-to-medium repository inspection and coding.
-- `AWA_MCP_Workspace`: default for heavy or long-running work, custom runtime needs, or explicit selection; also the defined fallback when GitHub Workspace is unavailable.
+- `AWA_MCP_Workspace`: default for heavy or long-running work outside ChatGPT Work mode. In ChatGPT Work mode it is disabled by default and may be used only when the current user explicitly commands AWA MCP use for the requested scope.
 - `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
 `workflow.md` is the canonical owner of route selection and mechanics.
+
+## ChatGPT Work mode
+
+Native ChatGPT Work mode does not use AWA MCP by default. AWA MCP is allowed only for the specifically requested scope when the current user explicitly commands its use. Work mode otherwise keeps its native checkpointing, bounded parallelism, long-running preflight, and completion rules.
 
 ## Reload
 
@@ -65,7 +69,13 @@ reload admin plane
 
 Alias: `reload admin control plane`.
 
-A reload rereads the global owners, active project delta, and resolved repository agent. Previously loaded copies become non-authoritative for that chat.
+A reload rereads the global owners, active project delta, and resolved repository agent through a read-only path. Previously loaded copies become non-authoritative for that chat.
+
+```text
+reload mcp
+```
+
+`reload mcp` rereads the current AWA `mcp_instructions` contract only. It is read-only and does not authorize any other AWA MCP action.
 
 ## Public repository safety
 
