@@ -35,6 +35,15 @@ repository_state_resolution:
 repository_discovery:
 - objective: locate_smallest_material_owner_and_dependency_set_with_minimum_repository_scan_cost
 - known_path_or_symbol: direct_read_or_exact_lookup_first
+- route_native_repository_map_or_search: prefer_when_available_before_shell_scan
+- AWA_MCP_Workspace:
+  - first_repository_summary_when_scope_unknown: workspace_repository_map
+  - path_text_or_symbol_discovery: workspace_search
+  - search_modes: path|text|symbol
+  - use_workspace_search_before_generic_exec_rg_when_query_fits_bounded_native_search: preferred
+  - use_workspace_repository_map_before_reconstructing_HEAD_tree_manifests_or_dirty_state_via_multiple_shell_calls: preferred
+  - native_search_limits_are_not_completeness_evidence_beyond_returned_scope: true
+  - fall_back_to_local_git_or_rg_when: native_search_scope_limit_reached|query_requires_unsupported_semantics|untracked_files_matter|exact_full_scan_is_required
 - unknown_code_location:
   - prefer_repository_native_index_or_tracked_file_inventory_when_available: true
   - local_git_workspace_tracked_inventory: git_ls_files_preferred_over_recursive_find
@@ -183,6 +192,11 @@ awa_mcp_workspace:
   - invalidate_when: workspace_tool_surface_changed|workspace_contract_changed|explicit_reload|active_scope_changed
   - contract_version_or_source_change_when_observed: reread_before_next_material_workspace_action
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_workspace_capabilities
+- native_repository_introspection:
+  - repository_summary: workspace_repository_map
+  - bounded_repository_search: workspace_search
+  - preferred_for_initial_scope_narrowing_inside_bound_workspace: true
+  - shell_exec_remains_for: exact_git_operations|unsupported_search_semantics|untracked_content|full_validation|build_or_test_execution
 - chat_workspace_lifecycle:
   - workspace_identity_exposed_to_chat_and_handoff: workspace_id
   - creator_key:
