@@ -14,6 +14,57 @@ branch_resolution:
 - once_selected_for_task: keep_stable_until_user_or_material_repository_evidence_changes_it
 - make_explicit_when: selected_branch_is_not_main|context_could_be_ambiguous
 
+task_scope_resolution:
+- resolve_before_material_execution: objective|requested_completion|target_repository_or_repositories|branch|owner|mutation_class|runtime_need
+- explicit_user_scope: authoritative
+- inferred_scope: smallest_coherent_scope_supported_by_current_evidence
+- freeze_resolved_scope_for_change_set: true
+- reopen_scope_only_when: new_material_dependency|repository_state_changed|user_expands_scope|current_route_proves_insufficient
+- do_not_repeat_scope_discovery_after_freeze: true
+- materially_ambiguous_target_that_changes_write_destination: resolve_before_write
+- read_only_progress_when_write_target_is_ambiguous: allowed_when_safe
+
+repository_state_resolution:
+- current_repository_state: authoritative
+- before_write_resolve_when_material: repository|branch|base_or_head_sha|owner_contract|relevant_dependencies
+- retain_observed_refs_for_change_set: required
+- stale_base_before_write: refetch_and_reconcile_before_mutation
+- branch_or_owner_change_invalidates_affected_change_set_resolution: true
+- do_not_reconstruct_known_state_from_repeated_broad_search: true
+
+repository_discovery:
+- objective: locate_smallest_material_owner_and_dependency_set_with_minimum_repository_scan_cost
+- known_path_or_symbol: direct_read_or_exact_lookup_first
+- unknown_code_location:
+  - prefer_repository_native_index_or_tracked_file_inventory_when_available: true
+  - local_git_workspace_tracked_inventory: git_ls_files_preferred_over_recursive_find
+  - text_search: ripgrep_or_route_native_equivalent_preferred
+  - symbol_or_heading_index: prefer_cached_incremental_index_when_available
+  - invalidate_incremental_index_by: head_change|dirty_path_fingerprint|file_add_remove_rename
+- broad_tree_or_content_scan: only_when_narrow_discovery_cannot_resolve_material_scope
+- full_file_read: only_when_narrow_ranges_or_symbol_owner_are_insufficient
+- tool_output_truncation: cannot_support_completeness_claim
+- discovery_result_should_preserve: path|symbol_or_anchor_when_available|owner|relevant_dependency_refs
+
+operation_classification:
+- classify_material_actions_before_execution: read_only|reversible_write|branch_or_ref_mutation|external_side_effect|destructive|long_running
+- idempotency_class_when_retry_possible: idempotent|conditionally_idempotent|non_idempotent|unknown
+- unknown_mutation_outcome: inspect_authoritative_state_before_retry
+- blind_retry_of_non_idempotent_or_unknown_mutation: prohibited
+- destructive_or_irreversible_boundary: require_applicable_explicit_approval_or_owner_policy
+- read_only_discovery_does_not_authorize_mutation: true
+
+cross_repository_execution:
+- apply_when: one_requested_outcome_spans_multiple_repositories
+- resolve_owner_and_branch_per_repository_before_change: required
+- build_dependency_order_between_repositories_when_material: true
+- parallelize_independent_repository_reads_tests_or_changes_when_safe: preferred
+- serialize_cross_repository_steps_when_one_repository_output_is_input_to_another: required
+- each_repository_keeps_its_own: base_head|working_branch|validation|commit|push_evidence
+- no_atomic_cross_repository_push_assumption: true
+- integration_completion_requires_all_affected_repositories_verified_at_current_heads: true
+- partial_cross_repository_completion: report_exact_completed_and_blocked_repositories
+
 chatgpt_work_mode:
 - apply_when: active_ChatGPT_product_mode_is_Work
 - role: native_ChatGPT_Work_execution_policy
@@ -243,7 +294,7 @@ awa_mcp_workspace:
 
 awa_work:
 - role: durable_goal_and_task_orchestration_over_AWA_MCP
-- native_instruction_source: awa-si/awa/work/workflow.md
+- native_instruction_source: awa-si/awa/mcp/work/workflow.md
 - load_native_work_instructions_once_before_first_nontrivial_AWA_Work_use_in_active_scope: required
 - native_work_contract: authoritative_for_work_*_mechanics
 - native_work_instruction_cache:
@@ -252,42 +303,41 @@ awa_work:
   - invalidate_when: work_tool_surface_changed|work_contract_changed|explicit_reload|active_scope_changed
   - contract_version_or_source_change_when_observed: reread_before_next_material_work_action
 - current_AWA_MCP_tool_schema: authoritative_for_exposed_work_capabilities
-- use_when: durable_state|multiple_ordered_steps|approval_resume|retained_compact_evidence|recovery_after_interruption
-- avoid_when: persistence_adds_no_value|single_simple_read|single_simple_capability_call
+- orchestration_engine_detail: owned_by_native_work_contract_not_admin
+- use_when: durable_state|multiple_ordered_steps|approval_resume|reconciliation|cancellation|retained_compact_evidence|recovery_after_interruption
+- avoid_when: persistence_adds_no_value|single_simple_read|single_simple_capability_call|ordinary_workspace_edit_test_commit_flow_without_durability_need
 - identity:
   - retain_exact_work_id: required
-  - replacement_work_item_for_pause_or_restart: prohibited
+  - replacement_work_item_for_pause_restart_or_interrupt: prohibited
 - execution:
   - GPT_owns: intent|plan|completion_criteria|semantic_completion_judgment|user_communication
-  - Work_owns: durable_workflow_state|checkpoint|position|approval_interrupt|resume|compact_evidence
+  - Work_owns: durable_operational_state|position|approval_state|reconciliation_state|cancellation_state|compact_evidence
   - AWA_MCP_owns: executable_capabilities|validation|credentials|security_gates|provider_and_workspace_boundaries
   - recursive_work_calls: prohibited
   - step_tool_names_must_resolve_to_live_AWA_MCP_capabilities: true
   - actual_actions_bypass_AWA_MCP: prohibited
 - approvals:
-  - approval_interrupt_is_additional_gate_not_replacement_for_MCP_policy: true
-  - never_resume_with_approval_without_required_user_approval: true
+  - approval_gate_is_additional_not_replacement_for_capability_policy: true
+  - approval_identity_and_shape: follow_live_work_schema
+  - never_synthesize_or_infer_required_user_approval: true
+- external_jobs:
+  - accepted_job_or_resource_id_is_not_completion: true
+  - authoritative_terminal_status_and_result_required_when_completion_matters: true
+  - detached_missing_timeout_or_ambiguous_external_outcome: fail_closed_or_reconcile_per_native_contract
+- reconciliation:
+  - ambiguous_external_effect_must_not_be_silently_resubmitted: true
+  - use_live_work_reconciliation_capability_when_supported_and_applicable: true
+- cancellation:
+  - cancellation_request_is_not_proof_external_effect_was_undone: true
+  - authoritative_external_state_remains_decisive: true
 - completion:
-  - work_status_completed_means_supplied_steps_completed_without_execution_exception_only: true
-  - require_work_result_before_semantic_completion_when_result_material: true
+  - operational_work_completion_is_not_semantic_user_goal_completion: true
+  - require_work_result_or_equivalent_retained_evidence_when_material: true
   - semantic_user_goal_completion_requires_GPT_evaluation_of_completion_criteria_against_evidence: true
-- long_jobs:
-  - work_start_of_async_capability_is_not_job_completion: true
-  - explicit_status_and_result_steps_required_when_underlying_completion_matters: true
-  - current_MVP_has_no_generic_wait_or_poll_node: true
-- retry:
-  - generic_automatic_retry: prohibited
-  - before_retrying_mutation: inspect_current_state_for_partial_success
 - persistence:
-  - checkpoint_state_keep_compact: true
+  - checkpoint_or_work_state_keep_compact: true
   - large_logs_files_datasets_artifacts: remain_with_owning_subsystem_and_reference_by_stable_id_or_path
-- current_MVP_limits:
-  - serial_steps_only: true
-  - no_autonomous_planner: true
-  - no_parallel_branches: true
-  - no_generic_retry_backoff: true
-  - no_background_worker: true
-  - do_not_claim_durable_background_execution: true
+- admin_must_not_pin_engine_specific_limits_that_can_change_with_live_work_contract: true
 
 github_workspace:
 - role: route_to_installed_GitHub_Workspace_skill
@@ -331,6 +381,17 @@ bundled_execution:
 - stop_only_when: bundle_complete|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
 - explicit_bundle_request_takes_precedence_over_default_single_milestone_turn_scope: true
 
+change_set_lifecycle:
+- unit: smallest_coherent_set_of_materially_related_changes
+- preferred_sequence: resolve -> inspect -> edit -> focused_validate -> broader_validate_if_required -> commit -> remote_verify
+- do_not_commit_unvalidated_material_code_when_validation_route_is_available: true
+- validation_failure: keep_change_set_open_until_fixed_or_actual_blocker_reported
+- equivalent_validation_without_state_change: do_not_repeat
+- docs_and_code_changed_for_same_contract: validate_as_one_change_set_when_practical
+- bundled_user_request: multiple_related_change_sets_may_execute_before_returning_control
+- independent_rollback_boundaries: may_use_separate_commits
+- completion_requires_no_known_unresolved_inconsistency_inside_requested_change_set: true
+
 edit_and_writeback:
 - smallest_coherent_change: required
 - unrelated_refactor_in_same_change: prohibited
@@ -369,6 +430,12 @@ long_running_execution:
   - wrong_commit: prefer_revert_or_compensating_commit
 
 verification:
+- evidence_ladder: syntax_static -> focused_behavior -> affected_scope -> integration_or_remote_when_material
+- choose_highest_required_evidence_not_maximum_available_evidence: true
+- same_evidence_level_may_be_skipped_when_unchanged_valid_result_is_still_applicable: true
+- remote_write_verification: verify_exact_changed_remote_state_or_head_not_merely_tool_success
+- generated_or_hosted_artifact_claim: bind_to_source_sha_or_run_identity_when_material
+- negative_verification_result: blocker_or_open_change_set_not_completion
 - order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
 - missing_validation_dependency:
   - declared_dev_or_test_dependency_missing: install_then_rerun_same_check
@@ -385,6 +452,17 @@ performance_evidence:
 - preserve_domain_semantics_and_contracts: required
 - compare_same_workload_before_after: true
 - focused_local_measurement_first_when_representative: true
+
+failure_and_recovery:
+- classify_failure_before_recovery: validation_failure|dependency_missing|permission_denied|stale_ref|tool_unavailable|runtime_lost|external_state_ambiguous|policy_block|user_decision_required
+- recover_using_owner_route_not_ad_hoc_substitution: required
+- stale_ref: refresh_current_state_then_reapply_or_reconcile_change
+- dependency_missing: follow_verification_missing_dependency_policy
+- permission_denied: do_not_reinterpret_as_missing_credentials_when_authenticated_boundary_exists
+- tool_or_runtime_unavailable: surface_actual_blocker_or_reclassify_to_allowed_equivalent_route
+- external_state_ambiguous: inspect_authoritative_state_before_retry
+- safety_or_policy_block: report_exact_blocked_operation_without_silent_bypass
+- recovery_must_not_weaken: correctness|security|approval|branch_protection|idempotency|repository_contract
 
 artifacts_and_logs:
 - workflow_artifacts: evidence_not_implicit_production_state
