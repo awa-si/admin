@@ -63,12 +63,12 @@ parallel_chat:
 - shared_integration_point: awa-si/awa@main
 
 awa_work:
-- canonical_contract: awa-si/awa/work/workflow.md
+- canonical_contract: awa-si/awa/mcp/work/workflow.md
 - use_for_repo_work_only_when_durable_orchestration_is_material: true
 - ordinary_AWA_repo_edit_test_commit_without_durability_need: use_AWA_MCP_Workspace_not_AWA_Work
 - public_work_tool_change:
-  - update_owner_docs: work/README.md|work/workflow.md
-  - focused_tests_required: ordered_execution|approval_interrupt|resume|checkpoint_restart_survival|unknown_work_id|work_recursion_rejection
+  - update_owner_docs: mcp/work/README.md|mcp/work/workflow.md
+  - focused_tests_required_for_affected_surface: plan_validation|start_status_result|approval_resume|reconciliation|cancellation|audit|restart_or_durability_when_affected|work_recursion_rejection
   - runtime_claim_requires_live_endpoint_verification: true
 
 mcp_runtime_change:
