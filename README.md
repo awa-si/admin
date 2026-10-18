@@ -75,7 +75,7 @@ A reload rereads the global owners, active project delta, and resolved repositor
 reload mcp
 ```
 
-`reload mcp` rereads the current AWA `mcp_instructions` contract only. It is read-only and does not authorize any other AWA MCP action.
+`reload mcp` performs `mcp_reload(scope="all")` and then rereads the current AWA `mcp_instructions` contract. The trigger does not authorize unrelated AWA MCP actions.
 
 ## Public repository safety
 
