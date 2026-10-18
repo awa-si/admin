@@ -280,6 +280,24 @@ refactoring:
 
 documentation:
 - documentation_is_part_of_contract_when_behavior_or_interface_is_non_obvious: true
+- code_functionality_anchor:
+  - use_when: functionality_has_material_documentation|cross_file_contract|public_or_operational_behavior|stable_reference_value
+  - purpose: stable_bidirectional_reference_between_code_and_documentation_without_duplicating_contract_text
+  - anchor_id: stable_semantic_identifier_independent_of_line_number_or_incidental_symbol_rename
+  - preferred_location: narrowest_code_owner_function|class|module_boundary
+  - preferred_form: repository_native_docstring_or_comment_metadata
+  - example_shape: doc_anchor:<semantic.id>
+  - one_active_anchor_per_functionality: required
+  - duplicate_anchor_id: prohibited
+  - anchor_must_not_be_used_as_substitute_for_clear_code_or_canonical_documentation: true
+  - docs_reference_code_anchor_instead_of_copying_implementation_detail_when_reference_is_sufficient: preferred
+  - code_may_reference_canonical_doc_section_when_behavioral_contract_requires_explanation: preferred
+  - bidirectional_reference_when_material: code_anchor -> canonical_doc|canonical_doc -> code_anchor
+  - reference_must_resolve_to_current_owner: required
+  - line_number_as_persistent_reference: prohibited
+  - symbol_or_file_move: preserve_anchor_id_when_semantics_are_unchanged
+  - semantic_split_or_merge: create_retire_or_redirect_anchor_explicitly
+  - stale_or_orphan_anchor: remove_or_update_with_owning_change
 - prefer_narrowest_canonical_owner_for_documented_rule: required
 - duplicate_active_contract_across_docs: prohibited
 - update_docs_when_change_affects: public_API|configuration|architecture|runtime_behavior|data_schema|operational_procedure|developer_workflow|failure_semantics
