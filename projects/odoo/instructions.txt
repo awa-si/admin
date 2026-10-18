@@ -1,0 +1,15 @@
+scope:
+- project: odoo
+- repository: awa-si/odoo-addons
+- branch: 16.0
+
+inheritance:
+- parent: global
+- mode: delta_only
+
+repository:
+- source_of_truth: awa-si/odoo-addons@16.0
+- agent: AGENTS.md
+
+project_delta:
+- none
