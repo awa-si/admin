@@ -286,7 +286,7 @@ documentation:
   - anchor_id: stable_semantic_identifier_independent_of_line_number_or_incidental_symbol_rename
   - preferred_location: narrowest_code_owner_function|class|module_boundary
   - preferred_form: repository_native_docstring_or_comment_metadata
-  - example_shape: doc_anchor:<semantic.id>
+  - example_shape: doc:<semantic.id>
   - one_active_anchor_per_functionality: required
   - duplicate_anchor_id: prohibited
   - anchor_must_not_be_used_as_substitute_for_clear_code_or_canonical_documentation: true
