@@ -1,14 +1,14 @@
 scope:
 - project: odoo
 - repository: awa-si/odoo
-- branch: 16.0
+- branch: main
 
 inheritance:
 - parent: global
 - mode: delta_only
 
 repository:
-- source_of_truth: awa-si/odoo@16.0
+- source_of_truth: awa-si/odoo@main
 - agent: AGENTS.md
 
 project_delta:
