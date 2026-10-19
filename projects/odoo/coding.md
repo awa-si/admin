@@ -1,0 +1,43 @@
+scope: project_odoo_coding
+mode: normative_project_delta
+owner: awa-si/admin/projects/odoo/coding.md
+inherits: awa-si/admin/coding.md
+repository: awa-si/odoo@main
+parent_rules_remain_active: true
+
+odoo_conventions:
+  target: repository_supported_odoo_version
+  names:
+    models: prefer_odoo_standard_dot_separated_model_names
+    python_classes: PascalCase
+    python_methods_and_fields: snake_case
+    xml_ids: stable_descriptive_snake_case
+    modules: lowercase_snake_case
+    relations: use_odoo_relational_fields_and_conventional_suffixes
+  follow: official_odoo_orm_api|manifest_structure|addon_layout|security_acl_and_record_rules|view_inheritance|upgrade_migrations
+  avoid: nonstandard_frameworks|direct_sql_when_orm_suffices|version_deprecated_apis|unnecessary_rpc_methods
+
+reuse_and_extension:
+  before_creating_model_or_addon: inspect_existing_standard_oca_and_first_party_models
+  prefer: _inherit_to_extend_existing_model_when_semantics_and_lifecycle_fit
+  use_existing_fields_and_methods_when_sufficient: true
+  use_view_inheritance_instead_of_copying_views: true
+  choose_new_model_when: independent_identity_or_lifecycle|precreation_reservation|separate_access_boundary|distinct_constraints|audit_history
+  avoid_parallel_models_or_duplicate_state_without_reason: true
+  ensure_unique_external_operation_ids_at_database_level: true
+  migration_when_renaming_models_or_fields: explicit_preserve_data_and_metadata
+
+simplicity_and_robustness:
+  select: smallest_cohesive_odoo_native_design_that_preserves_domain_invariants
+  minimize: states|RPC_roundtrips|custom_methods|dependencies|unnecessary_indirection
+  prefer: ORM_constraints_and_transactions|documented_apis|idempotent_operations|explicit_error_states
+  never_sacrifice: authorization|concurrency_safety|transaction_integrity|replay_safety|data_migration
+  avoid: speculative_abstractions|silent_retries_of_external_side_effects|redundant_state
+  external_side_effects: treat_uncertain_outcomes_as_uncertain_until_reconciled
+
+validation:
+  static: manifest|Python|XML|security_references
+  integration: isolated_database|isolated_filestore|access_rules|model_upgrade|transaction_and_concurrency_tests
+  migration: verify_existing_records_constraints_and_ir_model_metadata_after_rename
+  never_test_against_production_database: true
+  report_gates_actually_executed: true
