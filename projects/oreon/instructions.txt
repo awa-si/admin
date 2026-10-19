@@ -12,4 +12,28 @@ repository:
 - agent: AGENTS.md
 
 project_delta:
-- none
+- oreon_repository_work: graph_first_required
+- applies_to: research|review|planning|documentation|coding|tests|refactoring|contract_architecture|integration|repo_change
+- canonical_graph_contract: awa-si/oreon@main:integrations/graph/model.md
+- framework_graph_cli: python -m scripts.graph_dependencies
+- before_work:
+  - bootstrap_actual_AGENTS_md_and_entire_INDEX_md
+  - identify_narrowest_canonical_owner_for_requested_scope
+  - validate_current_registered_document_graph_and_run_impact_on_relevant_owner_paths
+  - examine_direct_and_material_transitive_review_candidates_before_choosing_change_set
+  - for_unregistered_code_or_other_assets_use_their_registered_architecture_owner_as_graph_entry_then_inspect_real_source_and_tests
+- during_work:
+  - graph_findings_guide_dependency_review_not_automatic_edits
+  - preserve_domain_owners_and_actual_current_git_state
+  - use_native_code_search_and_runtime_tests_for_dependencies_not_represented_by_document_links
+- after_material_change:
+  - synchronize_INDEX_md_registered_document_blob_SHAs_first
+  - rebuild_graph_and_recheck_changed_owner_paths_and_material_consumer_paths
+  - verify_impacted_contracts_interfaces_tests_and_permissions_as_relevant
+  - run_applicable_document_and_code_validation_before_commit
+- limitations:
+  - graph_v1_is_derived_explicit_document_citations_not_complete_semantic_dependency_or_business_truth
+  - graph_does_not_authorize_G0_G7_bank_actions_legal_rights_or_access
+  - graph_failure_or_stale_registry_must_be_reported_and_reconciled_not_silently_bypassed
+  - for_READ_ONLY_tasks_use_graph_for_relevant_source_and_dependency_resolution_without_unnecessary_mutation
+  - do_not_claim_complete_impact_coverage_from_graph_alone
