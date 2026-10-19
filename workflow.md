@@ -385,6 +385,17 @@ github_actions:
 bundled_execution:
 - apply_when: explicit_user_bundle_or_batch_instruction
 - scope: all_safe_materially_related_steps_requested_in_current_bundle
+- priority_model:
+  - P0: correctness|security|data_integrity|contract_violation|blocking_failure
+  - P1: requested_primary_behavior|material_bug|integration_failure|high_impact_architecture_or_maintainability
+  - P2: performance|reliability|tests|observability|moderate_debt|clarity
+  - P3: cleanup|style_consistency|non_blocking_refactor|documentation_polish|minor_optimization
+  - default_execution_order: P0 -> P1 -> P2 -> P3
+  - dependency_graph_precedes_priority_when_required: true
+  - same_priority: group_by_owner_or_coherent_change_set
+  - user_explicit_priority: may_override_default_classification_when_safe
+  - do_not_skip_requested_lower_priority_work_in_explicit_bundle_merely_because_higher_priority_work_completed: true
+  - blocked_lower_priority_item_does_not_block_independent_higher_or_same_priority_items: true
 - directory_scope:
   - explicit_directory_path_means: full_named_subtree
   - inventory_before_plan: all_material_tracked_files_in_subtree|local_manifests|tests|adjacent_owner_files_when_required
