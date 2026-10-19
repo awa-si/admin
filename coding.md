@@ -24,6 +24,7 @@ priorities:
 
 implementation_strategy:
 - before_new_method: inspect_existing_repo_implementation|existing_dependencies|standard_library|modern_mature_external_libraries
+- when_known_external_library_is_material: verify_current_official_docs_and_supported_version_before_design_or_implementation
 - selection_order: existing_repo_code > standard_library > suitable_existing_dependency > modern_mature_external_library > custom_implementation
 - reuse_existing_implementation_when_contract_satisfied: preferred
 - compose_existing_primitives_before_creating_parallel_abstraction: preferred
@@ -298,6 +299,17 @@ runtime_and_language_choice:
 - JIT: use_when_runtime_support_is_mature_and_warmup_tradeoff_is_acceptable
 
 libraries_and_dependencies:
+- known_library_first_step:
+  - apply_when: using_or_modifying_code_against_known_external_library|framework|SDK|runtime_API
+  - first_verify: latest_supported_release|current_supported_major|official_documentation|deprecation_status|breaking_changes_when_material
+  - official_primary_docs_before_memory_or_stale_examples: required
+  - current_declared_repository_version_remains_execution_target_unless_change_is_requested_or_required
+  - distinguish: latest_available_version|latest_supported_version|repository_declared_version
+  - API_or_behavior_assumption_must_match_declared_or_target_version: required
+  - version_sensitive_features: verify_against_current_official_docs_before_use
+  - deprecated_pattern_in_existing_code: do_not_copy_forward_without_current_docs_verification
+  - examples_from_issues_blogs_or_forums: secondary_only_when_official_docs_are_insufficient
+  - dependency_upgrade_not_implied_by_docs_check: true
 - dependency_addition_requires_material_value: true
 - inspect_before_add: existing_direct_or_transitive_dependency_can_satisfy_need
 - prefer_modern_mature_well_maintained_library: true
