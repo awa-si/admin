@@ -52,6 +52,16 @@ mode: normative
     - partial_scope_completion: prohibited_when_remaining_requested_in_scope_work_is_ready
     - file_by_file_micro_stop: prohibited
     - exclude_only_when: generated|vendored|binary|explicitly_out_of_scope|repository_contract_excludes
+  - priority_levels:
+    - P0: correctness|security|data_loss|contract_break|blocking_failure
+    - P1: user_requested_core_behavior|material_regression|broken_integration|high_impact_maintainability
+    - P2: performance|reliability|test_coverage|clarity|moderate_technical_debt
+    - P3: cleanup|consistency|non_blocking_refactor|documentation_polish|low_impact_optimization
+    - ordering: P0 -> P1 -> P2 -> P3
+    - dependency_order_overrides_numeric_priority_when_required_for_correct_execution: true
+    - user_explicit_priority_overrides_default_classification_when_safe: true
+    - lower_priority_work_must_not_delay_required_higher_priority_completion: true
+    - explicit_bundling_keeps_lower_priority_requested_work_in_scope_after_higher_priorities_complete: true
   - bundled_phase_boundary: stop_only_at_requested_bundle_completion|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
   - validation_in_bundle: aggregate_at_natural_boundaries_and_run_once_per_coherent_change_set_when_sufficient
   - commit_in_bundle: prefer_one_coherent_commit_per_change_set_after_validation_instead_of_commit_after_each_micro_step
