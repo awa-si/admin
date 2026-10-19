@@ -44,6 +44,14 @@ mode: normative
   - explicit_bundling_commands: bundle|bundled|batch|batched|all|do_all|do_all_batched|alles|gebuendelt
   - explicit_bundling_overrides_single_milestone_default: true
   - bundled_execution: execute_all_safe_and_materially_related_steps_in_requested_bundle_before_returning_control
+  - explicit_directory_target:
+    - examples: path/|package/|module_directory|repository_subtree
+    - scope: entire_named_directory_subtree_not_first_matching_file
+    - audit_or_enhance_request: inventory_all_material_files_and_local_dependencies_in_scope_before_stopping
+    - with_all_or_batched: complete_inventory -> coherent_plan -> execute_all_safe_material_changes -> validate_scope -> writeback_before_returning_control
+    - first_file_or_first_issue_completion: prohibited_when_remaining_in_scope_work_is_ready
+    - file_by_file_micro_stop: prohibited
+    - exclude_only_when: generated|vendored|binary|explicitly_out_of_scope|repository_contract_excludes
   - bundled_phase_boundary: stop_only_at_requested_bundle_completion|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
   - validation_in_bundle: aggregate_at_natural_boundaries_and_run_once_per_coherent_change_set_when_sufficient
   - commit_in_bundle: prefer_one_coherent_commit_per_change_set_after_validation_instead_of_commit_after_each_micro_step
