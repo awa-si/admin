@@ -34,6 +34,8 @@ repository_state_resolution:
 
 repository_discovery:
 - objective: locate_smallest_material_owner_and_dependency_set_with_minimum_repository_scan_cost
+- explicit_directory_target_overrides_narrowest_single_file_optimization: true
+- when_directory_is_requested: establish_complete_material_subtree_inventory_before_treating_discovery_as_complete
 - known_path_or_symbol: direct_read_or_exact_lookup_first
 - route_native_repository_map_or_search: prefer_when_available_before_shell_scan
 - AWA_MCP_Workspace:
@@ -383,6 +385,19 @@ github_actions:
 bundled_execution:
 - apply_when: explicit_user_bundle_or_batch_instruction
 - scope: all_safe_materially_related_steps_requested_in_current_bundle
+- directory_scope:
+  - explicit_directory_path_means: full_named_subtree
+  - inventory_before_plan: all_material_tracked_files_in_subtree|local_manifests|tests|adjacent_owner_files_when_required
+  - use_native_repository_map_or_search_or_git_ls_files_to_establish_complete_scope: required
+  - bounded_search_truncation_or_scan_limit: must_expand_or_fallback_before_claiming_directory_inventory_complete
+  - audit_phase: inspect_full_material_scope_and_group_findings_by_owner_or_change_set
+  - planning_phase: build_coherent_execution_plan_for_all_actionable_findings_before_writeback
+  - execution_phase: implement_all_safe_material_findings_in_scope_when_user_requested_audit_and_enhance
+  - validation_phase: validate_each_change_set_and_final_directory_scope
+  - completion_requires: no_known_ready_actionable_finding_left_in_explicit_directory_scope
+  - do_not_stop_after: first_file|first_issue|first_commit|first_successful_test_when_remaining_scope_is_ready
+  - micro_iteration_across_files: avoid_when_batch_execution_is_safe
+  - excluded_content: generated|vendored|binary|explicitly_excluded|repository_contract_excluded
 - prefer_fewer_larger_coherent_phases_over_micro_iterations: true
 - do_not_return_after_each_edit_validate_commit_cycle_when_requested_bundle_has_ready_followup_work: true
 - validation:
