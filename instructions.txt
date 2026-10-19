@@ -47,9 +47,9 @@ mode: normative
   - explicit_directory_target:
     - examples: path/|package/|module_directory|repository_subtree
     - scope: entire_named_directory_subtree_not_first_matching_file
-    - audit_or_enhance_request: inventory_all_material_files_and_local_dependencies_in_scope_before_stopping
-    - with_all_or_batched: complete_inventory -> coherent_plan -> execute_all_safe_material_changes -> validate_scope -> writeback_before_returning_control
-    - first_file_or_first_issue_completion: prohibited_when_remaining_in_scope_work_is_ready
+    - inventory: all_material_files_and_local_dependencies_in_scope_before_stopping
+    - with_explicit_bundling: complete_inventory -> coherent_plan -> execute_all_safe_requested_work -> validate_scope -> writeback_before_returning_control
+    - partial_scope_completion: prohibited_when_remaining_requested_in_scope_work_is_ready
     - file_by_file_micro_stop: prohibited
     - exclude_only_when: generated|vendored|binary|explicitly_out_of_scope|repository_contract_excludes
   - bundled_phase_boundary: stop_only_at_requested_bundle_completion|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
