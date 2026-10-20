@@ -474,7 +474,7 @@ dependency_preflight:
 long_running_execution:
 - apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
 - preflight:
-  - required_sequence: syntax_static -> short_focused_smoke -> long_job
+  - required_sequence: dependency_preflight -> syntax_static -> short_focused_smoke -> long_job
   - syntax_static: smallest_relevant_parser_import_compile_or_static_check
   - short_focused_smoke: smallest_representative_runtime_check_using_same_material_code_path_and_runtime_profile_when_practical
   - long_job_start_gate: syntax_static_and_short_focused_smoke_passed
