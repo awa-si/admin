@@ -480,6 +480,12 @@ long_running_execution:
   - GitHub_Workspace_recovery: delegate_to_current_GitHub_Workspace_skill
   - wrong_commit: prefer_revert_or_compensating_commit
 
+mcp_versioning:
+- when_changing_MCP_implementation_or_tool_registration: increment_awa-si/awa/mcp/VERSION_in_same_change_set
+- verify_version_bump_before_commit_and_push: required
+- documentation_only_changes_without_MCP_runtime_effect: no_version_bump_required
+- version_change_does_not_hot_reload_Python_modules: process_restart_or_redeploy_still_required
+
 verification:
 - evidence_ladder: syntax_static -> focused_behavior -> affected_scope -> integration_or_remote_when_material
 - choose_highest_required_evidence_not_maximum_available_evidence: true
