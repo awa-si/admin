@@ -105,6 +105,9 @@ mode: normative
   - broad_repository_scan: only_when_scope_or_dependency_uncertainty_materially_requires_it
   - known_small_change: prefer_direct_patch_path
   - workspace_route: use_when_execution_or_uncertain_coupling_materially_requires_it_not_as_default_escalation
+  - tool_selection: use_connected_GitHub_connector_when_it_can_complete_requested_repository_work_with_required_verification
+  - AWA_workspace_creation: prohibited_when_connected_GitHub_connector_is_sufficient
+  - existing_AWA_workspace: do_not_create_or_switch_workspace_merely_for_repository_access
   - dependency_discovery: resolve_once_per_scope_version
   - do_not_restart_repository_analysis_during_writeback_or_verification: true
   - writeback: use_known_change_set_and_known_base
