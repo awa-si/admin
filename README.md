@@ -50,12 +50,13 @@ admin/
 
 ## Workflow routes
 
-- `GitHub_Patch`: small deterministic repository changes without local execution.
-- `GitHub_Workspace`: default for light-to-medium repository inspection and coding.
-- `AWA_MCP_Workspace`: default for heavy or long-running work outside ChatGPT Work mode. In ChatGPT Work mode it is disabled by default and may be used only when the current user explicitly commands AWA MCP use for the requested scope.
+- **Connected GitHub connector**: first choice whenever it can complete repository inspection, editing, and required verification; no AWA workspace is created in that case.
+- `GitHub_Patch`: small deterministic repository changes without local execution, using the connected GitHub connector.
+- `GitHub_Workspace`: light-to-medium repository coding requiring a temporary local workspace, with connector-mediated remote access.
+- `AWA_MCP_Workspace`: heavy or long-running execution, special runtimes, or requirements that cannot be met through the connector/GitHub Workspace alone. Once selected, local Git is run inside AWA and authenticated remote operations use AWA workspace repository tools. In ChatGPT Work mode, explicit current-user authorization for AWA remains required.
 - `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
-`workflow.md` is the canonical owner of route selection and mechanics. In an AWA MCP workspace, ChatGPT should prefer the native bounded `workspace_repository_map` and `workspace_search` capabilities for initial repository narrowing before reconstructing the same state through multiple shell scans.
+`workflow.md` is the canonical owner of route selection and mechanics. Repository scope alone does not justify creating an AWA workspace. In an AWA MCP workspace, ChatGPT should prefer the native bounded `workspace_repository_map` and `workspace_search` capabilities for initial repository narrowing before reconstructing the same state through multiple shell scans.
 
 ## ChatGPT Work mode
 
