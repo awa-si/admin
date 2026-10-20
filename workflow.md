@@ -459,6 +459,16 @@ edit_and_writeback:
 - force_push_or_force_overwrite: prohibited
 - same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
 
+dependency_preflight:
+- before_running: scripts|tests|builds|benchmarks|training|replays
+- inspect: dependency_manifests|lockfiles|workspace_profile|runtime_version|system_tools
+- verify_in_target_environment: required_packages|installed_versions|importability|executables|native_libraries
+- missing_dependencies: install_or_prepare_first_when_route_supports_it
+- do_not_start_main_script_until_required_dependencies_are_ready: true
+- recheck_when: dependency_manifest_or_environment_changes
+- failure: report_precise_missing_dependency_or_execution_route_blocker
+- avoid_redundant_checks: reuse_valid_preflight_for_unchanged_module_bundle
+
 long_running_execution:
 - apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
 - preflight:
