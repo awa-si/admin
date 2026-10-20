@@ -10,6 +10,16 @@ resolution:
 - project_specific_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
 
+language_and_toolchain_versions:
+- default_when_no_explicit_version_requirement: latest_stable_release
+- applies_to: Python|Node.js|Rust|Go|Java|C|C++|other_languages|runtimes|compilers|toolchains|package_managers
+- verify_current_latest_stable_from_official_upstream_source_when_version_choice_matters: true
+- do_not_default_to: outdated_versions|prerelease|beta|release_candidate|nightly
+- explicit_version_requirement: user_instruction|repository_manifest_or_lockfile|CI_or_deployment_contract|project_or_repository_compatibility_constraint
+- existing_repository_constraints: preserve_until_explicitly_authorized_migration
+- runtime_or_toolchain_upgrade: verify_dependencies|supported_platforms|compatibility|tests_before_adoption_when_material
+- latest_stable_does_not_imply_unrequested_repository_wide_upgrade: true
+
 priorities:
 - hard_constraints: correctness|security|repository_contract
 - optimization_priority_after_hard_constraints: performance > simplicity > maintainability > convenience
