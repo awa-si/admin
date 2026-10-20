@@ -16,9 +16,17 @@ awa_workspace:
 - repository_slot_default: 1
 - repository_profile_owner: awa-si/awa/workspace.ini
 - repository_profile_must_be_applied_after_import: true
+- workspace_create_resources: provisional_workspace_defaults_not_repository_profile
+- required_bootstrap_sequence: workspace_create -> workspace_repository_import(awa-si/awa@main) -> inspect_import_profile -> workspace_context(include_toolchain=true) -> execute
+- before_first_execution: verify_bound_repository_is_awa-si/awa|verify_profile_base_image|verify_effective_resources|verify_dataset_and_network_configuration
+- profile_source_of_truth: repository_root_workspace.ini_as_validated_by_MCP
+- never_infer_profile_applied_from: workspace_create_success|repository_name_in_chat|GitHub_connector_file_read
+- profile_missing_or_rejected: stop_and_report_actual_error_before_execution
+- execution_image: select_exact_effective_profile_image_from_import_or_workspace_context
+- default_image_fallback: allowed_only_when_no_repository_profile_exists_and_native_contract_permits
+- post_profile_change_on_existing_bound_workspace: workspace_profile_reload_when_idle_then_verify_context_before_execution
 - do_not_duplicate_workspace_resource_values_in_admin: true
 - effective_profile_source: workspace_repository_import.profile|workspace_context
-- execution_image: use_generated_repository_profile_image_when_present_else_localhost/workspace:py
 - repository_history:
   - complete_history_required: true
   - shallow_or_grafted_history_for_normal_development: prohibited
