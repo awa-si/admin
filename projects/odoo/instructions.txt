@@ -12,6 +12,7 @@ repository:
 - agent: AGENTS.md
 
 project_delta:
+- workflow_contract: projects/odoo/workflow.md
 - coding_contract: projects/odoo/coding.md
 - apply_on: Odoo code design, implementation, refactoring, reviews and tests
 - inheritance: retain global coding.md and repository AGENTS.md; project rules extend them
