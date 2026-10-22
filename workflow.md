@@ -471,10 +471,22 @@ dependency_preflight:
 - failure: report_precise_missing_dependency_or_execution_route_blocker
 - avoid_redundant_checks: reuse_valid_preflight_for_unchanged_module_bundle
 
+rights_preflight:
+- before_running: scripts|tests|builds|deployments|repository_writes|training|replays
+- verify_in_actual_execution_identity: filesystem_read_write_execute_permissions|directory_traversal|ownership|ACLs|workspace_mount_access|required_service_or_database_roles|repository_branch_permissions
+- check_targets: inputs|outputs|temporary_directories|cache|artifacts|runtime_sockets|external_resources_as_material
+- do_not_assume: root_access|sudo_access|host_access|credentials|privileges_from_workspace_creation
+- insufficient_rights: report_exact_denied_resource_and_required_permission_then_apply_only_safe_authorized_remediation
+- remediation: prefer_existing_owned_writable_locations|correct_scoped_permissions|approved_role_or_access_changes
+- prohibited: blanket_chmod_777|privilege_escalation|bypassing_security_controls|changing_unrelated_ownership
+- after_remediation: recheck_effective_access_then_continue_original_execution
+- unrecoverable_denial: stop_before_main_execution_and_report_blocker
+- avoid_redundant_checks: reuse_valid_preflight_when_identity|mounts|targets|permissions_unchanged
+
 long_running_execution:
 - apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
 - preflight:
-  - required_sequence: dependency_preflight -> syntax_static -> short_focused_smoke -> long_job
+  - required_sequence: dependency_preflight -> rights_preflight -> syntax_static -> short_focused_smoke -> long_job
   - syntax_static: smallest_relevant_parser_import_compile_or_static_check
   - short_focused_smoke: smallest_representative_runtime_check_using_same_material_code_path_and_runtime_profile_when_practical
   - long_job_start_gate: syntax_static_and_short_focused_smoke_passed
