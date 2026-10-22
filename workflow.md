@@ -483,10 +483,22 @@ rights_preflight:
 - unrecoverable_denial: stop_before_main_execution_and_report_blocker
 - avoid_redundant_checks: reuse_valid_preflight_when_identity|mounts|targets|permissions_unchanged
 
+environment_preflight:
+- before_running: scripts|tests|builds|deployments|training|replays|long_running_jobs
+- resolve_required_variables_from: repository_configuration_contract|declared_env_schema|runtime_or_workspace_profile|application_entrypoint
+- verify_in_actual_execution_environment: presence|nonempty_when_required|type_and_format|allowed_values|cross_variable_consistency|environment_scope
+- configuration_sources: use_existing_authorized_environment|approved_env_file_loading|secret_manager_or_runtime_injection_as_supported
+- missing_or_invalid_values: report_variable_names_and_validation_reasons_without_disclosing_sensitive_values
+- remediation: load_authorized_configuration_or_set_nonsecret_documented_defaults_when_safe|request_unavailable_secrets_or_authorization
+- prohibited: inventing_credentials|committing_env_secrets|printing_secret_values|silently_overriding_user_configuration
+- after_remediation: revalidate_in_target_process_context_then_continue_execution
+- failure: stop_before_main_execution_when_required_configuration_cannot_be_validated
+- avoid_redundant_checks: reuse_results_only_when_config_sources|process_environment|runtime_scope_unchanged
+
 long_running_execution:
 - apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
 - preflight:
-  - required_sequence: dependency_preflight -> rights_preflight -> syntax_static -> short_focused_smoke -> long_job
+  - required_sequence: dependency_preflight -> rights_preflight -> environment_preflight -> syntax_static -> short_focused_smoke -> long_job
   - syntax_static: smallest_relevant_parser_import_compile_or_static_check
   - short_focused_smoke: smallest_representative_runtime_check_using_same_material_code_path_and_runtime_profile_when_practical
   - long_job_start_gate: syntax_static_and_short_focused_smoke_passed
