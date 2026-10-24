@@ -12,4 +12,35 @@ repository:
 - agent: AGENTS.md
 
 project_delta:
-- none
+- workspace_policy:
+    canonical_contract: awa-si/awa@main:mcp/workspace.md
+    repository_only_work: use_GitHub_connector_when_sufficient_without_creating_workspace
+    existing_chat_workspace: reuse_existing_repository_slot
+    before_workspace_create_or_repository_import:
+      - resolve_exact_repository_and_target_branch
+      - query_complete_active_AWA_workspace_registry_with_pagination
+      - compare_exact_canonical_repository_across_all_slots
+      - treat_registry_snapshot_as_discovery_not_ownership_or_permission
+      - never_treat_failed_or_incomplete_registry_as_no_match
+    matching_workspace_in_other_chat:
+      - present_workspace_id_repository_slot_and_shared_state_implications
+      - request_explicit_user_consent_before_any_context_execution_or_mutation_in_that_workspace
+      - after_consent_verify_live_repository_binding_branch_dirty_state_active_jobs_locks_runtime_and_permissions
+      - do_not_assume_access_to_other_chat_messages_or_ownership
+      - consent_does_not_authorize_overwriting_or_destructive_operations
+    conflicts_or_denied_reuse:
+      - offer_compatible_isolated_slot_or_separate_workspace
+      - ask_explicit_authorization_before_creating_duplicate_workspace
+      - never_silently_create_duplicate_or_mutate_another_chat_worktree
+    concurrency:
+      - workspace_parallelism_counts_repository_slots_not_jobs
+      - respect_max_concurrent_executions_and_slot_and_environment_locks
+    lifecycle:
+      - no_automatic_delete_cleanup_reset_or_termination_of_shared_workspace
+      - report_workspace_id_repository_slot_and_effects_after_execution
+- redeployment_verification:
+    after_user_reports_redeploy: reload_AWA_MCP_instruction_resolver_and_check_workspace_policy
+    distinguish_mcp_reload_from_service_process_restart: true
+    verify_deployed_document_and_process_start_when_available: true
+    deployment_commit_unavailable: report_unverified_code_revision_without_claiming_confirmed_deployment
+    require_service_restart_for_loaded_Python_code_changes: true
