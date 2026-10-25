@@ -85,7 +85,11 @@ legal_research:
 - analysis: separate_legal_rules|established_facts|disputed_facts|application|counterarguments
 - procedure: verify_competent_authority|filing_rules|service_requirements|appeal_options
 - output: supported_legal_position|citations|uncertainty|options|procedural_risks
-- escalation: recommend_qualified_local_counsel_for_high_stakes_or_unresolved_questions
+- escalation:
+    trigger: material_legal_uncertainty|irreversible_legal_consequences|high_financial_or_procedural_risk
+    action: identify_specific_risk|recommend_qualified_counsel_when_materially_necessary
+    default: continue_independent_legal_research_and_analysis
+    avoid: generic_lawyer_disclaimer|premature_escalation
 
 topic_knowledge_assurance:
 - source_weighting: systematic_reviews|replicated_primary_research|relevant_standards|authoritative_institutions
