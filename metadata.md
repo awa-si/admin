@@ -14,15 +14,14 @@ repository: awa-si/admin
 mode: normative_machine_directives
 
 metadata:
-- applies_to: every_new_or_materially_edited_file
-- markdown_text_preferred: YAML_frontmatter
+- applies_to: every_new_or_materially_edited_markdown_md_file
+- format: YAML_frontmatter
 - required_fields: title|description|type|status|language|owner|created|updated
 - allowed_status: draft|active|review|archived
 - created: immutable
 - updated: refresh_on_material_change
-- source_code: compact_language_appropriate_metadata_header_when_safe
-- format_without_safe_inline_metadata: <filename>.meta.yaml
-- existing_file_without_metadata: add_on_next_material_edit
+- non_markdown_including_code_and_configuration: excluded
+- existing_markdown_without_metadata: add_on_next_material_edit
 - metadata_must_not_duplicate_domain_content: true
 
 registry:
