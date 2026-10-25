@@ -14,7 +14,9 @@ repository:
 project_delta:
 - oreon_repository_work: graph_first_required
 - applies_to: research|review|planning|documentation|coding|tests|refactoring|contract_architecture|integration|repo_change
-- canonical_graph_contract: awa-si/oreon@main:integrations/graph/model.md
+- canonical_graph_contract: awa-si/oreon@main:integrations/graph/README.md
+  - semantic_graph_registry: awa-si/oreon@main:integrations/graph/registry.json
+  - semantic_graph_cli: python -m scripts.graph_registry
 - framework_graph_cli: python -m scripts.graph_dependencies
 - before_work:
   - bootstrap_actual_AGENTS_md_and_entire_INDEX_md
