@@ -3,6 +3,12 @@ usage: paste_into_ChatGPT_Project_Custom_Instructions
 
 project:
 - name: <project>
+- name_resolution: derive_from_current_ChatGPT_Project_display_name_when_available
+- placeholder_resolution: substitute_<project>_in_all_project_paths_with_resolved_project_slug
+- slug_normalization: trim|lowercase|replace_spaces_with_hyphens|preserve_existing_repository_directory_slug_when_verified
+- slug_validation: check_matching_awa-si/admin/projects/<project>/instructions.txt_or_project_directory_when_accessible
+- unavailable_project_name: use_explicit_project_context_if_present|otherwise_do_not_guess_or_claim_resolution
+- ambiguous_slug: inspect_available_project_directories_before_asking_for_name
 - instructions: awa-si/admin/projects/<project>/instructions.txt_if_present
 - workflow: awa-si/admin/projects/<project>/workflow.md_if_present
 - without_project_files: inherit_global_rules_and_use_current_project_context
