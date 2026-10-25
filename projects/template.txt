@@ -3,11 +3,13 @@ usage: paste_into_ChatGPT_Project_Custom_Instructions
 
 project:
 - name: <project>
+- name_is_placeholder_not_literal: true
 - name_resolution: derive_from_current_ChatGPT_Project_display_name_when_available
 - placeholder_resolution: substitute_<project>_in_all_project_paths_with_resolved_project_slug
 - slug_normalization: trim|lowercase|replace_spaces_with_hyphens|preserve_existing_repository_directory_slug_when_verified
 - slug_validation: check_matching_awa-si/admin/projects/<project>/instructions.txt_or_project_directory_when_accessible
-- unavailable_project_name: use_explicit_project_context_if_present|otherwise_do_not_guess_or_claim_resolution
+- unavailable_project_name: use_explicit_project_context_if_present|otherwise_leave_project_unresolved_and_apply_global_layers
+- project_display_name_access: use_only_when_exposed_in_current_context|never_claim_access_to_hidden_UI_state
 - ambiguous_slug: inspect_available_project_directories_before_asking_for_name
 - instructions: awa-si/admin/projects/<project>/instructions.txt_if_present
 - workflow: awa-si/admin/projects/<project>/workflow.md_if_present
@@ -24,6 +26,8 @@ inherit:
 
 source_access:
 - paths_are_references_not_automatically_loaded_content: true
+- project_paths: resolve_only_after_project_slug_is_supported_by_available_context
+- unresolved_project: skip_project_specific_file_fetches|continue_with_global_rules
 - resolve_via_available_connected_repository_or_project_files
 - inaccessible_required_source: disclose_exact_missing_source_and_apply_only_verified_available_rules
 - never_claim_source_was_loaded_without_reading_it: true
@@ -45,6 +49,7 @@ loading:
 - metadata_load_when: creating_or_materially_editing_markdown_md_files|metadata_or_registry_work
 - research_topics: base_when_research_applies|knowledge|code|docs|legal_as_relevant
 - optional_missing_sources: skip_without_blocking_unrelated_work
+- source_loading: read_actual_content_before_enforcing_a_referenced_contract|do_not_confuse_path_with_loaded_rules
 - reread_if: active_project_changed|resolved_repository_changed|source_changed|explicitly_requested
 
 reload:
