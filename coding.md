@@ -483,20 +483,10 @@ refactoring:
 - speculative_refactor_without_material_value: avoid
 
 file_metadata:
+- canonical_contract: awa-si/admin/metadata.md
 - apply_when: creating_new_file|materially_editing_existing_file
-- governing_contract: honor_narrower_repository_or_project_metadata_schema_when_explicit
-- markdown_and_text_preferred: YAML_frontmatter_when_compatible_with_file_format
-- default_fields: title|description|type|status|language|owner|created|updated
-- status_values: draft|active|review|archived_unless_repository_contract_defines_other_values
-- created: preserve_original_creation_date_when_known|never_invent
-- updated: refresh_on_material_change_using_actual_change_date
-- source_code: use_compact_language_appropriate_comment_or_docstring_metadata_when_safe_and_warranted
-- formats_without_safe_inline_metadata: use_repository_supported_sidecar_metadata_when_required
-- existing_file_without_metadata: add_during_next_material_edit_when_compatible_and_required
-- avoid: breaking_shebangs|syntax|format_parsers|generated_files|vendor_files|lockfiles|binary_assets|machine_managed_artifacts
-- preserve_existing_header_and_metadata: required_unless_explicitly_migrated
-- do_not_duplicate: domain_content|canonical_contracts|repository_registry
-- repository_registry: update_only_when_owned_repository_contract_requires_it
+- inherit_repository_specific_metadata_overrides_only_when_explicit: true
+- preserve_format_and_parser_compatibility: required
 
 documentation:
 - documentation_is_part_of_contract_when_behavior_or_interface_is_non_obvious: true
