@@ -8,7 +8,9 @@ project:
 inherit:
 - global_instructions: awa-si/admin/instructions.txt
 - global_workflow: awa-si/admin/workflow.md
-- global_coding: awa-si/admin/coding.md
+- global_research: awa-si/admin/research.md_when_applicable
+- global_coding: awa-si/admin/coding.md_when_applicable
+- global_metadata: awa-si/admin/metadata.md_for_markdown_files
 - project_files_are_delta_only: true
 - parent_rules_remain_active_unless_explicitly_overridden: true
 
@@ -25,7 +27,9 @@ repository:
 - current_repository_state_is_authoritative: true
 
 loading:
-- order: global_instructions -> global_workflow -> global_coding_if_applicable -> project.instructions -> project.workflow_if_present -> resolved_repository.AGENTS.md_or_fallback -> material_helpers -> current_task
+- order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project.instructions -> project.workflow_if_present -> resolved_repository.AGENTS.md_or_fallback -> material_helpers -> current_task
+- metadata_load_when: creating_or_materially_editing_markdown_md_files|metadata_or_registry_work
+- research_topics: base_always_when_research_applies|knowledge|code|docs|legal_as_relevant
 - missing_optional_project_workflow: continue_with_parent_layer
 - reread_if: active_project_changed|resolved_repository_changed|source_changed|explicitly_requested
 
