@@ -8,6 +8,8 @@
 instructions.txt                       global behavior + resolution
 workflow.md                           repository execution/workflow
 coding.md                             coding/design/performance guidance
+research.md                           knowledge/code/docs research and evidence standards
+metadata.md                           Markdown-only file metadata contract
 AGENTS.md                             Admin repository agent + fallback repository agent
 projects/<project>/instructions.txt   project behavior/repository delta
 projects/<project>/workflow.md        optional project workflow delta
@@ -24,6 +26,7 @@ Project repository resolution is defined by `projects/<project>/instructions.txt
 ```text
 instructions.txt
 → workflow.md
+→ research.md                            # when applicable
 → coding.md                              # when applicable
 → projects/<project>/instructions.txt   # when active
 → projects/<project>/workflow.md        # when present
