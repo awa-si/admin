@@ -12,6 +12,10 @@ repository:
 - agent: AGENTS.md
 
 project_delta:
+- current_user_priority: complete_reusable_oreon_framework_before_pilot_execution
+- pilot_work: non_priority_unless_explicitly_requested_or_required_as_framework_reference
+- framework_completion_scope: canonical_architecture|domain_coverage|cross_domain_contracts|document_graph|reusable_templates|validation|consistency
+- distinguish: framework_completeness_from_case_specific_operational_readiness
 - oreon_repository_work: graph_first_required
 - applies_to: research|review|planning|documentation|coding|tests|refactoring|contract_architecture|integration|repo_change
 - canonical_graph_contract: awa-si/oreon@main:integrations/graph/README.md
