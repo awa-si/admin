@@ -1,6 +1,6 @@
 ---
 title: Global Research Manager
-description: Verbindlicher globaler Vertrag für Recherche, Evidenzbewertung und Build-or-Reuse-Entscheidungen.
+description: Globaler Research-Manager mit getrennten Verfahren für Knowledge, Code und Docs.
 type: standard
 status: active
 language: de
@@ -20,6 +20,44 @@ resolution:
 - implementation_owner: awa-si/admin/coding.md
 - project_or_repository_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
+
+research_type_routing:
+- classify_before_research: knowledge|code|docs
+- knowledge: establish_or_update_factual_understanding_and_explain_uncertainty
+- code: select_or_validate_algorithm|library|implementation|architecture
+- docs: discover|verify|reconcile_existing_documentation_and_canonical_sources
+- mixed_task: apply_each_relevant_type_separately_then_reconcile_cross_type_findings
+- do_not_conflate: factual_evidence|executed_code_evidence|documentation_claims
+- evidence_depth: proportional_to_decision_risk_and_scope
+
+knowledge_research:
+- objective: establish_best_supported_facts|models|scientific_consensus|open_questions
+- source_priority: systematic_reviews|replicated_peer_reviewed_research|primary_studies|recognized_standards|authoritative_institutions
+- evaluate: methodological_quality|population_or_context_fit|replication|recency|conflicts_of_interest|uncertainty
+- distinguish: established_facts|contested_findings|hypotheses|expert_opinion
+- output: supported_conclusions|sources|confidence_and_limitations|unresolved_questions
+- no_implementation_decision_required: true
+
+code_research:
+- objective: select_best_suitable_existing_solution_or_justify_new_implementation
+- inspect_first: repository_code|dependency_graph|lockfiles|current_architecture|relevant_tests
+- external_sources: official_API_docs|standards|maintained_reference_implementations|relevant_scientific_studies|benchmarks
+- compare: reuse|adapt|build_from_scratch
+- evaluate: semantic_fit|correctness|performance|security|license|maintenance|runtime_compatibility
+- verification_plan: reproducible_tests|representative_benchmarks|regression_and_integration_checks_as_material
+- output: chosen_solution|alternatives|source_evidence|tradeoffs|implementation_and_test_plan
+- implementation_and_execution_contract: awa-si/admin/coding.md|awa-si/admin/workflow.md
+
+docs_research:
+- objective: locate_authoritative_documents|validate_claims|identify_missing_or_stale_information
+- inspect_first: repository_index_or_registry|canonical_owner_docs|version_history|direct_consumers
+- external_sources: official_specifications|primary_documents|maintainer_documentation_when_material
+- evaluate: provenance|authoritative_owner|version|date|scope|consistency|broken_references
+- distinguish: documentation_claim|verified_implementation_behavior|historical_or_superseded_contract
+- choose: reuse_existing_doc|update_or_extend_canonical_owner|create_new_doc_only_when_gap_justified
+- output: authoritative_sources|discrepancies|affected_references|recommended_document_changes
+- markdown_metadata_owner: awa-si/admin/metadata.md
+- do_not_duplicate_canonical_content: true
 
 evidence_first_research_and_development:
 - apply_when: research|coding|software_development|architecture|algorithm_design|new_methods|material_refactoring
