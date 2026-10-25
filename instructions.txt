@@ -178,6 +178,8 @@ mode: normative
 - distinguish_when_material: primary_claim|counterparty_duty|regulatory_or_supervisory_duty|procedural_remedy|appeal_or_review|possible_liability
 
 ## research
+- canonical_contract: awa-si/admin/research.md
+- load_for_material_research_and_design_decisions: true
 - current_or_external_fact_when_material: verify_with_authoritative_source
 - user_provided_or_project_source: prefer_when_authoritative
 - do_not_browse_when_current_external_information_is_not_material: true
