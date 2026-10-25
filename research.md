@@ -1,0 +1,62 @@
+---
+title: Global Research Manager
+description: Verbindlicher globaler Vertrag für Recherche, Evidenzbewertung und Build-or-Reuse-Entscheidungen.
+type: standard
+status: active
+language: de
+owner: AWA
+created: 2026-10-25
+updated: 2026-10-25
+---
+
+scope: global_research_guidance
+mode: normative_machine_directives
+
+resolution:
+- owner: awa-si/admin/research.md
+- apply_when: research|technical_investigation|coding|software_development|architecture|algorithm_design|new_methods|material_refactoring|scientific_claim_validation
+- behavior_owner: awa-si/admin/instructions.txt
+- execution_owner: awa-si/admin/workflow.md
+- implementation_owner: awa-si/admin/coding.md
+- project_or_repository_override: explicit_only
+- parent_rules_remain_active_unless_overridden: true
+
+evidence_first_research_and_development:
+- apply_when: research|coding|software_development|architecture|algorithm_design|new_methods|material_refactoring
+- before_choosing_solution: search_for_relevant_existing_peer_reviewed_studies|systematic_reviews|authoritative_technical_reports|standards|official_documentation|well_maintained_reference_implementations
+- sources_priority: peer_reviewed_and_replicated_evidence|recognized_standards|primary_research|official_project_documentation|mature_open_source_implementations
+- evidence_quality: assess_relevance|recency|methodology|independent_validation|limitations|reproducibility|licensing|maintenance
+- distinguish: established_findings|preprints_or_unreplicated_claims|engineering_practice|hypotheses
+- decision_after_evidence_review: reuse_existing_solution|adapt_and_extend_validated_prior_work|implement_from_scratch_when_materially_justified
+- implementation_decision_basis: fitness_to_requirements|correctness|performance|security|compatibility|licensing|maintenance_cost
+- from_scratch_requires: documented_gap_or_material_advantage_over_available_work
+- no_relevant_evidence_found: state_search_scope_and_limitation_not_claim_novelty
+- effort_proportionality: targeted_source_review_for_small_changes|deeper_review_for_novel_or_high_impact_work
+- report_material_sources_and_reason_for_reuse_adaptation_or_new_implementation: required_when_decision_is_material
+- avoid: redundant_reimplementation|uncritical_adoption_of_unverified_studies|research_that_delays_trivial_fixes_without_benefit
+
+research_workflow:
+- define_first: question|scope|decision_to_support|acceptance_criteria
+- check_before_external_search: authoritative_project_sources|existing_repo_code|declared_dependencies|prior_valid_evidence
+- targeted_external_discovery: peer_reviewed_studies|systematic_reviews|standards|official_documentation|reference_implementations_as_material
+- compare_alternatives: reuse|adapt|build_from_scratch|defer_if_evidence_insufficient
+- capture_decision: chosen_approach|material_sources|limitations|tradeoffs|verification_plan
+- use_primary_sources_when_possible: required
+- source_traceability: record_title|author_or_organization|publication_date_or_version|permanent_link_or_DOI_when_material
+- contradictory_results: compare_methods|populations|assumptions|replication|recency_and_explain_remaining_uncertainty
+- outdated_or_unverified_source: do_not_present_as_established_fact
+- stop_search_when: decision_has_sufficient_evidence_for_scope_and_additional_search_has_low_expected_value
+- do_not_cite_unread_sources_or_fabricate_references: true
+
+scientific_and_engineering_transfer:
+- verify_applicability_to_target_workload_and_constraints: required_when_material
+- reference_implementation: inspect_license|maintenance|security|API_compatibility|benchmark_or_test_evidence
+- reproducibility: record_dataset|environment|version|metrics|baseline_when_material
+- benchmark_comparison: use_comparable_setup_and_metrics|distinguish_measured_from_reported_performance
+- adoption_gate: preserve_domain_semantics|verify_correctness|test_material_edge_cases
+
+reporting:
+- concise_default: research_question|strongest_evidence|recommendation|important_caveats
+- source_links: provide_for_material_external_claims
+- no_relevant_studies: say_so_with_search_scope_and_limitations
+- avoid_research_overhead_for_trivial_uncontested_changes: true
