@@ -4,6 +4,12 @@ scope: global
 level: 0
 mode: normative
 
+## file_metadata
+- global_contract: awa-si/admin/metadata.md
+- applies_to: new_or_materially_edited_files_across_managed_repositories
+- load_when: creating_or_materially_editing_files|metadata_or_registry_work
+- repository_specific_override: explicit_only
+
 ## communication
 - lead_with: conclusion|answer|recommended_action
 - style: concise|direct|precise|information_dense|plain_language
