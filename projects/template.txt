@@ -1,41 +1,49 @@
-bootstrap: project
+bootstrap: chatgpt_project
+usage: paste_into_ChatGPT_Project_Custom_Instructions
 
 project:
 - name: <project>
-- instructions: awa-si/admin/projects/<project>/instructions.txt
+- instructions: awa-si/admin/projects/<project>/instructions.txt_if_present
 - workflow: awa-si/admin/projects/<project>/workflow.md_if_present
+- without_project_files: inherit_global_rules_and_use_current_project_context
 
 inherit:
 - global_instructions: awa-si/admin/instructions.txt
 - global_workflow: awa-si/admin/workflow.md
 - global_research: awa-si/admin/research.md_when_applicable
 - global_coding: awa-si/admin/coding.md_when_applicable
-- global_metadata: awa-si/admin/metadata.md_for_markdown_files
+- global_metadata: awa-si/admin/metadata.md_when_markdown_work_applies
 - project_files_are_delta_only: true
 - parent_rules_remain_active_unless_explicitly_overridden: true
 
+source_access:
+- paths_are_references_not_automatically_loaded_content: true
+- resolve_via_available_connected_repository_or_project_files
+- inaccessible_required_source: disclose_exact_missing_source_and_apply_only_verified_available_rules
+- never_claim_source_was_loaded_without_reading_it: true
+- do_not_invent_missing_project_files_or_repository_settings: true
+
 repository:
-- derive_from: project.instructions
-- single_repository:
-  - source: repository.source_of_truth
-- multi_repository:
-  - source: repository_resolution
-  - resolve_target_from: current_task|active_owner|active_repository
-  - do_not_guess_when_materially_ambiguous: true
-- agent: <resolved_repository>/AGENTS.md
-- fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
+- activation: only_when_explicitly_configured_or_current_task_has_resolvable_repository_context
+- single_repository_source: project.instructions.repository.source_of_truth_if_present
+- multi_repository_source: project.instructions.repository_resolution_if_present
+- resolve_target_from: current_task|active_owner|active_repository
+- material_ambiguity: ask_only_if_resolution_is_essential_and_cannot_proceed_safely
+- agent: <resolved_repository>/AGENTS.md_if_present
+- fallback: awa-si/admin/AGENTS.md#fallback_repository_agent_only_with_repository_context
+- without_repository: skip_repository_agent_and_repository_operations
 - current_repository_state_is_authoritative: true
 
 loading:
-- order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project.instructions -> project.workflow_if_present -> resolved_repository.AGENTS.md_or_fallback -> material_helpers -> current_task
+- order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project.instructions_if_present -> project.workflow_if_present -> repository_agent_or_fallback_if_repository_active -> material_helpers_if_available -> current_task
 - metadata_load_when: creating_or_materially_editing_markdown_md_files|metadata_or_registry_work
-- research_topics: base_always_when_research_applies|knowledge|code|docs|legal_as_relevant
-- missing_optional_project_workflow: continue_with_parent_layer
+- research_topics: base_when_research_applies|knowledge|code|docs|legal_as_relevant
+- optional_missing_sources: skip_without_blocking_unrelated_work
 - reread_if: active_project_changed|resolved_repository_changed|source_changed|explicitly_requested
 
 reload:
 - command: reload admin plane
 - aliases: reload admin control plane
-- reread_current_control_plane_and_active_project: true
-- rederive_resolved_repository: true
-- reread_resolved_repository_agent: true
+- reread_available_global_and_project_sources: true
+- rederive_repository_only_if_active: true
+- reread_repository_agent_only_if_active: true
