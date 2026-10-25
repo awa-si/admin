@@ -12,9 +12,12 @@ repository:
 - agent: AGENTS.md
 
 project_delta:
-- current_user_priority: complete_reusable_oreon_framework_before_pilot_execution
+- current_user_priority: complete_reusable_oreon_framework_transaction_domain_first_before_pilot_execution
 - pilot_work: non_priority_unless_explicitly_requested_or_required_as_framework_reference
-- framework_completion_scope: canonical_architecture|domain_coverage|cross_domain_contracts|document_graph|reusable_templates|validation|consistency
+- framework_completion_scope: transaction_first|canonical_architecture|domain_coverage|cross_domain_contracts|document_graph|reusable_templates|validation|consistency
+- active_framework_domain: transaction
+- transaction_first_scope: domains/transaction/model.md|domains/transaction/logic.md|domains/transaction/payment.md|domains/transaction/template.md|contracts/transaction/|capital/funding.md|core/settlement.md
+- other_domains: maintain_existing_contracts_and_dependencies_but_defer_domain_completeness_work_until_transaction_complete
 - distinguish: framework_completeness_from_case_specific_operational_readiness
 - oreon_repository_work: graph_first_required
 - applies_to: research|review|planning|documentation|coding|tests|refactoring|contract_architecture|integration|repo_change
