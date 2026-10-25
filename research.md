@@ -1,6 +1,6 @@
 ---
 title: Global Research Manager
-description: Globaler Research-Manager mit getrennten Verfahren für Knowledge, Code und Docs.
+description: Globaler Research-Manager mit getrennten Verfahren für Knowledge, Code, Docs und Legal.
 type: standard
 status: active
 language: de
@@ -35,11 +35,12 @@ base:
 
 topic_routing:
 - default: apply_base_first
-- activate_only_relevant_topic: knowledge|code|docs
+- activate_only_relevant_topic: knowledge|code|docs|legal
 - mixed_task: apply_each_relevant_topic_and_reconcile_shared_findings
 - knowledge: facts|science|models|uncertainty
 - code: algorithms|libraries|implementation_choices|engineering_evidence
 - docs: canonical_documentation|version_and_reference_verification
+- legal: jurisdiction|statutes|case_law|legal_procedure
 - topic_rules: extend_base_not_replace_it
 
 knowledge_research:
@@ -74,6 +75,18 @@ docs_research:
 - markdown_metadata_owner: awa-si/admin/metadata.md
 - do_not_duplicate_canonical_content: true
 
+legal_research:
+- objective: identify_applicable_law|evaluate_legal_sources|analyze_options_and_risks
+- define: jurisdiction|material_facts|legal_question|relevant_dates|procedural_stage
+- primary_sources: official_statutes|regulations|court_decisions|authoritative_official_guidance
+- hierarchy: distinguish_binding_law|judicial_interpretation|administrative_guidance|secondary_commentary
+- time: verify_effective_dates|amendments|transitional_provisions|relevant_deadlines
+- case_law: verify_court|date|case_number|holding|material_factual_distinctions
+- analysis: separate_legal_rules|established_facts|disputed_facts|application|counterarguments
+- procedure: verify_competent_authority|filing_rules|service_requirements|appeal_options
+- output: supported_legal_position|citations|uncertainty|options|procedural_risks
+- escalation: recommend_qualified_local_counsel_for_high_stakes_or_unresolved_questions
+
 topic_knowledge_assurance:
 - source_weighting: systematic_reviews|replicated_primary_research|relevant_standards|authoritative_institutions
 - distinguish: hypothesis|preprint|replicated_finding|consensus|expert_opinion
@@ -94,4 +107,10 @@ topic_docs_assurance:
 - distinguish: current_contract|superseded_document|asserted_behavior|observed_behavior
 - preserve: repository_registry_and_graph_contract_when_defined
 - quality_gate: canonical_owner_identified|discrepancies_noted|no_parallel_specification_created
+
+topic_legal_assurance:
+- authority: verify_jurisdiction|applicable_version|binding_status|source_provenance
+- accuracy: distinguish_current_law|proposed_law|agency_practice|interpretation
+- deadlines: prioritize_time_sensitive_actions|do_not_invent_channels_or_legal_effects
+- quality_gate: law_and_facts_separated|sources_identified|uncertainty_and_counterarguments_stated
 
