@@ -24,6 +24,7 @@ metadata.md                           Markdown-only file metadata contract
 AGENTS.md                             Admin repository agent + fallback repository agent
 projects/<project>/instructions.txt   project behavior/repository delta
 projects/<project>/workflow.md        optional project workflow delta
+projects/<project>/coding.md          optional project coding delta
 <repository>/AGENTS.md                repository-specific AI behavior
 <repository>/<helper>                 substantive technical/domain contracts
 ```
@@ -41,6 +42,7 @@ instructions.txt
 → coding.md                              # when applicable
 → projects/<project>/instructions.txt   # if present
 → projects/<project>/workflow.md        # when present
+→ projects/<project>/coding.md          # when present and coding applies
 → <resolved-repository>/AGENTS.md       # only with repository context; fallback if missing
 → material helper / canonical owner
 → current task
@@ -61,7 +63,8 @@ admin/
     ├── template.txt
     └── <project>/
         ├── instructions.txt
-        └── workflow.md        # optional
+        ├── workflow.md        # optional
+        └── coding.md          # optional
 ```
 
 ## Workflow routes
