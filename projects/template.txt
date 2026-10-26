@@ -55,6 +55,12 @@ loading:
 reload:
 - command: reload admin plane
 - aliases: reload admin control plane
-- reread_available_global_and_project_sources: true
-- rederive_repository_only_if_active: true
-- reread_repository_agent_only_if_active: true
+- preferred_source: AWA_MCP.mcp_instructions()
+- bootstrap: call_mcp_instructions_without_topic_to_load_current_canonical_admin_documents_and_capability_index
+- read_returned_documents_and_validate_completeness_before_claiming_loaded: true
+- fallback_if_AWA_unavailable: fetch_global_and_project_sources_from_available_connected_repository_or_project_files
+- active_project: resolve_current_project_name_then_load_optional_project_delta_when_available
+- active_repository: resolve_only_if_context_supports_it_then_load_repository_agent_or_fallback
+- refresh_cached_rules: invalidate_prior_admin_instruction_snapshot_after_verified_new_read
+- MCP_runtime_reload: separate_action_via_mcp_reload_only_when_explicitly_requested
+- do_not_claim_runtime_restart_or_tool_schema_refresh_from_admin_reload: true
