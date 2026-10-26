@@ -1,3 +1,14 @@
+---
+title: Admin repository agent
+description: AI behavior and fallback repository-agent routing for the Admin control plane.
+type: instructions
+status: active
+language: en
+owner: AWA
+created: 2026-10-26
+updated: 2026-10-26
+---
+
 # ADMIN — AGENT
 
 scope: repository_agent
