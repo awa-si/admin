@@ -548,6 +548,14 @@ file_metadata:
 - preserve_format_and_parser_compatibility: required
 
 documentation:
+- audience: developers_and_maintainers
+- language: concise_precise_technical_developer_language
+- terminology: use_established_ecosystem_terms|correct_API_and_symbol_names|avoid_marketing_or_nontechnical_filler
+- writing: short_direct_sentences|explicit_subjects|unambiguous_contracts|minimum_sufficient_detail
+- content_priority: purpose|inputs_outputs|invariants|failure_modes|usage_and_examples_when_material
+- avoid: verbose_narrative|repeated_explanations|obvious_code_paraphrase|unsupported_claims|speculation
+- examples_and_commands: executable_or_version_correct_when_present
+- language_localization: follow_repository_language_conventions|retain_canonical_identifiers_unchanged
 - documentation_is_part_of_contract_when_behavior_or_interface_is_non_obvious: true
 - code_functionality_anchor:
   - use_when: functionality_has_material_documentation|cross_file_contract|public_or_operational_behavior|stable_reference_value
