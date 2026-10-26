@@ -257,6 +257,18 @@ mode: normative
 - current_repository_state: authoritative
 - substantive_domain_technical_business_operational_contract: narrowest_target_repository_helper_or_canonical_owner
 
+## admin_plane_reload
+- command: reload admin plane
+- aliases: reload admin control plane
+- preferred_bootstrap: AWA_MCP.mcp_instructions_without_arguments
+- returned_documents: read_current_canonical_admin_sources|verify_completeness|use_capability_index_for_current_AWA_tool_routing
+- optional_project_delta: resolve_active_ChatGPT_project_then_load_if_accessible
+- repository_agent: load_only_when_resolved_repository_context_is_active
+- fallback: use_connected_repository_or_project_files_if_AWA_bootstrap_is_unavailable_or_incomplete
+- cache_invalidation: replace_previous_admin_snapshot_after_verified_read
+- runtime_reload_boundary: mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload
+- do_not_claim: MCP_process_restarted|tool_schema_changed_without_actual_evidence
+
 ## loading_and_resolution
 - global_load: instructions.txt -> workflow.md -> research.md_when_applicable -> coding.md_when_applicable
 - project_resolution: load_projects/<project>/instructions.txt_when_active_project_exists
