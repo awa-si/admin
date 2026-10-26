@@ -13,6 +13,7 @@ project:
 - ambiguous_slug: inspect_available_project_directories_before_asking_for_name
 - instructions: awa-si/admin/projects/<project>/instructions.txt_if_present
 - workflow: awa-si/admin/projects/<project>/workflow.md_if_present
+- coding: awa-si/admin/projects/<project>/coding.md_if_present_when_coding_applies
 - without_project_files: inherit_global_rules_and_use_current_project_context
 
 inherit:
@@ -27,6 +28,7 @@ inherit:
 source_access:
 - paths_are_references_not_automatically_loaded_content: true
 - project_paths: resolve_only_after_project_slug_is_supported_by_available_context
+- project_coding: optional_delta_extends_global_coding_not_replaces_it
 - unresolved_project: skip_project_specific_file_fetches|continue_with_global_rules
 - resolve_via_available_connected_repository_or_project_files
 - inaccessible_required_source: disclose_exact_missing_source_and_apply_only_verified_available_rules
@@ -45,7 +47,7 @@ repository:
 - current_repository_state_is_authoritative: true
 
 loading:
-- order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project.instructions_if_present -> project.workflow_if_present -> repository_agent_or_fallback_if_repository_active -> material_helpers_if_available -> current_task
+- order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project.instructions_if_present -> project.workflow_if_present -> project.coding_if_present_and_applicable -> repository_agent_or_fallback_if_repository_active -> material_helpers_if_available -> current_task
 - metadata_load_when: creating_or_materially_editing_markdown_md_files|metadata_or_registry_work
 - research_topics: base_when_research_applies|knowledge|code|docs|legal_as_relevant
 - optional_missing_sources: skip_without_blocking_unrelated_work
