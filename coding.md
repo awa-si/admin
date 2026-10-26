@@ -1,3 +1,14 @@
+---
+title: Global Coding Standard
+description: Reusable development, dependency, testing and performance rules.
+type: standard
+status: active
+language: en
+owner: AWA
+created: 2026-10-26
+updated: 2026-10-26
+---
+
 scope: global_coding_guidance
 mode: normative_machine_directives
 
