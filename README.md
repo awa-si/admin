@@ -8,7 +8,7 @@
 instructions.txt                       global behavior + resolution
 workflow.md                           repository execution/workflow
 coding.md                             coding/design/performance guidance
-research.md                           knowledge/code/docs research and evidence standards
+research.md                           knowledge/code/docs/legal research and evidence standards
 metadata.md                           Markdown-only file metadata contract
 AGENTS.md                             Admin repository agent + fallback repository agent
 projects/<project>/instructions.txt   project behavior/repository delta
@@ -28,9 +28,9 @@ instructions.txt
 → workflow.md
 → research.md                            # when applicable
 → coding.md                              # when applicable
-→ projects/<project>/instructions.txt   # when active
+→ projects/<project>/instructions.txt   # if present
 → projects/<project>/workflow.md        # when present
-→ <resolved-repository>/AGENTS.md       # otherwise AGENTS.md#fallback_repository_agent
+→ <resolved-repository>/AGENTS.md       # only with repository context; fallback if missing
 → material helper / canonical owner
 → current task
 ```
@@ -42,6 +42,8 @@ admin/
 ├── instructions.txt
 ├── workflow.md
 ├── coding.md
+├── research.md
+├── metadata.md
 ├── AGENTS.md
 ├── README.md
 └── projects/
@@ -73,7 +75,7 @@ reload admin plane
 
 Alias: `reload admin control plane`.
 
-A reload rereads the global owners, active project delta, and resolved repository agent through a read-only path. Previously loaded copies become non-authoritative for that chat.
+A reload prefers AWA MCP `mcp_instructions()` for the current global owners and capability index, then reads an available project delta and repository agent only when applicable. Use connected repository reads if AWA is unavailable. It does not invoke `mcp_reload` or restart the MCP runtime. Previously loaded copies become non-authoritative for that chat.
 
 ```text
 reload mcp
