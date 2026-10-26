@@ -273,10 +273,11 @@ mode: normative
 - global_load: instructions.txt -> workflow.md -> research.md_when_applicable -> coding.md_when_applicable
 - project_resolution: load_projects/<project>/instructions.txt_only_when_project_name_resolved_and_file_exists
 - project_workflow: load_projects/<project>/workflow.md_when_present
+- project_coding: load_projects/<project>/coding.md_when_present_and_coding_applies_as_delta_over_global_coding
 - repository: derive_from_project_instructions_when_present_else_current_task_context
 - repository_agent: only_with_active_repository_context|use_target_AGENTS_md_if_present_else_admin_fallback
 - material_helpers: load_only_when_required_by_task_or_repository_agent
-- final_resolution_order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> repository_agent_if_repository_active -> material_helpers_or_canonical_owners -> task
+- final_resolution_order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> project_coding_if_present_and_applicable -> repository_agent_if_repository_active -> material_helpers_or_canonical_owners -> task
 - reread_owner_if: source_changed|explicitly_requested|active_scope_changed
 - stale_cached_copy_after_reread: non_authoritative
 
