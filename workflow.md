@@ -215,18 +215,26 @@ awa_mcp_workspace:
   - shell_exec_remains_for: exact_git_operations|unsupported_search_semantics|untracked_content|full_validation|build_or_test_execution
 - chat_workspace_lifecycle:
   - workspace_identity_exposed_to_chat_and_handoff: workspace_id
-  - creator_key:
-    - native_parameter: workspace_create.id
-    - admin_name: creator_id
-    - purpose: opaque_stable_client_key_for_create_and_resolve_only
+  - registry_key:
+    - native_entrypoint: workspace_exec(operation="create",payload={"id":"<stable-fallback>"})
+    - effective_key: returned_id_from_create_result
+    - server_derivation: HMAC_SHA256_of_openai_session_when_request_metadata_and_server_key_available
+    - fallback_when_derivation_unavailable: caller_supplied_stable_opaque_id
+    - never_calculate_conversation_digest_in_GPT: true
+    - raw_session_metadata_is_not_registry_identity: true
+    - correlation_key_is_not_authentication_or_authorization: true
     - do_not_conflate_with_workspace_id: true
     - do_not_expose_as_primary_workspace_identity: true
+    - HMAC_key_rotation_may_change_effective_key: true
+    - task_worker_metadata_not_guaranteed: true
   - first_AWA_workspace_use:
-    - generate_stable_opaque_creator_id: required
-    - first_workspace_action: workspace_create(id=creator_id)
-    - capture_from_create_result: workspace_id|effective_resources|parallelism
+    - cross_chat_repository_reuse_gate_first: required
+    - stable_opaque_fallback_id: supply_when_creating;not_the_authoritative_effective_id
+    - first_workspace_action_after_required_reuse_checks: workspace_exec(operation="create",payload={"id":"<stable-fallback>"})
+    - capture_from_create_result: workspace_id|id|resources|parallelism
     - first_AWA_workspace_use_chat_output: workspace_id|effective_resources|parallelism
-    - retain_for_lifecycle: creator_id|workspace_id|effective_resources|parallelism|repository_binding|branch
+    - retain_for_lifecycle: effective_registry_id|workspace_id|effective_resources|parallelism|repository_binding|branch
+    - canonical_effective_registry_id: create_result.id
   - resource_output_fields: cpu|memory_mb|storage_mb|pids|tmp_mb
   - retained_workspace_id_is_authoritative: true
   - do_not_scan_for_alternative_workspace: true
@@ -234,15 +242,16 @@ awa_mcp_workspace:
   - do_not_switch_workspace_id_silently: true
   - do_not_replace_missing_or_unhealthy_workspace_automatically: true
   - missing_or_unhealthy_retained_workspace: surface_blocker_and_keep_identity
-  - workspace_resolve_role: diagnostic_by_creator_id_only_not_workspace_selection
-  - replacement_allowed_only_after: explicit_user_approved_workspace_delete_then_workspace_create_with_same_creator_id
-  - after_replacement_create: capture_and_report_workspace_id|effective_resources|parallelism
+  - workspace_resolve_role: diagnostic_by_effective_registry_id_only_not_workspace_selection
+  - replacement_allowed_only_after: explicit_user_approved_workspace_delete_then_workspace_create_with_same_effective_registry_id_when_derivation_stable
+  - replacement_if_derivation_missing_or_rotated: do_not_assume_same_id;surface_blocker_and_require_explicit_authorization
+  - after_replacement_create: capture_and_report_workspace_id|effective_registry_id|effective_resources|parallelism
   - other_chat_workspace: distinct_unless_initialized_from_explicit_handoff
   - handoff_initialized_chat:
-    - default_behavior: inherit_handoff_workspace
+    - default_behavior: inherit_handoff_workspace_only_with_explicit_authorization
     - required_handoff_fields: workspace_id
-    - preserve_when_available: creator_id|effective_resources|parallelism|repository_binding|branch|active_jobs|artifacts|checkpoint|resume_point
-    - first_AWA_workspace_action: workspace_context(workspace_id=handoff_workspace_id)
+    - preserve_when_available: effective_registry_id|effective_resources|parallelism|repository_binding|branch|active_jobs|artifacts|checkpoint|resume_point
+    - first_AWA_workspace_action: workspace_exec(operation="context",payload={"workspace_id":"<handoff-workspace-id>"})
     - require_context_workspace_id: handoff_workspace_id
     - do_not_call_workspace_create_when_inherited_workspace_context_is_valid: true
     - do_not_generate_new_workspace_id_when_inherited_workspace_context_is_valid: true
@@ -250,11 +259,17 @@ awa_mcp_workspace:
     - inherited_workspace_missing_or_mismatch: surface_blocker_do_not_replace_automatically
     - replacement_after_handoff:
       - requires_explicit_user_approved_workspace_delete: true
-      - requires_original_creator_id: true
-      - missing_creator_id: surface_blocker_for_replacement_not_for_existing_workspace_use
-      - recreate_with: workspace_create(id=creator_id)
+      - requires_original_effective_registry_id_for_diagnostics: true
+      - missing_effective_registry_id: surface_blocker_for_replacement_not_for_existing_workspace_use
+      - recreate_with: workspace_exec(operation="create",payload={"id":"<authorized-stable-fallback>"})
+      - effective_id_must_be_revalidated_from_create_result: true
     - repository_and_branch_from_handoff: working_context_only_until_current_remote_state_verified_when_material
     - job_or_artifact_from_handoff: verify_current_workspace_state_before_resume
+  - cross_chat_reuse:
+    - matching_registry_key_or_workspace_id_does_not_confer_authorization: true
+    - mandatory_repo_identity_registry_gate: apply_native_workspace_contract
+    - reuse_other_chat_workspace_requires_explicit_user_consent: true
+    - no_silent_duplicate_workspace_when_reuse_denied: true
   - parallel_chat:
     - default_behavior: independent_workspace
     - workspace_sharing_between_simultaneously_active_chats: prohibited_unless_explicit_user_instruction
