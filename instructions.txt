@@ -47,7 +47,7 @@ mode: normative
 - do_not_optimize_for: maximum_work_completed_inside_single_turn
 
 - turn_scope:
-  - default: one_coherent_material_work_unit_per_turn
+  - default: complete_one_coherent_requested_outcome_including_related_changes_validation_and_authorized_delivery_before_returning_control
   - explicit_bundling_commands: bundle|bundled|batch|batched|all|do_all|do_all_batched|alles|gebuendelt
   - explicit_bundling_overrides_single_milestone_default: true
   - bundled_execution: execute_all_safe_and_materially_related_steps_in_requested_bundle_before_returning_control
@@ -73,14 +73,23 @@ mode: normative
   - validation_in_bundle: aggregate_at_natural_boundaries_and_run_once_per_coherent_change_set_when_sufficient
   - commit_in_bundle: prefer_one_coherent_commit_per_change_set_after_validation_instead_of_commit_after_each_micro_step
   - avoid_micro_cycle: edit -> validate -> commit -> stop_when_more_requested_related_work_is_ready
-  - broad_continue_commands_like_continue|weiter|do_without_bundling_language: advance_to_next_material_milestone_not_unbounded_completion
+  - broad_continue_commands_like_continue|weiter|next: complete_next_coherent_outcome_not_one_micro_edit_or_repeated_deployment_cycle
   - do_not_expand_scope_without_new_material_evidence: true
+
+- change_delivery_cadence:
+  - default: inspect_full_related_scope -> plan_one_coherent_change_set -> implement_related_changes -> validate_as_bundle -> commit -> deploy_once_if_requested_or_required_and_authorized -> verify_deployed_result
+  - do_not_cycle: edit -> deploy -> edit -> deploy_for_known_related_work
+  - deploy_not_automatic: only_when_user_requested_or_existing_approved_workflow_requires_it
+  - after_deploy_change: only_for_observed_regression|failed_verification|new_user_requirement
+  - after_deploy_fix: bounded_corrective_change_set -> focused_validation -> authorized_redeploy -> verification
+  - no_speculative_post_deploy_enhancement: true
+  - stop: complete_verified_requested_outcome|real_blocker|required_approval|valid_checkpoint_for_unavoidably_long_stage
 
 - execution_staging:
   - foreseeably_long_or_compute_heavy_work: split_into_bounded_stages_when_semantics_allow
   - heavy_examples: large_tests|builds|benchmarks|replays|repo_wide_scans|large_file_processing|bulk_connector_work
-  - after_material_stage_completion: return_control_to_user_unless_immediate_followup_is_required_for_correctness_or_requested_completion
-  - do_not_hold_interactive_turn_for_optional_next_stage: true
+  - after_material_stage_completion: continue_through_remaining_steps_needed_for_requested_outcome_when_safe_and_available
+  - optional_unrequested_next_stage: stop_after_completed_requested_outcome_or_valid_durable_checkpoint
   - stage_boundary_should_preserve: current_state|result|remaining_work|exact_resume_point
 
 - workspace_and_jobs:
