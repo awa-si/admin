@@ -270,7 +270,7 @@ mode: normative
 - command: reload admin plane
 - aliases: reload admin control plane
 - preferred_bootstrap: AWA_MCP.mcp_instructions_without_arguments
-- returned_documents: read_current_canonical_admin_sources|verify_completeness|use_capability_index_for_current_AWA_tool_routing
+- returned_documents: read_current_canonical_admin_sources|verify_completeness|use_mcp_model_for_current_AWA_tool_capability_capacity_and_execution_discovery
 - optional_project_delta: resolve_active_ChatGPT_project_then_load_if_accessible
 - repository_agent: load_only_when_resolved_repository_context_is_active
 - fallback: use_connected_repository_or_project_files_if_AWA_bootstrap_is_unavailable_or_incomplete
