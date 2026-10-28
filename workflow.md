@@ -462,6 +462,19 @@ bundled_execution:
 - stop_only_when: bundle_complete|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
 - explicit_bundle_request_takes_precedence_over_default_single_milestone_turn_scope: true
 
+deployment_cadence:
+- goal: finish_related_implementation_and_validation_before_authorized_deployment
+- default_sequence: scope_inventory -> coherent_design -> implement_related_changes -> bundle_tests_and_performance_metrics_when_reasonable -> commit -> deploy_if_required_and_authorized -> verify
+- avoid: change_deploy_change_deploy_cycle_for_work_known_before_first_deployment
+- deployment_gate: user_request|established_approved_automation_or_repository_contract|applicable_authorization
+- pre_deploy: no_known_ready_related_change_left_unimplemented_in_current_requested_change_set
+- deployment_count: prefer_one_per_coherent_release_boundary_not_one_per_edit
+- post_deploy_modification: observed_failure|verified_regression|new_requirement_only
+- corrective_cycle: isolate_actual_failure -> focused_patch -> validation -> authorized_redeploy -> verify
+- do_not_expand_scope_after_deploy: speculative_cleanup|unrelated_features|untested_tuning
+- long_running_constraint: use_resumable_checkpoint_when_completion_is_not_currently_possible
+- production_boundary: preserve_release_gates|approvals|rollback_and_safety_contracts
+
 change_set_lifecycle:
 - unit: smallest_coherent_set_of_materially_related_changes
 - preferred_sequence: resolve -> inspect -> edit -> focused_validate -> broader_validate_if_required -> commit -> remote_verify
