@@ -1,10 +1,22 @@
+---
+title: NAUTILUS Project Workflow
+description: Project-specific machine-readable workflow delta for nautilus.
+type: standard
+status: active
+language: en
+owner: AWA
+created: 2026-10-31
+updated: 2026-10-31
+---
+
 scope: project_workflow_delta
 project: nautilus
-mode: extend_parent_and_explicit_override_only
+mode: normative_machine_directives
 
-inherit:
-- awa-si/admin/workflow.md
-- override_only_if_explicit: true
+resolution:
+- parent: awa-si/admin/workflow.md
+- project_instructions: awa-si/admin/projects/nautilus/instructions.txt
+- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
 
 historical_ml_validation:
 - short_tests_must_preserve: target_maturation|causal_OOF_coverage|purge|embargo
