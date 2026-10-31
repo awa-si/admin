@@ -42,7 +42,8 @@ multi_timeframe_ablation:
 - deployable_runtime_bundle: false
 
 performance_tracking:
-- performance_file: performance.md
+- performance_evidence_owner: resolve_current_repository_tracking_document_or_benchmark_artifact_before_update
+- missing_legacy_performance_md: do_not_create_or_assume_without_repository_owner_contract
 - update_when: measured_baseline_changed|bottleneck_ranking_changed|optimization_decision_changed
 - preserve: trading_semantics|causal_contracts|schemas|inference_training_order
 - hosted_runner_cross_run_wall_time: secondary_evidence
