@@ -1,10 +1,22 @@
+---
+title: NHSMM Project Workflow
+description: Machine-readable NHSMM testing and performance workflow.
+type: standard
+status: active
+language: en
+owner: AWA
+created: 2026-10-31
+updated: 2026-10-31
+---
+
 scope: project_workflow_delta
 project: nhsmm
-mode: extend_parent_and_explicit_override_only
+mode: normative_machine_directives
 
-inherit:
-- awa-si/admin/workflow.md
-- override_only_if_explicit: true
+resolution:
+- parent: awa-si/admin/workflow.md
+- project_instructions: awa-si/admin/projects/nhsmm/instructions.txt
+- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
 
 local_performance_cycle:
 - performance_work: prefer_bounded_local_profile_edit_measure_cycles_when_representative
