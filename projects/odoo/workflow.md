@@ -1,155 +1,166 @@
-# Odoo addon development workflow
+---
+title: Odoo Project Workflow
+description: Machine-readable Odoo addon development, activation, testing and release gates.
+type: standard
+status: active
+language: en
+owner: AWA
+created: 2026-10-31
+updated: 2026-10-31
+---
 
-This file defines the **Odoo project-specific** development and test workflow for `awa-si/odoo@main`. It extends `awa-si/admin/workflow.md` and the global coding and project controls; parent instructions remain authoritative unless explicitly overridden.
+scope: project_workflow_delta
+project: odoo
+mode: normative_machine_directives
 
-## Objective and scope
+resolution:
+- parent: awa-si/admin/workflow.md
+- project_instructions: awa-si/admin/projects/odoo/instructions.txt
+- project_coding: awa-si/admin/projects/odoo/coding.md
+- repository: awa-si/odoo@main
+- repository_agent: awa-si/odoo@main:AGENTS.md
+- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
+- repository_state: source_of_truth_not_running_Odoo_installation
+- Odoo_target: 19.0_by_default|verify_installed_Odoo_and_OCA_versions
+- first_party_modules: modules/<technical_name>/
 
-- Develop, maintain, validate and test **all first-party Odoo modules** under `modules/<technical_name>/`.
-- Target Odoo **19.0** by default. Confirm the installed Odoo and OCA revisions before relying on framework behavior; pin external dependencies for reproducibility.
-- Treat the repository as source of truth, not as a running Odoo installation. Never use production databases, secrets or filestores for tests.
+development:
+- inspect: active_repo_and_branch|git_state|manifest|dependency_addons|models|views|security|Odoo_and_OCA_APIs
+- scope: changed_modules|dependent_modules|ORM_invariants|migrations|ACL|record_rules|multi_company|billing|concurrency|HTTP
+- implement: production_code_and_tests_as_coherent_bundle
+- tests: native_TransactionCase_for_ORM|HttpCase_for_HTTP_or_UI_when_required|setUpClass_for_shared_fixtures|test_isolation
+- gates: static -> focused_integration -> full_integration_when_release_or_risk_requires
+- review: data_loss|privilege_escalation|compatibility|races|idempotency
+- deliver: commit_and_remote_verify_when_authorized|report_observed_gate_status
+- prohibit: production_database_tests|production_secrets_or_filestore|unverified_runtime_success_claims
 
-## Standard execution loop
+activation_gate:
+- apply_when: existing_installable_addon_contains_new_or_modified_untested_functionality
+- keep_active: previously_tested_production_behavior
+- prohibit_before_required_tests: importing|registering|wiring_new_code_into_active_runtime_entrypoints
+- entrypoints: __init__.py|manifests|XML_data_and_views|cron|controllers|hooks|menus|model_inheritance|automation|external_routing
+- stage: unimported_implementation_and_tests_when_possible
+- feature_flag_alone: insufficient_when_import_changes_models_or_registry
+- imported_code_change: disabled_by_default_only_if_import|registry|schema|existing_behavior|install_and_upgrade_remain_safe
+- otherwise: keep_change_out_of_deployable_path_until_verified
+- installed_addon_installable_false_as_staging: prohibited
+- production_functionality_disable_or_uninstall_for_staging: prohibited
+- stage_validation: isolated_database_and_filestore|gate_1|gate_2|gate_3_when_required
+- test_scope: installation|upgrade|permissions|downstream_modules|disabled_default_behavior
+- activation: after_tests_and_explicit_release_acceptance -> wire_into_addon -> rerun_integrated_bundle -> authorized_deploy
+- commit_import_static_or_dry_run_as_activation_authorization: prohibited
+- report: staging_status|outstanding_tests|actual_release_state
+- active_imports_may_execute_after_service_restart: true
 
-1. **Inspect:** Resolve the active repository/branch, current Git state, target addon manifest, dependent addons, related models/views/security and applicable Odoo/OCA APIs. Do not assume existing code is correct.
-2. **Scope:** Identify changed modules and downstream dependent modules. Specify the behavior/invariants at risk (ORM, migrations, ACL/record rules, multi-company, billing, concurrency, HTTP).
-3. **Implement:** Change code and tests together; use native Odoo `TransactionCase` for ORM/business invariants and `HttpCase` for HTTP/UI when necessary. Reuse class fixtures via `setUpClass`, keeping tests independent and isolated.
-4. **Validate progressively** using the three gates below. Batch related work, parallelize independent checks when resources permit, and report any skipped gate explicitly.
-5. **Review:** Inspect diffs for data-loss risk, privilege escalation, compatibility, race conditions, and idempotency; do not silently alter production configuration.
-6. **Deliver:** Commit/push and verify remote state when requested/authorized by the active control plane. Record what was actually tested; never equate syntax validation with Odoo runtime success.
+gate_1_static:
+- apply: every_change_or_commit
+- commands: python_dev/check.py|python_-m_compileall_-q_modules
+- checks: manifest|dependencies|Python_syntax|XML_CSV_JSON_references|security|license|version|formatting|Odoo_lint
+- OCA_checks_when_installed: bash_dev/oca-checks.sh
+- installed_dependency_verification: python_dev/oca-verify.py_--addons-path=/opt/odoo/env/odoo/addons,/opt/odoo/env/addons,/opt/odoo/addons,/opt/odoo/modules
+- OCA_tools: pylint-odoo|oca-checks-odoo-module
+- archived_MQT_as_current_framework: prohibited
+- execution: local_or_manual_CI
+- PostgreSQL: not_required
+- gate_1_not_equal: Odoo_runtime_or_integration_success
 
-## Untested changes in already installable addons — activation gate
+host_runtime:
+- preference: reuse_verified_existing_Odoo_binary|Python_environment|compatible_OCA_checkout_when_isolation_safe
+- execution_identity: host_odoo_OS_account_only_through_authorized_host_runner
+- require: verified_binary|Python_environment|separate_disposable_PostgreSQL_database|credentials|filestore|logs|test_config
+- test_filestore_root: /var/lib/awa-data/odoo/filestore
+- historical_host_test_database: odoo
+- historical_test_configuration: /opt/odoo/test.config
+- historical_host_details: verify_current_state_via_host_odoo_preflight|never_assume_still_safe
+- production_database: never_modify|drop|initialize|upgrade_or_test
+- production_config: do_not_use_without_proof_of_isolated_test_configuration
+- versions: verify_Odoo_19_and_compatible_OCA_before_host_tests
+- external_effects: disable_mail|external_endpoints|cron|live_payment|provisioning
+- workspace_container: not_host_odoo_identity|do_not_assume_host_binary_or_PostgreSQL_socket_access
+- host_boundary: explicit_authorized_host_executor_or_isolated_test_container_with_required_mounts
+- gate_2: reuse_isolated_host_runtime_if_verified
+- gate_3: fresh_disposable_database_with_isolation_or_OCA_style_CI
+- isolation_or_capacity_missing: use_safe_CI_route|report_blocker
 
-- Apply when an existing addon has `installable=True` and newly added or modified functionality has not passed its required isolated Odoo tests.
-- Keep the current tested production behavior active. Do **not** import, register, or wire untested additions into runtime entry points (for example `__init__.py`, manifests, XML data/views, cron, controllers, hooks, menus, model inheritance, automation or external routing) until the relevant validation gates pass.
-- Stage new implementation and tests in separate, unimported files when possible. An opt-in parameter alone is **not** a substitute for this gate: imported Python can register models, add fields or change behavior before the feature flag is checked.
-- For modifications to already-imported code, preserve the verified path and isolate the new behavior behind an explicit disabled-by-default gate **only when** imports, model registry, schema, existing execution and installation/upgrade remain safe; otherwise keep the modification out of the deployable path until tested.
-- Never switch `installable` to `False` for a previously installed addon just to stage changes; this can disrupt installation and upgrade lifecycle. Do not disable or uninstall currently active functionality to satisfy staging.
-- Test the staged change against a disposable database/filestore with relevant Gate 1 and Gate 2 checks, then Gate 3 when required by scope or release policy. Test installation/upgrade, permissions, affected downstream modules and disabled/default behavior where material.
-- After successful tests and explicit release acceptance, wire the code into the addon, verify the resulting integrated bundle again, and only then promote/deploy. A commit, successful import, static check, dry-run or code review alone does not authorize activation.
-- Record staging status and outstanding tests in the change report. The production deployment script must not be assumed to distinguish tested and untested files; code included in active addon imports can execute after a normal service restart.
+gate_2_focused_integration:
+- database: preinitialized_disposable_isolated_Odoo_19_and_filestore
+- dependencies: matching_OCA
+- tests: native_Odoo_--test-tags_/module[:Class[.method]]
+- optional_adapter: pytest-odoo_when_compatible|not_substitute_for_native_install_or_upgrade_tests
+- update_affected_modules_when: models|manifests|data|views_changed
+- avoid_full_database_reinitialization: for_pure_method_changes_when_safe
+- assertions: accepted_and_rejected_operations|invalid_transitions|ACL_violations|duplicate_requests|cross_company_denial
+- example_runner: dev/test-odoo.sh
+- runner_requires: ODOO_BIN|ODOO_TEST_DB|ODOO_CONFIG|ODOO_ADDONS_PATH|ODOO_TEST_MODULES
+- runner_modes: ODOO_TEST_MODE=install|update
+- runner_not_environment_provisioner: true
+- runner_database_guard: test_*|*_test_only
+- host_database_odoo: host_odoo_test_executor_only|never_whitelist_in_shell_runner
+- never_point_runner_at_production: true
 
-## Gate 1 — static (every change/commit)
+gate_3_release_integration:
+- apply_when: PR|release|repository_policy|material_risk
+- environment: fresh_disposable_PostgreSQL_and_filestore|Odoo_19|pinned_OCA_19
+- execution: install_changed_modules_and_dependencies|native_tests|upgrade|relevant_end_to_end_flows
+- preferred: OCA_style_isolated_CI_with_PostgreSQL
+- coverage: installation|XML_and_data|registry|cron|ACL|record_rules|multi_company|state_transitions|constraints|idempotency|concurrency
+- billing: contracts|fixed_line_pricing|dates|currency|recurring_invoicing
+- migration: sanitized_representative_records|rollback_and_recovery_plan
+- production_or_real_customer_data: prohibited
 
-Run:
-```bash
-python dev/check.py
-python -m compileall -q modules
-```
+test_conventions:
+- location: modules/<name>/tests/test_*.py
+- discovery: tests/__init__.py|addon_import_when_required_by_Odoo
+- framework: TransactionCase|HttpCase|Odoo_test_tags
+- ORM_semantics: use_real_ORM_for_computed_fields|constraints|record_rules
+- data: controlled|deterministic|isolated
+- external_services: fake_at_service_boundary
+- concurrency: distinct_transactions_or_cursors_when_material|sequential_mock_insufficient
+- additional_conventions: inherit_awa-si/admin/coding.md#test_writing_conventions
 
-Check module manifests and dependencies, Python syntax, XML/CSV/JSON references, security declarations, license/version conventions, formatting and Odoo-specific linting as tools become available. Run `bash dev/oca-checks.sh` when OCA dev requirements are installed; use `python dev/oca-verify.py --addons-path=/opt/odoo/env/odoo/addons,/opt/odoo/env/addons,/opt/odoo/addons,/opt/odoo/modules` for actual installed Odoo/OCA dependency resolution. Run these locally or through manual CI only. `pylint-odoo` and `oca-checks-odoo-module` are provided by OCA; do not use archived MQT as the active framework. Gate 1 does not require PostgreSQL.
+AWA_module_acceptance:
+- deployment: confirmation_creates_once|repeated_confirmation_idempotent|correct_line_order_product_links
+- registry: transitions|invalid_transitions|uniqueness|runtime_lookup
+- wizard: defaults|activation_states|repeated_and_concurrent_activation|one_to_one_binding
+- lifecycle: service_states|immutable_billing_terms_after_activation
+- OCA_contract_19: explicit_lines_after_create|automatic_price_false|specific_price|quantity|currency|date_start|date_end|recurring_next_date|at_least_one_recurring_invoice
+- security: ACL|record_rules|multi_company_isolation
+- known_hardening_area: security_access_controls_verify_actual_repo_state
 
-## Existing host Odoo runtime (preferred when safely available)
+resource_and_reporting:
+- workspace_role: inspection|gate_1|bounded_focused_tests
+- historical_workspace_profile: 2_CPU|2048_MB_RAM|verify_current_profile_not_hardcode
+- full_Odoo_installation_capacity: do_not_assume
+- performance: reuse_cached_test_environments|avoid_reinstall_per_edit
+- CI_static_only: report_gate_1_only
+- report_each_gate: passed|failed|blocked|not_run
+- include: actual_commands_and_environment_when_material|missing_runtime_blocker
+- never_claim_unexecuted_integration: true
 
-The VPS already has an `odoo` OS account and an Odoo installation. **Reuse its installed Odoo binary, Python environment and compatible OCA checkout** instead of provisioning a second runtime, but separate execution from production operation:
+reply_model_rename_migration:
+- from: awa.reply.operation
+- to: reply.operation
+- owner: modules/awa/upgrades/19.0.1.0.1/pre-rename_reply.py
+- method: official_odoo_upgrade_util.rename_model(rename_table=False)
+- require: compatible_odoo-upgrade-util_in_host_Python_environment
+- existing_database_upgrade: never_bypass_migration_if_historical_operations_exist
+- validate: preflight|ir.model_references|record_counts_before_after|ACL|reservation_and_completion_tests
+- preserve_SQL_table: awa_reply_operation
 
-- Run tests under the existing `odoo` identity, using an explicit, verified executable path and environment (for example `sudo -u odoo ...` through an authorized host runner).
-- Use **a separate disposable PostgreSQL database**, credentials, filestore, log path and test-only Odoo configuration.
-- Keep the isolated test filestore beneath `/var/lib/awa-data/odoo/filestore`. The current verified disposable database is `odoo` and the test configuration is `/opt/odoo/test.config`; validate both with `host_odoo_preflight` before host tests. Do not copy production secrets. Do not modify, drop, initialize or upgrade the production database.
-- Verify the installed Odoo major version is 19.0 and that the required OCA addons match that version; if not, use a dedicated test environment rather than adapting production code to mismatched versions.
-- Disable network side effects: outgoing email, external endpoints, scheduled integrations/cron and live payment/provisioning actions in the test configuration.
-- Never run a test command using the production `/opt/odoo/config` without first proving it is an isolated test configuration.
-- AWA's `workspace_exec_start` executes in an isolated container, **not as the host `odoo` user**. Do not assume host binaries, PostgreSQL sockets or services are accessible there. Host tests require an explicitly authorized host execution boundary or an isolated test container with mounted dependencies.
-- Prefer the existing host runtime for Gate 2 and a fresh disposable database on the same host for Gate 3 only if safe isolation and adequate capacity are established; otherwise use OCA-style CI.
+optional_test_tools:
+- dev/test-db-snapshot.sh: isolated_source_test_*_or_*_test|new_target|no_overwrite|does_not_clone_filestore
+- snapshot_requires: PostgreSQL_clients|access|ODOO_SNAPSHOT_SOURCE|ODOO_SNAPSHOT_TARGET|ODOO_SNAPSHOT_CONFIRM_SOURCE|ODOO_SNAPSHOT_SOURCE_ACK=isolated-test-only
+- source_database_odoo: not_eligible_for_snapshot
+- snapshot_filestore: separately_copy_only_approved_isolated_filestore_when_required
+- dev/check-migration.py_--database_test_odoo_dev: read_only_metadata_table_and_ACL_verification_on_disposable_db
+- dev/test-coverage.sh: native_tests_on_disposable_DB|coverage.xml|requires_provisioned_matching_runtime_and_config
+- coverage: supplementary_not_substitute_for_behavior_assertions
+- pytest_odoo: optional_if_Odoo_19_compatible|native_TransactionCase_and_odoo-bin_--test-enable_remain_release_gate
+- Github_CI_static_only: do_not_mark_gate_3_passed
+- external_effects_in_gate_3: verified_disabled
 
-## Gate 2 — focused integration (development cycle)
-
-Use an already initialized, **isolated and disposable** Odoo 19 database and filestore with matching OCA dependencies.
-
-- Prefer focused native Odoo `--test-tags /module[:Class[.method]]` runs for changed behavior.
-- `pytest-odoo` may be used for faster red/green cycles when configured and compatible; it does **not** replace native installation/update tests.
-- Reinstall/update affected modules whenever changes modify models, manifests, data or views. Avoid unnecessary full DB initialization for pure method changes.
-- Test both successful and rejected operations, e.g. invalid state transitions, access violations, duplicated requests, and cross-company access.
-
-Example with a provisioned Odoo test environment:
-```bash
-python /path/to/odoo-bin -c /path/to/isolated-test.conf \
-  -d test_odoo_dev --addons-path=/path/to/odoo/addons,/path/to/oca/addons,/path/to/repo/modules \
-  -u awa --test-tags /awa --stop-after-init
-```
-
-The provided `dev/test-odoo.sh` is an **integration runner**, not a complete environment provisioner. It requires `ODOO_BIN`, `ODOO_TEST_DB`, `ODOO_CONFIG`, `ODOO_ADDONS_PATH`, and `ODOO_TEST_MODULES`; its default mode installs named modules, so do not use it to update an already-installed module without adapting the invocation. Never point it at production.
-
-## Gate 3 — full integration (PR/release)
-
-Provision a fresh PostgreSQL database and separate filestore with Odoo 19 and pinned OCA 19.0 addons. Install all changed modules and their declared dependencies, run the native Odoo test suite, verify install/upgrade and exercise relevant end-to-end flows. Use an OCA-style isolated CI environment (e.g. GitHub Actions with PostgreSQL), rather than the production VPS.
-
-The minimum release checks are:
-
-- fresh addon installation, XML views/data loading, registry initialization and cron setup;
-- ACLs, record rules, permitted/denied operations and multi-company isolation;
-- workflow transitions, consistency constraints, idempotency and competing transactions;
-- contracts, line-level fixed pricing, dates, currency and recurring invoicing for billing modules;
-- update/migration against representative sanitized data, including rollback/recovery planning.
-
-Keep full-install tests separate from fast development tests; no real customer data.
-
-## Test code conventions
-
-- Put Odoo tests in `modules/<name>/tests/test_*.py`, exported from `tests/__init__.py` and imported in the addon as required for test discovery.
-- Use `TransactionCase`, `HttpCase`, Odoo test tagging and reusable helpers; favor actual ORM behavior over mocks for computed fields, constraints and record rules.
-- Use controlled, deterministic test data; no real network or external service dependencies in normal unit tests. Fake external responses at service boundaries.
-- For concurrency-sensitive behavior, use database-level integration tests and separate transactions/cursors where warranted; a sequential mock is insufficient.
-
-## AWA module acceptance matrix
-
-1. Deployment creation on order confirmation and repeated confirmation; correct line/order/product linkage.
-2. Registry and line state transitions, invalid transitions, uniqueness and runtime lookup.
-3. Service wizard defaults, allowed activation states, repeated/concurrent activation and one-to-one service binding.
-4. Service lifecycle and immutable billing terms after activation.
-5. **OCA contract 19.0**: explicit lines after ORM `create()`, `automatic_price=False`, `specific_price`, quantity, currency, `date_start`, `date_end`, `recurring_next_date`, and at least one recurring invoice.
-6. ACLs, record rules and multi-company separation (currently a known area requiring hardening).
-
-## Resource and reporting policy
-
-- The AWA workspace is intended for inspection, Gate 1 and bounded focused tests; its configured profile is 2 CPU / 2048 MB RAM. Do not assume this is adequate for full installation or large OCA dependency trees.
-- Prefer cached, prepared test environments and targeted reruns over reinstalling Odoo after every edit.
-- CI owns reproducible Gate 3 runs. A CI workflow that only executes static checks must be described as **Gate 1 only**.
-- Report per gate: **passed / failed / blocked / not run**, and state the exact command/environment where useful.
-- If a required runtime is missing, finish supported checks, explain the blocker, and do not claim integration coverage.
-
-## References
-
-- Odoo 19 developer testing: https://www.odoo.com/documentation/19.0/developer/reference/backend/testing.html
-- OCA pytest-odoo: https://github.com/OCA/pytest-odoo
-- OCA addon repository template: https://github.com/OCA/oca-addons-repo-template
-- OCA contract 19.0: https://github.com/OCA/contract/tree/19.0/contract
-
-## Reply model rename upgrade gate
-
-The `awa.reply.operation` → `reply.operation` rename is handled in
-`modules/awa/upgrades/19.0.1.0.1/pre-rename_reply.py` with the official Odoo
-upgrade-util `rename_model(..., rename_table=False)`. Install a version-compatible
-`odoo-upgrade-util` in the host Odoo Python environment before updating an
-existing database. Do not bypass the migration when historical operations exist.
-Run the preflight, compare `ir.model` references and record count before and after
-the upgrade, then exercise ACLs and the reservation/completion integration tests.
-The SQL table `awa_reply_operation` must be preserved.
-
-`dev/test-odoo.sh` requires an explicitly disposable database matching
-`test_*` or `*_test`; it accepts `ODOO_TEST_MODE=install|update`.
-The existing host `odoo` database is restricted to the separately controlled
-AWA `host_odoo_test` executor and must not be whitelisted in this shell script.
-
-## Optional disposable test tools
-
-- `dev/test-db-snapshot.sh`: create a **new** test DB from an explicitly
-  approved existing `test_*` or `*_test` database. Requires PostgreSQL
-  client tools, access, `ODOO_SNAPSHOT_SOURCE`, `ODOO_SNAPSHOT_TARGET`,
-  `ODOO_SNAPSHOT_CONFIRM_SOURCE` and
-  `ODOO_SNAPSHOT_SOURCE_ACK=isolated-test-only`. It refuses overwrite and
-  **does not copy the filestore**. Never treat it as a full Odoo clone without
-  copying the approved filestore to a separately isolated test data directory.
-  The current host DB `odoo` is deliberately not eligible as a source.
-- `dev/check-migration.py --database test_odoo_dev`: read-only checks of
-  renamed `reply.operation` metadata, retained table and ACL references.
-  Run on a verified disposable DB after update.
-- `dev/test-coverage.sh`: run native Odoo module tests under coverage on
-  an explicitly disposable DB, producing `coverage.xml`. It assumes a
-  provisioned matching Odoo and OCA runtime and isolated config. Coverage
-  reports are not a substitute for behavior assertions.
-- `pytest-odoo` is an optional accelerated test adapter; verify installed
-  plugin compatibility with Odoo 19 before using it. Native `TransactionCase`
-  and `odoo-bin --test-enable` remain the release gate.
-- GitHub CI currently provides only manual static checks; Gate 3 requires a
-  separately provisioned fresh DB, isolated filestore and verified disabled
-  external side effects. Do not mark it passed from CI static checks.
+references:
+- Odoo_testing: https://www.odoo.com/documentation/19.0/developer/reference/backend/testing.html
+- OCA_pytest_odoo: https://github.com/OCA/pytest-odoo
+- OCA_addon_template: https://github.com/OCA/oca-addons-repo-template
+- OCA_contract_19: https://github.com/OCA/contract/tree/19.0/contract
