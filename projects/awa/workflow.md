@@ -8,62 +8,63 @@ owner: AWA
 created: 2026-10-31
 updated: 2026-10-31
 ---
-
 scope: project_workflow_delta
 project: awa
-mode: extend_parent_and_explicit_override_only
+mode: normative_machine_directives
 
-inherit:
-- awa-si/admin/workflow.md
-- awa-si/admin/projects/awa/instructions.txt
-- override_only_if_explicit: true
-
-repository:
+resolution:
+- parent: awa-si/admin/workflow.md
+- project_instructions: awa-si/admin/projects/awa/instructions.txt
+- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
 - source_of_truth: awa-si/awa@main
-- agent: AGENTS.md
-- current_repository_state: authoritative
+- repository_agent: awa-si/awa@main:AGENTS.md
+- state_authority: current_repository_and_live_runtime
 
-canonical_contracts:
-- project_and_workspace_reuse_policy: awa-si/admin/projects/awa/instructions.txt
-- repository_agent_and_ownership: awa-si/awa@main:AGENTS.md
-- MCP_entrypoint_and_runtime: awa-si/awa@main:mcp/README.md
-- workspace_API_lifecycle_profiles_slots_git_and_execution: awa-si/awa@main:mcp/docs/workspace.md
-- workspace_runtime_implementation_owners: awa-si/awa@main:mcp/workspace/README.md
-- actual_tool_operations_and_payloads: current_live_AWA_MCP_schema_and_canonical_workspace_contract
-- contract_precedence: live_tool_schema_for_invocation|current_repo_contract_for_semantics|admin_workflow_for_execution_routing
-- never_assume: historical_handler_names_are_public_tools|committed_code_is_running_code
+canonical_owners:
+- workspace_reuse_and_consent: awa-si/admin/projects/awa/instructions.txt
+- repository_ownership: awa-si/awa@main:AGENTS.md
+- MCP_runtime_and_entrypoint: awa-si/awa@main:mcp/README.md
+- workspace_API_and_lifecycle: awa-si/awa@main:mcp/docs/workspace.md
+- workspace_implementation_map: awa-si/awa@main:mcp/workspace/README.md
+- workspace_profile: awa-si/awa@main:workspace.ini
+- invocation_authority: live_AWA_MCP_tool_schema
+- semantics_authority: current_canonical_repository_contract
+- execution_routing_authority: awa-si/admin/workflow.md
+- unavailable_owner: report_exact_missing_source|do_not_invent_fallback_contract
 
 routing:
-- repository_only_edit: connected_GitHub_connector_when_sufficient
-- existing_authorized_workspace: follow_project_instructions_and_global_reuse_policy
-- runtime_or_heavy_execution: AWA_MCP_Workspace_when_global_route_and_authorization_allow
-- durable_orchestrated_work: AWA_Work_only_when_global_workflow_conditions_apply
-- do_not_create_or_replace_workspace_merely_because_project_is_AWA: true
+- GitHub_connector: repository_only_work_when_sufficient
+- existing_workspace: reuse_only_under_project_consent_and_registry_policy
+- AWA_MCP_Workspace: heavy_or_runtime_work_when_authorized_and_global_gate_passes
+- AWA_Work: durable_orchestration_only_when_global_gate_passes
+- workspace_create: prohibited_without_lifecycle_and_authorization_gates
+- workspace_replace: prohibited_without_explicit_approval
 
-workspace_execution:
-- before_use: load_current_canonical_workspace_contract|verify_live_operation_and_payload_schema
-- before_create_or_import: apply_project_workspace_registry_reuse_consent_and_lifecycle_policy
-- repository_profile_owner: awa-si/awa@main:workspace.ini
-- profile_application: verify_import_result_and_effective_workspace_context_before_compute
-- profile_change: use_current_canonical_reload_operation_when_workspace_idle|reverify_effective_context
-- git_and_remote_transport: follow_canonical_workspace_contract|no_direct_remote_git_from_exec_when_prohibited
-- history_requirements: follow_canonical_workspace_contract_for_full_history_and_sync
-- compute_parallelism_and_job_lifecycle: follow_canonical_workspace_contract
-- never_copy_workspace_resource_defaults_or_legacy_operation_names_here: true
+workspace:
+- before_use: load_current_workspace_contract|verify_live_operation_schema
+- before_create_or_import: verify_registry|repository_binding|reuse_consent|lifecycle_policy
+- tool_invocation: workspace_exec_operation_payload_per_live_schema
+- legacy_handler_names_as_tools: prohibited
+- profile: validate_import_result|verify_effective_context_before_compute
+- profile_reload: idle_only|use_current_canonical_operation|verify_effective_context
+- remote_git: canonical_workspace_transport_only
+- history_sync: canonical_workspace_contract
+- slots_jobs_resources: canonical_workspace_contract
+- copied_resource_defaults_or_legacy_operation_names: prohibited
 
-development_and_delivery:
-- change_set: implement_all_known_related_changes_then_bundle_validation
-- pre_deploy: verify_tests|versioning_and_compatibility_contracts|authorized_deployment_boundary
-- deployment: only_when_requested_or_established_approved_workflow_requires
-- deployment_cadence: one_authorized_deploy_per_coherent_release_boundary_when_practical
-- after_deploy: verify_running_service_and_live_tool_behavior_if_runtime_changed
-- code_or_tool_registration_change: do_not_claim_hot_reload_or_live_activation_from_commit_or_configuration_reload
-- failed_live_verification: diagnose_real_failure_then_bounded_fix_and_authorized_redeploy
-- current_MCP_runtime_and_restart_contract: awa-si/awa@main:mcp/README.md
+delivery:
+- scope: complete_coherent_change_set_before_release_boundary
+- sequence: inspect -> implement_related_changes -> validate_bundle -> commit -> authorized_deploy_if_required -> verify_live_behavior
+- pre_deploy: tests|versioning|compatibility|required_approval
+- deploy_gate: user_request|existing_authorized_workflow
+- deployment_cadence: one_per_coherent_release_boundary_when_practical
+- post_deploy: verify_running_service_and_live_capabilities_when_runtime_affected
+- code_or_registration_change: process_restart_or_redeploy_per_canonical_runtime_contract
+- configuration_reload_as_code_activation: prohibited
+- corrective_cycle: observed_failure -> focused_fix -> validation -> authorized_redeploy -> verification
 
 verification:
-- focused_tests: affected_repository_tests_and_contracts_first
-- broader_tests: when_material_risk_or_repository_gate_requires
-- remote_repository_write: verify_current_remote_state
-- runtime_claim: requires_live_endpoint_evidence
-- report: changed_behavior|actual_tests|commit|deployment_status|remaining_blockers
+- tests: focused_affected_contracts_first|broader_if_material
+- repository_write: verify_remote_state
+- runtime_claim: live_endpoint_evidence_required
+- report: actual_changes|executed_tests|commit|deployment_status|blockers
