@@ -1,10 +1,22 @@
+---
+title: Trading Project Workflow
+description: Machine-readable multi-repository handoff and parallel chat workflow.
+type: standard
+status: active
+language: en
+owner: AWA
+created: 2026-10-31
+updated: 2026-10-31
+---
+
 scope: project_workflow_delta
 project: trading
-mode: extend_parent_and_explicit_override_only
+mode: normative_machine_directives
 
-inherit:
-- awa-si/admin/workflow.md
-- override_only_if_explicit: true
+resolution:
+- parent: awa-si/admin/workflow.md
+- project_instructions: awa-si/admin/projects/trading/instructions.txt
+- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
 
 chat_handoff:
 - apply_when: new_chat_is_initialized_from_trading_handoff
