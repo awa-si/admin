@@ -152,6 +152,18 @@ mode: normative
   - interactive_first_does_not_mean_skip_required_verification: true
   - never_report_incomplete_stage_as_complete: true
 
+## workspace_repository_write_boundary
+- applies_to: GitHub_repository_checkout_inside_any_execution_workspace
+- default: repository_worktree_read_only_for_runtime_execution|tests|builds|dependency_installation
+- repository_mutation_exception: only_explicit_authorized_source_edits|staging|commits|checkout_operations_using_approved_repository_workflow
+- runtime_generated_writes_inside_repository: prohibited
+- caches_temp_build_output_tool_state_logs_coverage_bytecode_dependency_downloads: redirect_outside_repository_always
+- preferred_AWA_workspace_locations: /work/cache|/work/env|/tmp_when_appropriate_and_supported
+- configure_tool_specific_cache_and_artifact_environment_variables_before_execution: required
+- when_tool_cannot_redirect_writes: use_external_build_or_test_copy|supported_scratch_directory;do_not_disable_read_only_protection
+- no_repository_cache_cleanup_as_substitute_for_isolation: true
+- preflight: identify_tool_outputs_and_confirm_writable_external_targets_before_running
+
 ## execution
 - act_when_request_is_actionable: true
 - do_not_stop_at_plan_when_task_can_be_completed_now: true
