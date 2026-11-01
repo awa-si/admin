@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-01
 ---
 
 scope: global_workflow
@@ -195,6 +195,13 @@ github_patch:
 - route_to_workspace_if: local_execution|test_or_build|dependency_discovery|broad_search|uncertain_coupling
 
 awa_mcp_workspace:
+- public_command_directive_owner: awa-si/admin/workflow.md
+- public_workspace_API_reference: awa-si/awa@main:mcp/docs/workspace.md
+- public_workspace_tool: workspace_exec(operation,payload)
+- public_workspace_operation_names: short_keys_from_live_dispatcher_only;never_workspace_prefixed_handler_names
+- example_context: workspace_exec(operation="context",payload={"workspace_id":"<id>","slot":1})
+- example_exec_start: workspace_exec(operation="exec_start",payload={"workspace_id":"<id>","argv":["python","-V"]})
+- legacy_workspace_handler_names_as_direct_tool_calls: prohibited
 - role: heavy_or_explicit_workspace_route
 - independent_from_GitHub_Workspace_contract: true
 - selection_owner: github_routing_gate
@@ -290,24 +297,24 @@ awa_mcp_workspace:
     - repository_import_does_not_imply_compute_ready: true
     - before_first_compute: resolve_repository_instructions_and_workload_manifests
     - install_only_required_dependencies: true
-    - dependency_setup_job: workspace_exec_start(shared_env_access="write",network=true)_when_external_retrieval_required
+    - dependency_setup_job: workspace_exec(operation="exec_start",payload={shared_env_access:"write",network:true,...})_when_external_retrieval_required
     - subsequent_compute_default: shared_env_access="read"
     - network_after_setup: false_unless_workload_itself_requires_network
     - dependency_source_changed: re_evaluate_shared_environment_before_compute
   - asynchronous_jobs:
     - use_start_status_result_flow: required
     - timeout_remaining_seconds_is_not_ETA: true
-    - extend_running_job_when_more_budget_is_justified: workspace_exec_extend
+    - extend_running_job_when_more_budget_is_justified: workspace_exec(operation="exec_extend",payload={...})
     - extension_requires_process_local_running_job: true
     - completed_status_and_result_history_survives_MCP_restart: true
     - detached_after_restart: inspect_then_terminate_or_restart_not_extend
     - do_not_classify_restart_recovered_terminal_result_as_lost_without_checking_persisted_result: true
 - workspace_git_preference:
   - applies_when: actively_working_inside_AWA_MCP_Workspace_with_a_repository
-  - required_when_repository_bound: local_Git_CLI_via_workspace_exec_start_for_repository_inspection_and_mutations
+  - required_when_repository_bound: local_Git_CLI_via_workspace_exec_operation_exec_start_for_repository_inspection_and_mutations
   - local_operations: status|diff|log|show|branch|add|commit|switch|checkout|merge|rebase|cherry_pick|stash|tag
   - local_repository_files_and_metadata_over_redundant_GitHub_connector_reads: required
-  - authenticated_remote_transport: workspace_repository_import|workspace_repository_fetch|workspace_repository_push
+  - authenticated_remote_transport: workspace_exec(operation="repository_import",payload={...})|workspace_exec(operation="repository_fetch",payload={...})|workspace_exec(operation="repository_push",payload={...})
   - ChatGPT_GitHub_connector: use_only_when_operation_is_unavailable_or_unsuitable_through_existing_AWA_workspace_and_repository_tools
   - never_run_direct_GitHub_remote_transport_from_workspace_exec: true
   - does_not_change_routing_outside_an_active_AWA_MCP_Workspace: true
@@ -317,9 +324,9 @@ awa_mcp_workspace:
   - allowed_local_git: status|diff|add|commit|checkout|switch|merge|rebase|cherry_pick|reset|restore|stash|tag|log|show
   - prohibited_from_workspace_exec: git_fetch|git_pull|git_push|git_clone|other_GitHub_remote_transport
   - reason: workspace_exec_containers_do_not_receive_GitHub_credentials
-  - authenticated_remote_read: workspace_repository_fetch
-  - authenticated_remote_write: workspace_repository_push
-  - initial_materialization: workspace_repository_import
+  - authenticated_remote_read: workspace_exec(operation="repository_fetch",payload={...})
+  - authenticated_remote_write: workspace_exec(operation="repository_push",payload={...})
+  - initial_materialization: workspace_exec(operation="repository_import",payload={...})
   - credential_failure_from_direct_workspace_git_remote: classify_as_wrong_transport_path_not_missing_user_credentials
   - on_direct_git_remote_failure: retry_via_corresponding_workspace_repository_boundary_tool
   - do_not_ask_user_for_GitHub_username_or_token_when_bound_repository_tool_is_available: true
@@ -390,7 +397,7 @@ repository_tool_routing:
 - do_not_create_AWA_workspace_if: connected_GitHub_connector_can_complete_task_and_required_verification
 - use_AWA_workspace_only_when: execution|testing|repository_coupling|other_material_capability_requires_it
 - when_AWA_workspace_selected: use_AWA_workspace_local_git_for_all_supported_local_repository_operations
-- when_AWA_workspace_selected_remote_transport: use_AWA_workspace_repository_import|workspace_repository_fetch|workspace_repository_push
+- when_AWA_workspace_selected_remote_transport: use_AWA_workspace_exec(operation="repository_import",payload={...})|workspace_exec(operation="repository_fetch",payload={...})|workspace_exec(operation="repository_push",payload={...})
 - do_not_mix_GitHub_connector_for_operations_supported_by_active_AWA_workspace: true
 - exception: specific_required_AWA_workspace_capability_verified_unavailable_or_unsuitable
 - prohibited_connector_fallback_reasons: convenience|small_change|habit|duplicate_validation
