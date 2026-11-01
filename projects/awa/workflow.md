@@ -37,20 +37,11 @@ routing:
 - existing_workspace: reuse_only_under_project_consent_and_registry_policy
 - AWA_MCP_Workspace: heavy_or_runtime_work_when_authorized_and_global_gate_passes
 - AWA_Work: durable_orchestration_only_when_global_gate_passes
-- workspace_create: prohibited_without_lifecycle_and_authorization_gates
-- workspace_replace: prohibited_without_explicit_approval
 
 workspace:
-- before_use: load_current_workspace_contract|verify_live_operation_schema
-- before_create_or_import: verify_registry|repository_binding|reuse_consent|lifecycle_policy
-- tool_invocation: workspace_exec_operation_payload_per_live_schema
-- legacy_handler_names_as_tools: prohibited
-- profile: validate_import_result|verify_effective_context_before_compute
-- profile_reload: idle_only|use_current_canonical_operation|verify_effective_context
-- remote_git: canonical_workspace_transport_only
-- history_sync: canonical_workspace_contract
-- slots_jobs_resources: canonical_workspace_contract
-- copied_resource_defaults_or_legacy_operation_names: prohibited
+- directive: awa-si/admin/workflow.md#awa_mcp_workspace
+- technical_reference: awa-si/awa@main:mcp/docs/workspace.md
+- live_schema: authoritative
 
 delivery:
 - scope: complete_coherent_change_set_before_release_boundary
