@@ -278,6 +278,18 @@ mode: normative
 - current_repository_state: authoritative
 - substantive_domain_technical_business_operational_contract: narrowest_target_repository_helper_or_canonical_owner
 
+## awa_mcp_information_delegation
+- admin_owns: intent_routing|authorization_boundary|repository_workflow_precedence|completion_policy
+- canonical_AWA_knowledge: resolve_via_mcp_instructions_and_current_awa-si/awa_repository_contract
+- tool_and_capacity_discovery: resolve_via_mcp_model_and_live_tool_schema|read_only_discovery_not_execution_admission
+- diagnostics: mcp_diagnostic_when_material_and_available
+- registered_native_task: task_exec_subject_to_current_registry_permissions_and_live_schema
+- workspace_execution: workspace_exec_subject_to_current_workspace_contract_and_explicit_authorization_rules
+- durable_orchestration: work_exec_subject_to_current_work_contract_and_approval_gates
+- operation_names|payload_shapes|timeouts|runtime_limits|implementation_owners: never_pin_as_admin_copy_when_canonical_live_source_exists
+- unavailable_or_changed_contract: fetch_current_owner|reconcile_scope|report_real_gap|never_guess_legacy_operation
+- execution_rules: awa-si/admin/workflow.md#awa_mcp_information_routing
+
 ## admin_plane_reload
 - command: reload admin plane
 - aliases: reload admin control plane
