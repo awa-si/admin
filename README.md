@@ -77,9 +77,9 @@ admin/
 
 `workflow.md` is the canonical owner of route selection and mechanics. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/docs/workspace.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
 
-## AWA MCP information routing
+## AWA MCP authority and reference routing
 
-The Admin plane owns route selection and approval boundaries, not MCP operation inventories or runtime parameters. Use `mcp_instructions` for canonical instruction topics, `mcp_model` for live capability discovery, `task_exec` for reviewed native tasks, `workspace_exec` for workspace and container operations, and `work_exec` for approved durable orchestration when appropriate. Consult the current AWA tool schemas and [MCP gateway contract](https://github.com/awa-si/awa/blob/main/mcp/README.md); the [workspace contract](https://github.com/awa-si/awa/blob/main/mcp/docs/workspace.md) owns operation names, lifecycle, timeouts and transport details. Never infer admission or permission from discovery alone.
+Admin owns route selection, authorizations, and completion criteria; it does not define MCP tool interfaces or implementation mechanics. Load the current canonical instruction, capability, and subsystem contracts before applicable AWA actions. The authoritative references are [AWA MCP gateway](https://github.com/awa-si/awa/blob/main/mcp/README.md), [Workspace contract](https://github.com/awa-si/awa/blob/main/mcp/docs/workspace.md), current AWA repository owners and live registered tool schemas. Neither discovery nor documentation alone grants execution permission.
 
 ## ChatGPT Work mode
 
@@ -93,13 +93,13 @@ reload admin plane
 
 Alias: `reload admin control plane`.
 
-A reload prefers AWA MCP `mcp_instructions()` for the current global owners and capability index, then reads an available project delta and repository agent only when applicable. Use connected repository reads if AWA is unavailable. It does not invoke `mcp_reload` or restart the MCP runtime. Previously loaded copies become non-authoritative for that chat.
+A reload prefers the current AWA instruction resolver for global owners; capability discovery is delegated to the separate current discovery interface when needed. Project deltas and repository agents are read only when applicable. Use connected repository reads if AWA is unavailable. It does not invoke `mcp_reload` or restart the MCP runtime. Previously loaded copies become non-authoritative for that chat.
 
 ```text
 reload mcp
 ```
 
-`reload mcp` performs `mcp_reload(scope="all")` and then rereads the current AWA `mcp_instructions` contract. The trigger does not authorize unrelated AWA MCP actions.
+`reload mcp` uses the current canonical MCP reload contract and then rereads applicable instructions. It does not authorize unrelated actions or prove a service process restart.
 
 ## Public repository safety
 
