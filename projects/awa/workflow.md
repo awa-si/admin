@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-31
-updated: 2026-10-31
+updated: 2026-11-03
 ---
 scope: project_workflow_delta
 project: awa
@@ -32,22 +32,21 @@ canonical_owners:
 - execution_routing_authority: awa-si/admin/workflow.md
 - unavailable_owner: report_exact_missing_source|do_not_invent_fallback_contract
 
+
 routing:
 - GitHub_connector: repository_only_work_when_sufficient
 - existing_workspace: reuse_only_under_project_consent_and_registry_policy
 - AWA_MCP_Workspace: heavy_or_runtime_work_when_authorized_and_global_gate_passes
 - AWA_Work: durable_orchestration_only_when_global_gate_passes
-- fast_reviewed_tasks: prefer_task_exec_for_short_bounded_operations_when_registered_and_authorized
-- missing_fast_task: create_reviewed_TaskContract_module_in_awa-si/awa:mcp/tasks/registry/ -> validate -> approved_host_sync -> task_exec_reload -> capabilities -> invoke
-- task_reload_call: task_exec(operation="reload",payload={})
-- task_reload_scope: file_backed_handler_registry_only|not_MCP_tool_registrations_or_gateway_infrastructure
-- task_route_boundary: no_arbitrary_shell_or_privileged_mutation|workspace_exec_for_container_commands|work_exec_for_durable_work
-- task_preference_limit: do_not_create_handler_if_suitable_existing_native_provider_tool_is_available
-- short_workspace_execution: prefer_workspace_exec(operation="exec_sync")_when_isolation_required_and_known_bounded_runtime_fits_deployed_sync_limit
-- sync_limit: inspect_deployed_schema|current_host_limit_15_seconds|do_not_use_sync_for_uncertain_duration
-- long_workspace_execution: use_exec_start_then_exec_result_for_long_or_uncertain_jobs
-- latency_optimization: avoid_unnecessary_exec_start_result_polling_for_short_jobs|avoid_handler_creation_for_one_off_calls_when_setup_exceeds_execution_cost
-- measurement: separate_GPT_orchestration|tool_wall_time|provider_admission|container_execution|handler_compute
+- native_reviewed_task: prefer_registered_task_exec_when_suitable|verify_live_capabilities_and_scope
+- task_registry_and_registration: delegate_to_current_awa-si/awa_MCP_task_contract|no_unreviewed_dynamic_handler_or_arbitrary_shell
+- container_job: use_workspace_exec_per_live_schema_when_isolation_or_runtime_requirements_demand
+- retired_exec_sync: prohibited
+- execution_duration_and_limits: inspect_live_contract|never_hardcode_previous_15_second_limit
+- task_vs_container: do_not_confuse_native_task_engine_with_workspace_container_jobs
+- reload_boundary: task_handler_reload_is_not_gateway_process_restart_or_tool_schema_refresh
+- latency: avoid_job_polling_when_terminal_result_is_already_available|prefer_existing_capability_to_new_handler
+- measurement: distinguish_tool_overhead|admission|runtime|handler_compute
 
 workspace:
 - directive: awa-si/admin/workflow.md#awa_mcp_workspace
