@@ -69,9 +69,7 @@ host_runtime:
 - execution_identity: host_odoo_OS_account_only_through_authorized_host_runner
 - require: verified_binary|Python_environment|separate_disposable_PostgreSQL_database|credentials|filestore|logs|test_config
 - test_filestore_root: /var/lib/awa-data/odoo/filestore
-- historical_host_test_database: odoo
-- historical_test_configuration: /opt/odoo/test.config
-- historical_host_details: verify_current_state_via_host_odoo_preflight|never_assume_still_safe
+- test_database_config_and_runtime_paths: resolve_from_current_AWA_host_contract_and_verified_live_preflight|never_assume_historical_values
 - production_database: never_modify|drop|initialize|upgrade_or_test
 - production_config: do_not_use_without_proof_of_isolated_test_configuration
 - versions: verify_Odoo_19_and_compatible_OCA_before_host_tests
@@ -83,30 +81,19 @@ host_runtime:
 - isolation_or_capacity_missing: use_safe_CI_route|report_blocker
 
 mcp_host_odoo_execution:
-- applicability: when_Odoo_host_inspection|host_sync|native_Odoo_integration_testing_is_requested_or_required
-- source_of_truth: awa-si/awa@main:mcp/host/odoo_.py|mcp/host/odoo_contract.py|mcp/tools/host_tools.py|worker/services/odoo.py
-- boundary: ChatGPT -> AWA_MCP_host_odoo_* -> /run/awa-odoo/odoo.sock -> separate_awa-odoo-executor_process_as_OS_user_odoo
-- host_executor: fixed_allowlist_only|validated_arguments|no_arbitrary_shell|never_use_generic_worker_as_privileged_executor
-- discovery: use_current_registered_MCP_tools_and_schemas|do_not_assume_older_tool_names_or_supported_operations
-- step_1_read_only: host_odoo_inspect({}) -> host_odoo_version({}) -> host_odoo_preflight({})
-- step_1_verify: installed_binary|Python_venv|Odoo_19|config_valid|database_verified|Odoo_schema|matching_OCA|approved_addons_path
-- step_2_source: complete_related_changes_and_gate_1_in_awa-si/odoo@main|commit_and_verify_remote_before_host_sync
-- step_3_host_sync: host_exec(operation="git.inspect",arguments={"repository":"odoo"})_when_registered -> host_exec(operation="git.pull",arguments={"repository":"odoo"})_when_registered_and_authorized -> verify_host_SHA_matches_required_remote_commit
-- git_pull_semantics: fast_forward_only|fixed_/opt/odoo_checkout|verified_origin_and_branch|does_not_deploy_or_restart|failure_or_divergence_stop_and_diagnose_not_force_reset
-- step_4_test_admission: ensure_proven_disposable_isolated_DB_and_filestore|approved_test_config|explicit_test_enablement|external_integrations_isolated|not_production|matching_dependency_versions
-- observed_test_contract: config=/opt/odoo/test.config|db=odoo|filestore_root=/var/lib/awa-data/odoo/filestore|executor_owned_by_odoo
-- observed_test_db_name: historical_allowlisted_value_only|not_proof_of_disposability|never_interpret_as_permission_to_reset
-- preflight_limit: config_valid_and_existing_Odoo_schema_do_not_alone_prove_isolation_or_safe_writes
-- step_5_focused_test: host_odoo_test(module="<technical_name>")_only_after_test_admission|installs_if_uninitialized_else_updates_module|native_--test-enable_--test-tags_/module|600s_timeout|exclusive_lock
-- step_5_install_test: host_odoo_install_test(module="<technical_name>")_only_if_explicitly_needed_and_safe|forces_install_flow|never_install_into_production
-- step_5_script: host_odoo_script(script="<approved_identifier>")_only_for_verified_allowlisted_script_ids|never_infer_arbitrary_script_support
-- step_6_results: examine_returncode|stdout_tail|stderr_tail|Odoo_test_failures|registry_install_upgrade|record_actual_gate_2_pass_fail_block
-- step_7_release: gate_3_on_fresh_disposable_database_when_required|separate_explicit_authorization_for_deploy_or_restart|verify_deployed_runtime_independently
-- host_reset: host_odoo_reset_preflight({})_is_read_only|eligible_false_means_no_reset|never_reset_initialized_odoo_DB_without_separate_verified_attestation_and_backup_and_authorization
-- host_scripts: scripts_are_approved_by_mcp/host/odoo_contract.py|validate_current_allowlist_before_use
-- safety: prohibit_prod_DB_write|prod_filestore_access|unsafe_reset|unverified_host_sha|tests_before_isolation_proof|deployment_by_git_pull_alone
-- fallback: if_host_executor_or_isolation_unavailable_use_separate_disposable_CI_runtime|report_gate_2_blocked_not_passed
-- reporting: report_repository_SHA|host_SHA_if_verified|preflight|isolation_evidence|tool_invocations|returncodes|gate_1_2_3_status|deployment_status
+- apply_when: authorized_host_inspection|host_repository_sync|native_Odoo_integration_tests
+- technical_contract_owner: awa-si/awa@main:mcp/host/odoo_contract.py
+- implementation_owners: awa-si/awa@main:mcp/host/odoo_.py|mcp/tools/host_tools.py
+- interface_and_allowed_operations: resolve_from_live_AWA_MCP_tool_schema_and_current_canonical_host_contract
+- host_runtime_configuration_and_limits: resolve_from_current_executor_preflight_and_canonical_contract
+- sequence: resolve_verified_source_and_target_SHA -> perform_authorized_read_only_preflight -> confirm_isolated_disposable_test_environment -> perform_authorized_source_sync_when_required -> run_admitted_focused_test -> inspect_actual_result -> apply_release_gates_separately
+- test_admission: require_independent_evidence_of_isolated_database|filestore|configuration|external_effects_disabled|compatible_Odoo_and_OCA_versions
+- authorization: repository_sync|host_test|deploy|restart|reset_are_distinct_boundaries
+- never_assume: tool_registration_confers_authorization|preflight_success_proves_disposability|Git_sync_is_deployment|historical_handler_name_is_public_tool
+- destructive_or_ambiguous_database_operation: fail_closed_until_attested_and_authorized
+- safety: no_production_database_or_filestore_mutation|no_arbitrary_privileged_shell|no_unverified_host_revision|no_tests_without_isolation_evidence
+- fallback: independent_disposable_CI_environment_when_host_execution_or_isolation_unavailable
+- reporting: verified_source_and_host_revisions|preflight|isolation_evidence|observed_test_result|gate_status|deployment_status
 
 gate_2_focused_integration:
 - database: preinitialized_disposable_isolated_Odoo_19_and_filestore
@@ -155,7 +142,7 @@ AWA_module_acceptance:
 
 resource_and_reporting:
 - workspace_role: inspection|gate_1|bounded_focused_tests
-- historical_workspace_profile: 2_CPU|2048_MB_RAM|verify_current_profile_not_hardcode
+- workspace_resource_limits: resolve_from_current_repository_profile_and_live_workspace_context
 - full_Odoo_installation_capacity: do_not_assume
 - performance: reuse_cached_test_environments|avoid_reinstall_per_edit
 - CI_static_only: report_gate_1_only
