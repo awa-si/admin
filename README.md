@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-03
 ---
 
 # GPT Admin
@@ -75,7 +75,11 @@ admin/
 - `AWA_MCP_Workspace`: heavy or long-running execution, special runtimes, or requirements that cannot be met through the connector/GitHub Workspace alone. Once selected, local Git is run inside AWA and authenticated remote operations use AWA workspace repository tools. In ChatGPT Work mode, explicit current-user authorization for AWA remains required.
 - `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
-`workflow.md` is the canonical owner of route selection and mechanics. Repository scope alone does not justify creating an AWA workspace. In an AWA MCP workspace, ChatGPT should prefer the native bounded `workspace_repository_map` and `workspace_search` capabilities for initial repository narrowing before reconstructing the same state through multiple shell scans.
+`workflow.md` is the canonical owner of route selection and mechanics. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/docs/workspace.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
+
+## AWA MCP information routing
+
+The Admin plane owns route selection and approval boundaries, not MCP operation inventories or runtime parameters. Use `mcp_instructions` for canonical instruction topics, `mcp_model` for live capability discovery, `task_exec` for reviewed native tasks, `workspace_exec` for workspace and container operations, and `work_exec` for approved durable orchestration when appropriate. Consult the current AWA tool schemas and [MCP gateway contract](https://github.com/awa-si/awa/blob/main/mcp/README.md); the [workspace contract](https://github.com/awa-si/awa/blob/main/mcp/docs/workspace.md) owns operation names, lifecycle, timeouts and transport details. Never infer admission or permission from discovery alone.
 
 ## ChatGPT Work mode
 
