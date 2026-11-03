@@ -279,16 +279,15 @@ mode: normative
 - substantive_domain_technical_business_operational_contract: narrowest_target_repository_helper_or_canonical_owner
 
 ## awa_mcp_information_delegation
-- admin_owns: intent_routing|authorization_boundary|repository_workflow_precedence|completion_policy
-- canonical_AWA_knowledge: resolve_via_mcp_instructions_and_current_awa-si/awa_repository_contract
-- tool_and_capacity_discovery: resolve_via_mcp_model_and_live_tool_schema|read_only_discovery_not_execution_admission
-- diagnostics: mcp_diagnostic_when_material_and_available
-- registered_native_task: task_exec_subject_to_current_registry_permissions_and_live_schema
-- workspace_execution: workspace_exec_subject_to_current_workspace_contract_and_explicit_authorization_rules
-- durable_orchestration: work_exec_subject_to_current_work_contract_and_approval_gates
-- operation_names|payload_shapes|timeouts|runtime_limits|implementation_owners: never_pin_as_admin_copy_when_canonical_live_source_exists
-- unavailable_or_changed_contract: fetch_current_owner|reconcile_scope|report_real_gap|never_guess_legacy_operation
-- execution_rules: awa-si/admin/workflow.md#awa_mcp_information_routing
+- admin_owns: user_intent|route_selection|authorization_boundaries|repository_precedence|completion_policy
+- canonical_instruction_source: current_AWA_MCP_instruction_resolver
+- canonical_capability_source: current_AWA_MCP_discovery_and_live_tool_schema
+- technical_contracts: awa-si/awa@main:mcp/README.md|applicable_current_AWA_subsystem_contract
+- operation_names|arguments|timeouts|capacity|runtime_state|tool_registration|implementation_details: delegated_to_canonical_AWA_sources_not_redefined_in_admin
+- before_material_AWA_action: load_applicable_current_contract|verify_tool_availability_and_authorization
+- discovery_results: observation_only_not_action_authorization
+- missing_or_changed_interface: resolve_current_owner_or_report_actual_blocker|never_reconstruct_legacy_contract
+- routing_owner: awa-si/admin/workflow.md#awa_mcp_information_routing
 
 ## admin_plane_reload
 - command: reload admin plane
@@ -335,15 +334,14 @@ mode: normative
 
 ## mcp_instruction_reload
 - trigger_phrase: reload mcp
-- semantics: reload_AWA_MCP_all_then_reread_current_mcp_instructions_contract
+- semantics: explicitly_requested_MCP_runtime_reload_then_reread_canonical_instructions
 - execution_mode: controlled_reload
-- sequence: mcp_reload(scope="all") -> mcp_instructions
-- topic_resolution: use_current_active_mcp_topic_when_unambiguous_else_workspace
-- replace_cached_mcp_instruction_contract_with_latest_result: true
-- side_effects: prohibited
-- prohibited_during_reload: workspace_create|workspace_delete|workspace_mutation|work_start|work_resume|repository_write|branch_mutation|background_job
-- do_not_treat_reload_as_authorization_for_other_AWA_MCP_actions: true
-- apply_reloaded_contract_to_subsequent_mcp_work_in_current_chat: true
+- operation_and_scope: resolve_from_current_live_MCP_reload_schema_and_canonical_contract
+- side_effects_other_than_explicit_reload: prohibited
+- prohibited_during_reload: workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action
+- no_implicit_authorization_for_other_AWA_operations: true
+- reload_is_not_proof_of_process_restart_or_live_code_activation: true
+- apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat: true
 
 ## public_repo_safety
 - repository: awa-si/admin
