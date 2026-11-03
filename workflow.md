@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-26
-updated: 2026-11-01
+updated: 2026-11-03
 ---
 
 scope: global_workflow
@@ -194,202 +194,57 @@ github_patch:
 - CI_or_status_polling: only_when_material
 - route_to_workspace_if: local_execution|test_or_build|dependency_discovery|broad_search|uncertain_coupling
 
+
+awa_mcp_information_routing:
+- scope: AWA_MCP_knowledge|capability_discovery|diagnostics|execution|reloading
+- instructions: mcp_instructions_without_topic_for_bootstrap_or_with_supported_topic_for_canonical_contract
+- capabilities_and_live_schema: mcp_model(operation="tools")_or_relevant_supported_discovery_operation
+- capability_discovery_is_not_execution_admission_or_permission: true
+- diagnostics: mcp_diagnostic_when_needed_and_available
+- task_execution: task_exec_for_registered_reviewed_native_tasks_only|discover_capabilities_and_permissions_from_live_task_contract
+- container_execution: workspace_exec_for_admitted_workspace_jobs|load_mcp_instructions(topic="workspace")_before_material_workspace_use
+- durable_orchestration: work_exec_when_durability_materially_needed_and_authorized|resolve_live_work_contract_from_mcp_entrypoint_and_tool_schema
+- reload: mcp_reload_only_for_explicit_runtime_reload_scope|never_equate_with_service_process_restart
+- routing_owner: awa-si/admin/workflow.md
+- technical_owners: awa-si/awa@main:mcp/README.md|awa-si/awa@main:mcp/docs/workspace.md|current_live_AWA_MCP_tool_schema
+- knowledge_resolution: consult_current_canonical_source_instead_of_copying_tool_parameters|limits|timeouts|operations|runtime_state_into_admin
+- unsupported_tool_or_topic: consult_live_mcp_model_and_repository_contract|report_actual_unavailability|do_not_guess
+- availability_and_authorization: tool_installed_and_responding_is_not_scope_permission|honor_ChatGPT_Work_and_user_approval_gates
+
 awa_mcp_workspace:
-- public_command_directive_owner: awa-si/admin/workflow.md
-- public_workspace_API_reference: awa-si/awa@main:mcp/docs/workspace.md
-- public_workspace_tool: workspace_exec(operation,payload)
-- public_workspace_operation_names: short_keys_from_live_dispatcher_only;never_workspace_prefixed_handler_names
-- example_context: workspace_exec(operation="context",payload={"workspace_id":"<id>","slot":1})
-- example_exec_start: workspace_exec(operation="exec_start",payload={"workspace_id":"<id>","argv":["python","-V"]})
-- legacy_workspace_handler_names_as_direct_tool_calls: prohibited
-- role: heavy_or_explicit_workspace_route
-- independent_from_GitHub_Workspace_contract: true
+- role: selected_heavy_or_explicit_workspace_route
 - selection_owner: github_routing_gate
-- availability_gate: required_before_selection
-- native_instruction_source: mcp_instructions(topic="workspace")
-- load_native_workspace_instructions_once_before_first_AWA_workspace_use_in_active_scope: required
-- native_workspace_contract: authoritative_for_AWA_workspace_mechanics
-- native_workspace_instruction_cache:
-  - reuse_within_same_active_scope_and_tool_surface: required
-  - do_not_reresolve_on_each_prompt_or_each_workspace_action: true
-  - invalidate_when: workspace_tool_surface_changed|workspace_contract_changed|explicit_reload|active_scope_changed
-  - contract_version_or_source_change_when_observed: reread_before_next_material_workspace_action
-- current_AWA_MCP_tool_schema: authoritative_for_exposed_workspace_capabilities
-- native_repository_introspection:
-  - repository_summary: workspace_repository_map
-  - bounded_repository_search: workspace_search
-  - preferred_for_initial_scope_narrowing_inside_bound_workspace: true
-  - shell_exec_remains_for: exact_git_operations|unsupported_search_semantics|untracked_content|full_validation|build_or_test_execution
-- chat_workspace_lifecycle:
-  - workspace_identity_exposed_to_chat_and_handoff: workspace_id
-  - registry_key:
-    - native_entrypoint: workspace_exec(operation="create",payload={"id":"<stable-fallback>"})
-    - effective_key: returned_id_from_create_result
-    - server_derivation: HMAC_SHA256_of_openai_session_when_request_metadata_and_server_key_available
-    - fallback_when_derivation_unavailable: caller_supplied_stable_opaque_id
-    - never_calculate_conversation_digest_in_GPT: true
-    - raw_session_metadata_is_not_registry_identity: true
-    - correlation_key_is_not_authentication_or_authorization: true
-    - do_not_conflate_with_workspace_id: true
-    - do_not_expose_as_primary_workspace_identity: true
-    - HMAC_key_rotation_may_change_effective_key: true
-    - task_worker_metadata_not_guaranteed: true
-  - first_AWA_workspace_use:
-    - cross_chat_repository_reuse_gate_first: required
-    - stable_opaque_fallback_id: supply_when_creating;not_the_authoritative_effective_id
-    - first_workspace_action_after_required_reuse_checks: workspace_exec(operation="create",payload={"id":"<stable-fallback>"})
-    - capture_from_create_result: workspace_id|id|resources|parallelism
-    - first_AWA_workspace_use_chat_output: workspace_id|effective_resources|parallelism
-    - retain_for_lifecycle: effective_registry_id|workspace_id|effective_resources|parallelism|repository_binding|branch
-    - canonical_effective_registry_id: create_result.id
-  - resource_output_fields: cpu|memory_mb|storage_mb|pids|tmp_mb
-  - retained_workspace_id_is_authoritative: true
-  - do_not_scan_for_alternative_workspace: true
-  - do_not_call_workspace_create_again_while_retained_workspace_exists: true
-  - do_not_switch_workspace_id_silently: true
-  - do_not_replace_missing_or_unhealthy_workspace_automatically: true
-  - missing_or_unhealthy_retained_workspace: surface_blocker_and_keep_identity
-  - workspace_resolve_role: diagnostic_by_effective_registry_id_only_not_workspace_selection
-  - replacement_allowed_only_after: explicit_user_approved_workspace_delete_then_workspace_create_with_same_effective_registry_id_when_derivation_stable
-  - replacement_if_derivation_missing_or_rotated: do_not_assume_same_id;surface_blocker_and_require_explicit_authorization
-  - after_replacement_create: capture_and_report_workspace_id|effective_registry_id|effective_resources|parallelism
-  - other_chat_workspace: distinct_unless_initialized_from_explicit_handoff
-  - handoff_initialized_chat:
-    - default_behavior: inherit_handoff_workspace_only_with_explicit_authorization
-    - required_handoff_fields: workspace_id
-    - preserve_when_available: effective_registry_id|effective_resources|parallelism|repository_binding|branch|active_jobs|artifacts|checkpoint|resume_point
-    - first_AWA_workspace_action: workspace_exec(operation="context",payload={"workspace_id":"<handoff-workspace-id>"})
-    - require_context_workspace_id: handoff_workspace_id
-    - do_not_call_workspace_create_when_inherited_workspace_context_is_valid: true
-    - do_not_generate_new_workspace_id_when_inherited_workspace_context_is_valid: true
-    - inherited_workspace_becomes_authoritative_for_new_chat: true
-    - inherited_workspace_missing_or_mismatch: surface_blocker_do_not_replace_automatically
-    - replacement_after_handoff:
-      - requires_explicit_user_approved_workspace_delete: true
-      - requires_original_effective_registry_id_for_diagnostics: true
-      - missing_effective_registry_id: surface_blocker_for_replacement_not_for_existing_workspace_use
-      - recreate_with: workspace_exec(operation="create",payload={"id":"<authorized-stable-fallback>"})
-      - effective_id_must_be_revalidated_from_create_result: true
-    - repository_and_branch_from_handoff: working_context_only_until_current_remote_state_verified_when_material
-    - job_or_artifact_from_handoff: verify_current_workspace_state_before_resume
-  - cross_chat_reuse:
-    - matching_registry_key_or_workspace_id_does_not_confer_authorization: true
-    - mandatory_repo_identity_registry_gate: apply_native_workspace_contract
-    - reuse_other_chat_workspace_requires_explicit_user_consent: true
-    - no_silent_duplicate_workspace_when_reuse_denied: true
-  - parallel_chat:
-    - default_behavior: independent_workspace
-    - workspace_sharing_between_simultaneously_active_chats: prohibited_unless_explicit_user_instruction
-    - same_repository_concurrent_work: separate_workspace_and_separate_working_branch
-    - working_branch_per_chat_or_workstream: required_for_independent_concurrent_changes
-    - handoff_branch_inheritance_does_not_apply_to_independent_parallel_chat: true
-    - shared_integration_point: GitHub_remote
-    - same_remote_branch_concurrent_push_if_explicitly_used: require_expected_remote_head_and_non_force_push
-    - remote_head_changed: fetch_integrate_reverify_before_push
-    - automatic_force_push_or_silent_branch_overwrite: prohibited
-    - integration_to_shared_branch: explicit_merge|rebase|cherry_pick|pull_request_as_task_requires
-- execution_orchestration:
-  - default_workspace_create_parallelism: 1
-  - expand_slots_only_when_real_parallel_work_requires_it: workspace_expand_slots
-  - speculative_slot_allocation: prohibited
-  - slot_expansion_is_monotonic_for_workspace_lifetime: true
-  - dependency_sensitive_execution:
-    - repository_import_does_not_imply_compute_ready: true
-    - before_first_compute: resolve_repository_instructions_and_workload_manifests
-    - install_only_required_dependencies: true
-    - dependency_setup_job: workspace_exec(operation="exec_start",payload={shared_env_access:"write",network:true,...})_when_external_retrieval_required
-    - subsequent_compute_default: shared_env_access="read"
-    - network_after_setup: false_unless_workload_itself_requires_network
-    - dependency_source_changed: re_evaluate_shared_environment_before_compute
-  - asynchronous_jobs:
-    - use_start_status_result_flow: required
-    - timeout_remaining_seconds_is_not_ETA: true
-    - extend_running_job_when_more_budget_is_justified: workspace_exec(operation="exec_extend",payload={...})
-    - extension_requires_process_local_running_job: true
-    - completed_status_and_result_history_survives_MCP_restart: true
-    - detached_after_restart: inspect_then_terminate_or_restart_not_extend
-    - do_not_classify_restart_recovered_terminal_result_as_lost_without_checking_persisted_result: true
-- workspace_git_preference:
-  - applies_when: actively_working_inside_AWA_MCP_Workspace_with_a_repository
-  - required_when_repository_bound: local_Git_CLI_via_workspace_exec_operation_exec_start_for_repository_inspection_and_mutations
-  - local_operations: status|diff|log|show|branch|add|commit|switch|checkout|merge|rebase|cherry_pick|stash|tag
-  - local_repository_files_and_metadata_over_redundant_GitHub_connector_reads: required
-  - authenticated_remote_transport: workspace_exec(operation="repository_import",payload={...})|workspace_exec(operation="repository_fetch",payload={...})|workspace_exec(operation="repository_push",payload={...})
-  - ChatGPT_GitHub_connector: use_only_when_operation_is_unavailable_or_unsuitable_through_existing_AWA_workspace_and_repository_tools
-  - never_run_direct_GitHub_remote_transport_from_workspace_exec: true
-  - does_not_change_routing_outside_an_active_AWA_MCP_Workspace: true
-- repository_remote_transport:
-  - applies_when: AWA_MCP_Workspace_with_GitHub_bound_repository
-  - workspace_exec_git_scope: local_only
-  - allowed_local_git: status|diff|add|commit|checkout|switch|merge|rebase|cherry_pick|reset|restore|stash|tag|log|show
-  - prohibited_from_workspace_exec: git_fetch|git_pull|git_push|git_clone|other_GitHub_remote_transport
-  - reason: workspace_exec_containers_do_not_receive_GitHub_credentials
-  - authenticated_remote_read: workspace_exec(operation="repository_fetch",payload={...})
-  - authenticated_remote_write: workspace_exec(operation="repository_push",payload={...})
-  - initial_materialization: workspace_exec(operation="repository_import",payload={...})
-  - credential_failure_from_direct_workspace_git_remote: classify_as_wrong_transport_path_not_missing_user_credentials
-  - on_direct_git_remote_failure: retry_via_corresponding_workspace_repository_boundary_tool
-  - do_not_ask_user_for_GitHub_username_or_token_when_bound_repository_tool_is_available: true
-- repository_temp_data_boundary:
-  - apply_when: AWA_workspace_contains_or_imports_GitHub_repository
-  - temporary_runtime_data_must_not_be_repository_content_or_commit_candidate: true
-  - prefer_workspace_data_or_work_state_for: logs|replay_outputs|benchmarks|downloads|large_datasets|scratch_files|runtime_state|generated_intermediate_data
-  - native_workspace_internal_paths_allowed_when_contract_defined: .venv|.awa-mcp
-  - native_internal_paths_must_remain_git_excluded: true
-  - do_not_stage_or_commit_temporary_data: true
-  - repository_artifact_exception: only_when_artifact_is_explicitly_part_of_repository_contract_or_user_requests_commit
-  - before_commit: verify_temporary_runtime_data_is_not_in_git_status
-- admin_local_workspace_mechanics: fallback_only_if_native_workspace_instruction_source_is_unavailable
-- admin_owns_only: route_selection|chat_lifecycle_policy|fallback_policy|cross_route_precedence|completion_requirement
-- unavailable_or_unhealthy: surface_actual_blocker
-- remote_completion_claim_requires: verification_required_by_current_native_workspace_contract
+- technical_contract: awa-si/awa@main:mcp/docs/workspace.md
+- instructions_source: mcp_instructions(topic="workspace")
+- invocation: workspace_exec_with_live_operation_and_payload_schema
+- deprecated_or_historical_operations: never_invoke_without_live_schema_support
+- current_operation_limit_and_job_lifecycle: resolve_from_live_contract_not_hardcoded_admin_snapshot
+- discovery_before_use: live_capabilities|workspace_identity|active_repository_binding|available_resources|permissions
+- reuse_and_cross_chat_consent: enforce_global_and_project_policy_before_creation_import_or_mutation
+- workspace_identity: preserve_verified_workspace_id_and_handoff_context|never_silently_replace_or_duplicate
+- workspace_git: local_git_via_admitted_workspace_execution|authenticated_remote_transport_via_canonical_workspace_repository_operations
+- workspace_resources_and_profiles: repository_profile_and_live_context_authoritative|never_copy_resource_defaults
+- execution: select_native_task_or_container_by_actual_capability_and_required_isolation|never_use_retired_exec_sync
+- jobs: use_current_start_status_result_or_reconciliation_contract|bounded_polling|do_not_claim_started_is_completed
+- external_data_and_temp_files: preserve_repository_cleanliness|do_not_commit_unrequested_runtime_artifacts
+- capability_failure: diagnose_real_error|use_allowed_fallback_only_when_native_route_unavailable_or_unsuitable
+- lifecycle_changes: explicit_authorization_for_destructive_or_shared_state_operations
 
 awa_work:
-- role: durable_goal_and_task_orchestration_over_AWA_MCP
-- native_instruction_source: awa-si/awa/mcp/work/workflow.md
-- load_native_work_instructions_once_before_first_nontrivial_AWA_Work_use_in_active_scope: required
-- native_work_contract: authoritative_for_work_*_mechanics
-- native_work_instruction_cache:
-  - reuse_within_same_active_scope_and_tool_surface: required
-  - do_not_reresolve_on_each_prompt_or_each_work_action: true
-  - invalidate_when: work_tool_surface_changed|work_contract_changed|explicit_reload|active_scope_changed
-  - contract_version_or_source_change_when_observed: reread_before_next_material_work_action
-- current_AWA_MCP_tool_schema: authoritative_for_exposed_work_capabilities
-- orchestration_engine_detail: owned_by_native_work_contract_not_admin
-- use_when: durable_state|multiple_ordered_steps|approval_resume|reconciliation|cancellation|retained_compact_evidence|recovery_after_interruption
-- avoid_when: persistence_adds_no_value|single_simple_read|single_simple_capability_call|ordinary_workspace_edit_test_commit_flow_without_durability_need
-- identity:
-  - retain_exact_work_id: required
-  - replacement_work_item_for_pause_restart_or_interrupt: prohibited
-- execution:
-  - GPT_owns: intent|plan|completion_criteria|semantic_completion_judgment|user_communication
-  - Work_owns: durable_operational_state|position|approval_state|reconciliation_state|cancellation_state|compact_evidence
-  - AWA_MCP_owns: executable_capabilities|validation|credentials|security_gates|provider_and_workspace_boundaries
-  - recursive_work_calls: prohibited
-  - step_tool_names_must_resolve_to_live_AWA_MCP_capabilities: true
-  - actual_actions_bypass_AWA_MCP: prohibited
-- approvals:
-  - approval_gate_is_additional_not_replacement_for_capability_policy: true
-  - approval_identity_and_shape: follow_live_work_schema
-  - never_synthesize_or_infer_required_user_approval: true
-- external_jobs:
-  - accepted_job_or_resource_id_is_not_completion: true
-  - authoritative_terminal_status_and_result_required_when_completion_matters: true
-  - detached_missing_timeout_or_ambiguous_external_outcome: fail_closed_or_reconcile_per_native_contract
-- reconciliation:
-  - ambiguous_external_effect_must_not_be_silently_resubmitted: true
-  - use_live_work_reconciliation_capability_when_supported_and_applicable: true
-- cancellation:
-  - cancellation_request_is_not_proof_external_effect_was_undone: true
-  - authoritative_external_state_remains_decisive: true
-- completion:
-  - operational_work_completion_is_not_semantic_user_goal_completion: true
-  - require_work_result_or_equivalent_retained_evidence_when_material: true
-  - semantic_user_goal_completion_requires_GPT_evaluation_of_completion_criteria_against_evidence: true
-- persistence:
-  - checkpoint_or_work_state_keep_compact: true
-  - large_logs_files_datasets_artifacts: remain_with_owning_subsystem_and_reference_by_stable_id_or_path
-- admin_must_not_pin_engine_specific_limits_that_can_change_with_live_work_contract: true
+- role: durable_orchestration_over_AWA_MCP_when_global_route_and_user_authorization_permit
+- technical_owner: awa-si/awa@main:mcp/README.md|live_work_exec_schema|current_repository_implementation_contract
+- discovery: mcp_model_for_live_work_capabilities|current_AWA_tool_schema_for_arguments
+- when: resumable_multi_step_operation|checkpointing|approval_resume|reconciliation|cancellation|retained_evidence_is_material
+- avoid: trivial_reads|one_off_simple_tool_call|ordinary_repository_edit_test_commit_without_durability_need
+- GPT_owns: objective|acceptance_criteria|semantic_completion|user_communication
+- Work_owns: durable_execution_state|approvals|reconciliation|cancellation|compact_evidence
+- AWA_MCP_owns: underlying_executable_capabilities|security_and_provider_boundaries
+- safety: no_recursive_work|no_implicit_approval|no_bypass_of_tool_authorization
+- external_job: accepted_or_started_does_not_prove_completion
+- uncertain_side_effect: reconcile_authoritative_state_before_retry|do_not_claim_rollback_from_cancellation
+- completion: observed_terminal_evidence_and_semantic_acceptance_required
+- storage: references_to_large_artifacts_not_duplicate_payloads
+- mutable_engine_details: never_pin_limit_or_payload_in_admin
 
 repository_tool_routing:
 - priority: retained_healthy_repository_bound_AWA_workspace_before_GitHub_connector
@@ -397,7 +252,7 @@ repository_tool_routing:
 - do_not_create_AWA_workspace_if: connected_GitHub_connector_can_complete_task_and_required_verification
 - use_AWA_workspace_only_when: execution|testing|repository_coupling|other_material_capability_requires_it
 - when_AWA_workspace_selected: use_AWA_workspace_local_git_for_all_supported_local_repository_operations
-- when_AWA_workspace_selected_remote_transport: use_AWA_workspace_exec(operation="repository_import",payload={...})|workspace_exec(operation="repository_fetch",payload={...})|workspace_exec(operation="repository_push",payload={...})
+- when_AWA_workspace_selected_remote_transport: follow_current_canonical_workspace_repository_transport_contract
 - do_not_mix_GitHub_connector_for_operations_supported_by_active_AWA_workspace: true
 - exception: specific_required_AWA_workspace_capability_verified_unavailable_or_unsuitable
 - prohibited_connector_fallback_reasons: convenience|small_change|habit|duplicate_validation
