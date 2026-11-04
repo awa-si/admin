@@ -192,38 +192,38 @@ github_patch:
 - route_to_workspace_if: local_execution|test_or_build|dependency_discovery|broad_search|uncertain_coupling
 
 
-awa_mcp_information_routing:
-- responsibility: select_execution_route|enforce_authorization_and_approval|evaluate_user_goal_completion
-- discovery_owner: current_live_AWA_MCP_capability_and_diagnostic_interfaces
-- instruction_owner: current_mcp_instructions_resolver
-- technical_owner: awa-si/awa@main:mcp/README.md
-- workspace_contract: awa-si/awa@main:mcp/docs/workspace.md
-- work_and_task_contracts: resolve_from_current_AWA_repository_ownership_map_and_live_tool_schema
-- authority_order: current_exposed_tool_schema_for_invocation|canonical_repository_contract_for_semantics|admin_for_routing_and_approval
-- before_execution: resolve_relevant_current_contract_and_live_capabilities|verify_scope_and_permission
-- technical_details_not_owned_here: operation_names|arguments|timeouts|capacity|job_states|retry_rules|process_restart|tool_registration
-- discovery_is_not_admission_or_authorization: true
-- missing_or_changed_interface: resolve_actual_owner_or_report_blocker|never_reconstruct_historical_behavior
-
-awa_mcp_workspace:
-- role: selected_workspace_route_under_global_and_project_authorization
-- selection_owner: github_routing_gate
-- technical_contract: awa-si/awa@main:mcp/docs/workspace.md
-- interface_and_operations: current_live_AWA_MCP_schema
-- lifecycle_and_reuse: canonical_workspace_contract_with_global_and_project_approval_boundaries
-- repository_operations: follow_canonical_workspace_git_and_transport_contract
-- runtime_state: read_live_workspace_context|do_not_infer_from_repository_or_cached_snapshot
-- execution_results: verify_actual_completion|preserve_material_checkpoint_evidence
-- fallback: only_if_native_route_proven_unsuitable_or_unavailable|preserve_authorization
-
-awa_work:
-- role: durable_orchestration_route_when_material_and_authorized
-- routing_trigger: resumable_multi_step_execution|material_checkpointing|approval_resume|reconciliation_requirements
-- technical_contract: current_AWA_repository_MCP_ownership_map_and_live_work_schema
-- state_and_lifecycle: delegated_to_current_work_contract
-- approval: all_underlying_capability_and_user_approval_gates_remain_active
-- completion: observed_operational_evidence_plus_GPT_evaluation_of_user_goal
-- avoid: trivial_calls|ordinary_repository_edit_test_commit_without_durability_need
+awa_mcp:
+- scope: AWA_MCP_routing|permissions|knowledge_resolution|execution_selection|completion
+- admin_owns: route_selection|authorization|approval_boundaries|semantic_completion
+- canonical_gateway: awa-si/awa@main:mcp/README.md
+- instruction_source: current_AWA_MCP_instruction_resolver
+- capability_source: current_AWA_MCP_discovery_and_live_tool_schema
+- authority_order: live_tool_schema_for_invocation|current_AWA_repository_contract_for_semantics|admin_for_routing_and_approvals
+- discovery_is_not_execution_admission_or_authorization: true
+- before_material_action: resolve_current_owner_contract|verify_available_capability|verify_user_and_route_authorization
+- technical_details_delegated: tool_operations|arguments|timeouts|capacity|job_states|process_restart|registration|execution_transport
+- missing_or_changed_contract: consult_current_owner_or_report_actual_blocker|never_guess_old_interface
+- routes:
+  workspace:
+  - role: selected_workspace_execution_route
+  - selection: github_routing_gate|product_mode_and_authorization_policy
+  - technical_contract: awa-si/awa@main:mcp/docs/workspace.md
+  - current_interface: live_AWA_MCP_workspace_schema
+  - lifecycle_and_reuse: canonical_workspace_contract_plus_approval_and_cross_chat_consent
+  - git_and_environment: delegate_to_canonical_workspace_contract_and_repository_profile
+  - runtime_state_and_results: verify_live_workspace_context_and_actual_terminal_evidence
+  - fallback: only_when_native_route_unavailable_or_unsuitable|preserve_authorization
+  work:
+  - role: durable_orchestration_when_material_and_authorized
+  - technical_contract: current_AWA_repository_MCP_ownership_map_and_live_work_schema
+  - use_when: resumable_multi_step_execution|checkpointing|approval_resume|reconciliation
+  - approval_and_lifecycle: delegated_to_current_work_contract|underlying_user_and_capability_gates_remain
+  - completion: observed_execution_evidence_plus_GPT_goal_evaluation
+  - avoid: trivial_calls|ordinary_edit_test_commit_without_durability_need
+  native_task:
+  - role: registered_reviewed_short_or_bounded_native_task_when_suitable
+  - technical_contract: current_AWA_repository_MCP_ownership_map_and_live_task_schema
+  - admission: governed_by_registered_task_permissions_and_current_authorization
 
 repository_tool_routing:
 - priority: authorized_suitable_retained_AWA_workspace_before_GitHub_connector_only_when_AWA_route_is_permitted_and_selected
