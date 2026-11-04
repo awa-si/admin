@@ -44,7 +44,7 @@ routing:
 - unknown_or_retired_operation: consult_current_contract|never_infer_from_legacy_name
 
 workspace:
-- directive: awa-si/admin/workflow.md#awa_mcp_workspace
+- directive: awa-si/admin/workflow.md#awa_mcp
 - technical_reference: awa-si/awa@main:mcp/docs/workspace.md
 - live_schema: authoritative
 
