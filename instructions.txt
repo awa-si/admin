@@ -267,7 +267,8 @@ mode: normative
 
 ## control_plane
 - behavior_owner: awa-si/admin/instructions.txt
-- workflow_owner: awa-si/admin/workflow.md#decision_bootstrap
+- workflow_owner: awa-si/admin/workflow.md
+- workflow_bootstrap: awa-si/admin/workflow.md#decision_bootstrap
 - coding_owner: awa-si/admin/coding.md
 - repository_agent_policy_owner: awa-si/admin/instructions.txt#repository_agent_policy
 - project_behavior_delta: awa-si/admin/projects/<project>/instructions.txt_if_present
