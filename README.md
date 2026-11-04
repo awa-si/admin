@@ -69,7 +69,7 @@ admin/
 
 ## Workflow routes
 
-- **Connected GitHub connector**: default when no healthy, authorized repository-bound AWA workspace is retained and the connector can perform the requested repository work and verification; never create a workspace solely for repository access.
+- **Connected GitHub connector**: default when no suitable AWA workspace route has been selected and authorized, provided the connector can complete the requested work and verification. An existing workspace does not itself authorize its use; never create one solely for repository access.
 - `GitHub_Patch`: small deterministic repository changes without local execution, using the connected GitHub connector.
 - `GitHub_Workspace`: light-to-medium repository coding requiring a temporary local workspace, with connector-mediated remote access.
 - `AWA_MCP_Workspace`: heavy or long-running execution, special runtimes, or requirements that cannot be met through the connector/GitHub Workspace alone. Once selected, local Git is run inside AWA and authenticated remote operations use AWA workspace repository tools. In ChatGPT Work mode, explicit current-user authorization for AWA remains required.
