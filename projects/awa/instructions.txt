@@ -13,7 +13,8 @@ repository:
 
 project_delta:
 - workspace_policy:
-    directive: awa-si/admin/workflow.md#awa_mcp
+    route_selection: awa-si/admin/workflow.md#routing_decision_order
+    administrative_boundary: awa-si/admin/workflow.md#awa_mcp
     technical_reference: awa-si/awa@main:mcp/docs/workspace.md
 - redeployment_verification:
     after_user_reports_redeploy: reload_AWA_MCP_instruction_resolver_and_check_workspace_policy
