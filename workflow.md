@@ -203,8 +203,7 @@ awa_mcp:
 - before_material_action: resolve_current_owner_contract|verify_available_capability|verify_user_and_route_authorization
 - technical_details_delegated: tool_operations|arguments|timeouts|capacity|job_states|process_restart|registration|execution_transport
 - missing_or_changed_contract: consult_current_owner_or_report_actual_blocker|never_guess_old_interface
-- routes:
-  workspace:
+- workspace:
   - role: selected_workspace_execution_route
   - selection: github_routing_gate|product_mode_and_authorization_policy
   - technical_contract: awa-si/awa@main:mcp/docs/workspace.md
@@ -213,14 +212,14 @@ awa_mcp:
   - git_and_environment: delegate_to_canonical_workspace_contract_and_repository_profile
   - runtime_state_and_results: verify_live_workspace_context_and_actual_terminal_evidence
   - fallback: only_when_native_route_unavailable_or_unsuitable|preserve_authorization
-  work:
+- work:
   - role: durable_orchestration_when_material_and_authorized
   - technical_contract: current_AWA_repository_MCP_ownership_map_and_live_work_schema
   - use_when: resumable_multi_step_execution|checkpointing|approval_resume|reconciliation
   - approval_and_lifecycle: delegated_to_current_work_contract|underlying_user_and_capability_gates_remain
   - completion: observed_execution_evidence_plus_GPT_goal_evaluation
   - avoid: trivial_calls|ordinary_edit_test_commit_without_durability_need
-  native_task:
+- native_task:
   - role: registered_reviewed_short_or_bounded_native_task_when_suitable
   - technical_contract: current_AWA_repository_MCP_ownership_map_and_live_task_schema
   - admission: governed_by_registered_task_permissions_and_current_authorization
