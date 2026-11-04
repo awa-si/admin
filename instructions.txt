@@ -267,7 +267,7 @@ mode: normative
 
 ## control_plane
 - behavior_owner: awa-si/admin/instructions.txt
-- workflow_owner: awa-si/admin/workflow.md
+- workflow_owner: awa-si/admin/workflow.md#decision_bootstrap
 - coding_owner: awa-si/admin/coding.md
 - repository_agent_policy_owner: awa-si/admin/instructions.txt#repository_agent_policy
 - project_behavior_delta: awa-si/admin/projects/<project>/instructions.txt_if_present
@@ -287,7 +287,7 @@ mode: normative
 - before_material_AWA_action: load_applicable_current_contract|verify_tool_availability_and_authorization
 - discovery_results: observation_only_not_action_authorization
 - missing_or_changed_interface: resolve_current_owner_or_report_actual_blocker|never_reconstruct_legacy_contract
-- routing_owner: awa-si/admin/workflow.md#awa_mcp
+- routing_owner: awa-si/admin/workflow.md#routing_decision_order
 
 ## admin_plane_reload
 - command: reload admin plane
