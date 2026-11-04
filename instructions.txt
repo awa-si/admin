@@ -287,7 +287,7 @@ mode: normative
 - before_material_AWA_action: load_applicable_current_contract|verify_tool_availability_and_authorization
 - discovery_results: observation_only_not_action_authorization
 - missing_or_changed_interface: resolve_current_owner_or_report_actual_blocker|never_reconstruct_legacy_contract
-- routing_owner: awa-si/admin/workflow.md#awa_mcp_information_routing
+- routing_owner: awa-si/admin/workflow.md#awa_mcp
 
 ## admin_plane_reload
 - command: reload admin plane
