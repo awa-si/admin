@@ -171,7 +171,7 @@ routing_decision_order:
   - 3_target: resolve_repository|branch|scope|current_state|canonical_owner_before_material_write
   - 4_existing_workspace: consider_only_healthy_matching_owned_retained_workspace_when_permitted|authorized|suitable; reuse_is_not_implicit_permission
   - 5_capability_need: classify_repository_only|local_execution|heavy_runtime|durable_orchestration|hosted_CI; inspect_live_capabilities_only_as_needed
-  - 6_select_route: use_eligible_existing_AWA_workspace_only_if_it_satisfies_step_5; else_GitHub_Patch_for_known_small_no_execution_change; else_GitHub_Workspace_for_light_to_medium_execution; else_AWA_MCP_Workspace_for_authorized_heavy_or_special_runtime; else_AWA_Work_for_authorized_durable_workflows; GitHub_Actions_when_hosted_evidence_required; all_routes_subject_to_previous_gates
+  - 6_select_route: choose_by_required_execution_semantics_and_verified_capability; durable_orchestration_uses_authorized_AWA_Work_when_material; hosted_CI_uses_GitHub_Actions_when_required; otherwise_reuse_eligible_AWA_Workspace_when_suitable; else_GitHub_Patch_for_known_small_no_execution_change; else_GitHub_Workspace_for_supported_light_to_medium_execution; else_authorized_AWA_MCP_Workspace_for_heavy_or_special_runtime; no_candidate_means_report_blocker
   - 7_native_admission: provider_authorization|limits|approval|capacity_and_receipts_are_authoritative; discovery_is_not_admission
 - tie_breakers:
   - connected_GitHub_connector_when_sufficient_and_no_authorized_suitable_AWA_workspace_selected: preferred
@@ -212,6 +212,15 @@ routing_acceptance_cases:
   - id: retained_workspace
     given: not_Work_mode|authorized_healthy_owned_matching_AWA_workspace|runtime_tests_required|workspace_suitable
     expected: AWA_MCP_Workspace_reuse
+  - id: existing_workspace_no_consent
+    given: retained_AWA_workspace_exists|ownership_or_consent_not_verified|GitHub_connector_sufficient|repository_only_work
+    expected: GitHub_Patch|no_workspace_access_or_mutation
+  - id: existing_workspace_not_suitable
+    given: authorized_retained_AWA_workspace|wrong_repository_or_incompatible_runtime|GitHub_Workspace_sufficient
+    expected: GitHub_Workspace|do_not_silently_switch_or_replace_retained_workspace
+  - id: light_execution_dependencies
+    given: not_Work_mode|declared_dependencies|GitHub_Workspace_skill_allows_install|bounded_tests
+    expected: GitHub_Workspace|do_not_escalate_merely_for_dependency_installation
   - id: work_mode_default
     given: Work_mode|no_explicit_current_AWA_command|repository_execution_needed
     expected: native_ChatGPT_Work_only|AWA_MCP_Workspace_and_AWA_Work_prohibited
@@ -225,12 +234,18 @@ routing_acceptance_cases:
     given: not_Work_mode|heavy_tests_or_special_runtime_required|GitHub_Workspace_insufficient|authorized_AWA_route
     expected: AWA_MCP_Workspace|reuse_matching_existing_before_new
   - id: durable_work
-    given: durable_dependent_steps_required|AWA_Work_permitted|existing_workspace_alone_insufficient
-    expected: AWA_Work|underlying_provider_admission_required
+    given: not_Work_mode|durable_dependent_steps_required|AWA_Work_permitted|underlying_workspace_may_exist
+    expected: AWA_Work|underlying_provider_admission_required|existing_workspace_not_a_substitute_for_durable_orchestration
+  - id: hosted_ci
+    given: hosted_runner_evidence_required|GitHub_Actions_permitted|no_local_equivalent
+    expected: GitHub_Actions|current_repository_and_runner_permissions_required
+  - id: no_route
+    given: required_execution|no_permitted_provider_or_authorization
+    expected: report_actual_blocker|do_not_fallback_to_prohibited_route
   - id: deployment
     given: repository_change_validated|no_explicit_deploy_request_or_approved_workflow
     expected: commit_and_remote_verify_only|deployment_prohibited
-- validation: check_each_case_against_ordered_gates_and_owner_contract; route_names_are_advisory_not_live_capability_claims
+- validation: check_each_case_against_ordered_gates_and_owner_contract|reject_contradictory_route_precedence|verify_work_mode_and_cross_chat_reuse_boundaries; examples_never_grant_capability_or_permission
 
 github_patch:
 - role: connected_GitHub_connector_fast_path
