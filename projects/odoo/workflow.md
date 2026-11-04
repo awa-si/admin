@@ -57,7 +57,7 @@ gate_1_static:
 - commands: python_dev/check.py|python_-m_compileall_-q_modules
 - checks: manifest|dependencies|Python_syntax|XML_CSV_JSON_references|security|license|version|formatting|Odoo_lint
 - OCA_checks_when_installed: bash_dev/oca-checks.sh
-- installed_dependency_verification: python_dev/oca-verify.py_--addons-path=/opt/odoo/env/odoo/addons,/opt/odoo/env/addons,/opt/odoo/addons,/opt/odoo/modules
+- installed_dependency_verification: use_repository_dev/oca-verify.py_with_addons_paths_from_current_verified_Odoo_runtime
 - OCA_tools: pylint-odoo|oca-checks-odoo-module
 - archived_MQT_as_current_framework: prohibited
 - execution: local_or_manual_CI
@@ -68,7 +68,7 @@ host_runtime:
 - preference: reuse_verified_existing_Odoo_binary|Python_environment|compatible_OCA_checkout_when_isolation_safe
 - execution_identity: host_odoo_OS_account_only_through_authorized_host_runner
 - require: verified_binary|Python_environment|separate_disposable_PostgreSQL_database|credentials|filestore|logs|test_config
-- test_filestore_root: /var/lib/awa-data/odoo/filestore
+- test_filestore_root: resolve_from_verified_current_host_contract_and_isolated_runtime_preflight
 - test_database_config_and_runtime_paths: resolve_from_current_AWA_host_contract_and_verified_live_preflight|never_assume_historical_values
 - production_database: never_modify|drop|initialize|upgrade_or_test
 - production_config: do_not_use_without_proof_of_isolated_test_configuration
@@ -108,7 +108,7 @@ gate_2_focused_integration:
 - runner_modes: ODOO_TEST_MODE=install|update
 - runner_not_environment_provisioner: true
 - runner_database_guard: test_*|*_test_only
-- host_database_odoo: host_odoo_test_executor_only|never_whitelist_in_shell_runner
+- host_database_named_odoo: never_treat_name_or_historical_allowlist_as_isolation_evidence|follow_current_host_contract_and_test_runner_protection
 - never_point_runner_at_production: true
 
 gate_3_release_integration:
