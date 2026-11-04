@@ -69,10 +69,13 @@ admin/
 
 ## Workflow routes
 
+The canonical routing bootstrap is [`workflow.md#decision_bootstrap`](workflow.md#decision_bootstrap). Its single decision authority is [`workflow.md#routing_decision_order`](workflow.md#routing_decision_order): **product mode → authorization → repository and branch → eligible retained workspace → capability needs → selected route → native admission**. The [routing acceptance cases](workflow.md#routing_acceptance_cases) cover ordinary edits, existing-workspace reuse, permission failures, test execution, durable orchestration and deployment boundaries. These are policy examples, not live API specifications.
+
 - **Connected GitHub connector**: default when no suitable AWA workspace route has been selected and authorized, provided the connector can complete the requested work and verification. An existing workspace does not itself authorize its use; never create one solely for repository access.
 - `GitHub_Patch`: small deterministic repository changes without local execution, using the connected GitHub connector.
 - `GitHub_Workspace`: light-to-medium repository coding requiring a temporary local workspace, with connector-mediated remote access.
 - `AWA_MCP_Workspace`: heavy or long-running execution, special runtimes, or requirements that cannot be met through the connector/GitHub Workspace alone. Once selected, local Git is run inside AWA and authenticated remote operations use AWA workspace repository tools. In ChatGPT Work mode, explicit current-user authorization for AWA remains required.
+- `AWA_Work`: durable, approval-gated multi-step orchestration when specifically authorized and technically needed; an existing Workspace does not replace this route.
 - `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
 `workflow.md` owns route selection and execution orchestration; tool and workspace mechanics belong to the current provider contracts. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/docs/workspace.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
