@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-26
-updated: 2026-11-03
+updated: 2026-11-04
 ---
 
 # GPT Admin
@@ -69,13 +69,13 @@ admin/
 
 ## Workflow routes
 
-- **Connected GitHub connector**: first choice whenever it can complete repository inspection, editing, and required verification; no AWA workspace is created in that case.
+- **Connected GitHub connector**: default when no healthy, authorized repository-bound AWA workspace is retained and the connector can perform the requested repository work and verification; never create a workspace solely for repository access.
 - `GitHub_Patch`: small deterministic repository changes without local execution, using the connected GitHub connector.
 - `GitHub_Workspace`: light-to-medium repository coding requiring a temporary local workspace, with connector-mediated remote access.
 - `AWA_MCP_Workspace`: heavy or long-running execution, special runtimes, or requirements that cannot be met through the connector/GitHub Workspace alone. Once selected, local Git is run inside AWA and authenticated remote operations use AWA workspace repository tools. In ChatGPT Work mode, explicit current-user authorization for AWA remains required.
 - `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
-`workflow.md` is the canonical owner of route selection and mechanics. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/docs/workspace.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
+`workflow.md` owns route selection and execution orchestration; tool and workspace mechanics belong to the current provider contracts. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/docs/workspace.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
 
 ## AWA MCP authority and reference routing
 
