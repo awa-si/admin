@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-26
-updated: 2026-11-04
+updated: 2026-11-05
 ---
 
 # GPT Admin
@@ -78,11 +78,11 @@ The canonical routing bootstrap is [`workflow.md#decision_bootstrap`](workflow.m
 - `AWA_Work`: durable, approval-gated multi-step orchestration when specifically authorized and technically needed; an existing Workspace does not replace this route.
 - `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
 
-`workflow.md` owns route selection and execution orchestration; tool and workspace mechanics belong to the current provider contracts. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/docs/workspace.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
+`workflow.md` owns route selection and execution orchestration; tool and workspace mechanics belong to the current provider contracts. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/workspace/contract.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
 
 ## AWA MCP authority and reference routing
 
-Admin owns route selection, authorizations, and completion criteria; it does not define MCP tool interfaces or implementation mechanics. Load the current canonical instruction, capability, and subsystem contracts before applicable AWA actions. The authoritative references are [AWA MCP gateway](https://github.com/awa-si/awa/blob/main/mcp/README.md), [Workspace contract](https://github.com/awa-si/awa/blob/main/mcp/docs/workspace.md), current AWA repository owners and live registered tool schemas. Neither discovery nor documentation alone grants execution permission.
+Admin owns route selection, authorizations, and completion criteria; it does not define MCP tool interfaces or implementation mechanics. Load the current canonical instruction, capability, and subsystem contracts before applicable AWA actions. The authoritative references are [AWA MCP gateway](https://github.com/awa-si/awa/blob/main/mcp/README.md), [Workspace contract](https://github.com/awa-si/awa/blob/main/mcp/workspace/contract.md), current AWA repository owners and live registered tool schemas. Neither discovery nor documentation alone grants execution permission.
 
 ## ChatGPT Work mode
 
