@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-31
-updated: 2026-11-04
+updated: 2026-11-05
 ---
 scope: project_workflow_delta
 project: awa
@@ -24,7 +24,7 @@ canonical_owners:
 - workspace_reuse_and_consent: awa-si/admin/projects/awa/instructions.txt
 - repository_ownership: awa-si/awa@main:AGENTS.md
 - MCP_runtime_and_entrypoint: awa-si/awa@main:mcp/README.md
-- workspace_API_and_lifecycle: awa-si/awa@main:mcp/docs/workspace.md
+- workspace_API_and_lifecycle: awa-si/awa@main:mcp/workspace/contract.md
 - workspace_implementation_map: awa-si/awa@main:mcp/workspace/README.md
 - workspace_profile: awa-si/awa@main:workspace.ini
 - invocation_authority: live_AWA_MCP_tool_schema
@@ -40,7 +40,7 @@ routing:
 - unsupported_or_retired_operation: consult_current_owner|never_infer_legacy_name
 
 workspace:
-- technical_reference: awa-si/awa@main:mcp/docs/workspace.md
+- technical_reference: awa-si/awa@main:mcp/workspace/contract.md
 - selection: inherited_global_routing_gates
 - live_schema: authoritative
 
