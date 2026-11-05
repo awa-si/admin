@@ -6,7 +6,7 @@ status: active
 language: en
 owner: AWA
 created: 2026-10-26
-updated: 2026-11-04
+updated: 2026-11-05
 ---
 
 scope: global_workflow
@@ -275,7 +275,7 @@ awa_mcp:
 - workspace:
   - role: selected_workspace_execution_route
   - selection: routing_decision_order
-  - technical_contract: awa-si/awa@main:mcp/docs/workspace.md
+  - technical_contract: awa-si/awa@main:mcp/workspace/contract.md
   - current_interface: live_AWA_MCP_workspace_schema
   - lifecycle_and_reuse: canonical_workspace_contract_plus_approval_and_cross_chat_consent
   - git_and_environment: delegate_to_canonical_workspace_contract_and_repository_profile
