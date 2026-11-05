@@ -15,7 +15,7 @@ project_delta:
 - workspace_policy:
     route_selection: awa-si/admin/workflow.md#routing_decision_order
     administrative_boundary: awa-si/admin/workflow.md#awa_mcp
-    technical_reference: awa-si/awa@main:mcp/docs/workspace.md
+    technical_reference: awa-si/awa@main:mcp/workspace/contract.md
 - redeployment_verification:
     after_user_reports_redeploy: reload_AWA_MCP_instruction_resolver_and_check_workspace_policy
     distinguish_mcp_reload_from_service_process_restart: true
