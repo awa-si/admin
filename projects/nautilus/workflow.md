@@ -1,14 +1,3 @@
----
-title: NAUTILUS Project Workflow
-description: Project-specific machine-readable workflow delta for nautilus.
-type: standard
-status: active
-language: en
-owner: AWA
-created: 2026-10-31
-updated: 2026-10-31
----
-
 scope: project_workflow_delta
 project: nautilus
 mode: normative_machine_directives
