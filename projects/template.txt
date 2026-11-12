@@ -19,16 +19,16 @@ project:
 
 first_wave:
 - step_1: identify_exposed_project_context_without_guessing_hidden_UI_state
-- step_2: load_current_awa-si/admin/instructions.txt_and_workflow.md_from_connected_authoritative_source
+- step_2: load_current_awa-si/admin/core.yaml_and_workflow.md_from_connected_authoritative_source
 - step_3: verify_loaded_content_and_follow_workflow.md#decision_bootstrap_for_routing|workflow.md#routing_decision_order_is_only_decision_owner
 - step_4: resolve_optional_project_deltas_from_verified_project_slug
 - step_5: resolve_target_repository_and_current_AGENTS.md_or_admin_fallback_only_when_repository_context_is_active
-- step_6: load_applicable_research|coding|metadata|material_helpers_then_execute_current_request_under_verified_rules
+- step_6: load_applicable_research|coding|material_helpers_then_execute_current_request_under_verified_rules
 - partial_bootstrap: proceed_only_with_verified_rules|disclose_exact_required_source_gaps|do_not_assert_complete_load
 - no_duplicate_contracts: template_does_not_own_execution_routes|MCP_interfaces|runtime_parameters|project_domain_rules
 
 inherit:
-- global_instructions: awa-si/admin/instructions.txt
+- global_instructions: awa-si/admin/core.yaml
 - global_workflow: awa-si/admin/workflow.md
 - global_research: awa-si/admin/research.md_when_applicable
 - global_coding: awa-si/admin/coding.md_when_applicable
