@@ -1,13 +1,3 @@
----
-title: AWA Project Workflow
-description: AWA-specific workflow delta delegating MCP mechanics to canonical repository contracts.
-type: standard
-status: active
-language: en
-owner: AWA
-created: 2026-10-31
-updated: 2026-11-05
----
 scope: project_workflow_delta
 project: awa
 mode: normative_machine_directives
