@@ -1,0 +1,29 @@
+# AWA Admin dynamic workflow detail. Read only when required by workflow.md.
+verification:
+- evidence_ladder: syntax_static -> focused_behavior -> affected_scope -> integration_or_remote_when_material
+- choose_highest_required_evidence_not_maximum_available_evidence: true
+- same_evidence_level_may_be_skipped_when_unchanged_valid_result_is_still_applicable: true
+- remote_write_verification: verify_exact_changed_remote_state_or_head_not_merely_tool_success
+- generated_or_hosted_artifact_claim: bind_to_source_sha_or_run_identity_when_material
+- negative_verification_result: blocker_or_open_change_set_not_completion
+- order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
+- missing_validation_dependency:
+  - declared_dev_or_test_dependency_missing: install_then_rerun_same_check
+  - do_not_stop_before_install_and_rerun_when_current_route_allows_it: true
+  - if_current_route_cannot_install_dependencies: reclassify_to_an_allowed_route_when_permitted
+  - undeclared_or_unsafe_dependency_source: surface_actual_blocker
+- long_running_execution_preflight_applies_before_expensive_stage: true
+- never_claim_unobserved_execution: true
+- remote_ci: only_if_material
+- completion_claim: only_after_route_appropriate_remote_verification
+
+failure_and_recovery:
+- classify_failure_before_recovery: validation_failure|dependency_missing|permission_denied|stale_ref|tool_unavailable|runtime_lost|external_state_ambiguous|policy_block|user_decision_required
+- recover_using_owner_route_not_ad_hoc_substitution: required
+- stale_ref: refresh_current_state_then_reapply_or_reconcile_change
+- dependency_missing: follow_verification_missing_dependency_policy
+- permission_denied: do_not_reinterpret_as_missing_credentials_when_authenticated_boundary_exists
+- tool_or_runtime_unavailable: surface_actual_blocker_or_reclassify_to_allowed_equivalent_route
+- external_state_ambiguous: inspect_authoritative_state_before_retry
+- safety_or_policy_block: report_exact_blocked_operation_without_silent_bypass
+- recovery_must_not_weaken: correctness|security|approval|branch_protection|idempotency|repository_contract
