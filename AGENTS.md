@@ -69,7 +69,7 @@ reasoning:
 - when_admin_change_affects_managed_projects_or_repositories: inspect_downstream_semantic_impact
 
 layering:
-- follow_resolution_order_from: core.yaml#order
+- follow_resolution_order_from: core.yaml#registry
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
 - project_files: delta_only
