@@ -11,10 +11,10 @@ sources:
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution
   coding:
-    path: awa-si/admin/coding.md
+    path: awa-si/admin/workflow/coding.md
     load: on_coding_or_implementation
   research:
-    path: awa-si/admin/research.md
+    path: awa-si/admin/workflow/research.md
     load: on_research_or_material_fact_check
   mcp:
     discovery: mcp_model
