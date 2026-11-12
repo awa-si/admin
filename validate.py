@@ -39,18 +39,29 @@ def _read(path: Path) -> dict:
 def validate(repo: Path) -> dict:
     core = _read(repo / "core.yaml")
     template = _read(repo / "projects" / "template.txt")
-    if (core.get("scope"), core.get("mode"), core.get("version")) != ("chatgpt", "use_case_resolver", 2):
-        raise ValueError("core.yaml must be a version-2 use-case resolver")
-    if set(core) != {"version", "scope", "mode", "order", "resolution"}:
+    if (core.get("scope"), core.get("mode"), core.get("version")) != ("chatgpt", "use_case_resolver", 3):
+        raise ValueError("core.yaml must be a version-3 use-case resolver")
+    if set(core) != {"version", "scope", "mode", "registry", "resolution"}:
         raise ValueError("core.yaml contains unexpected keys")
-    order = core["order"]
-    if not isinstance(order, list):
-        raise ValueError("core.order must be an ordered list")
-    expected_ids = ("behavior", "workflow", "coding", "research", "github", "mcp", "project", "repository_agent")
-    ids = tuple(entry.get("id") for entry in order if isinstance(entry, dict))
-    if ids != expected_ids or len(order) != len(expected_ids):
-        raise ValueError("core use-case resolution order is invalid")
-    sources = dict(zip(ids, order))
+    registry = core["registry"]
+    if not isinstance(registry, list) or len(registry) != 4:
+        raise ValueError("core.registry must contain four ordered top-level entries")
+    if any(not isinstance(entry, dict) for entry in registry):
+        raise ValueError("core.registry entries must be mappings")
+    top_ids = tuple(entry.get("id") for entry in registry)
+    if top_ids != ("behavior", "workflow", "project", "repository_agent"):
+        raise ValueError("core top-level registry order is invalid")
+    workflow_children = registry[1].get("children")
+    if not isinstance(workflow_children, list) or len(workflow_children) != 4:
+        raise ValueError("workflow registry must contain four child use cases")
+    if any(not isinstance(child, dict) for child in workflow_children):
+        raise ValueError("workflow registry children must be mappings")
+    child_ids = tuple(child.get("id") for child in workflow_children)
+    if child_ids != ("coding", "research", "github", "mcp"):
+        raise ValueError("workflow child order is invalid")
+    sources = {entry["id"]: entry for entry in registry + workflow_children}
+    if len(sources) != 8:
+        raise ValueError("duplicate use-case identifier in registry")
     expected_paths = {
         "behavior": "behavior.yaml",
         "workflow": "workflow.md",
@@ -72,6 +83,10 @@ def validate(repo: Path) -> dict:
     for name in ("github", "mcp"):
         if sources[name].get("requires") != "workflow":
             raise ValueError(f"{name} must depend on workflow routing")
+    if core["resolution"].get("registry_semantics") != "ordered_parent_child_source_graph_not_instruction_priority":
+        raise ValueError("registry must not override instruction precedence")
+    if core["resolution"].get("child_loading") != "evaluate_each_child_condition_independently;parent_not_implicitly_loaded":
+        raise ValueError("child use cases must retain independent loading")
     if sources["mcp"].get("discovery") != "mcp_model":
         raise ValueError("MCP capability discovery must use mcp_model")
     if sources["mcp"].get("technical_sources") != "mcp_instructions":
@@ -85,8 +100,6 @@ def validate(repo: Path) -> dict:
     resolution = core["resolution"]
     if resolution.get("route_authority") != "awa-si/admin/workflow.md#routing_decision_order":
         raise ValueError("workflow.md must remain the route authority")
-    if resolution.get("order_semantics") != "evaluation_order_not_instruction_priority":
-        raise ValueError("resolution order must not redefine instruction precedence")
     if template.get("authority") != "awa-si/admin/core.yaml":
         raise ValueError("project authority must point at core.yaml")
     if template.get("load", {}).get("index") != "awa-si/admin/core.yaml":
