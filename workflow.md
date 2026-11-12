@@ -1,4 +1,5 @@
 scope: global_workflow
+
 mode: normative_machine_directives
 
 resolution:
@@ -11,10 +12,120 @@ decision_bootstrap:
 - entrypoint: routing_decision_order
 - authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
-- expand_on_demand: workflow/repository.md|workflow/routes.md|workflow/github.md|workflow/mcp.md|workflow/execution.md|workflow/preflight.md|workflow/verification.md
+- expand_on_demand: workflow/routes.md|workflow/github.md|workflow/mcp.md_when_route_material
 - default: prefer_connected_GitHub_connector_for_sufficient_repository_only_work; do_not_create_AWA_workspace_without_material_execution_need_or_explicit_selection
 - never_infer: workspace_permission|mutating_authorization|deploy_approval|runtime_availability_from_discovery
 - invalidation: affected_scope_or_authority_change_only
+
+branch_resolution:
+- priority: explicit_user_branch_in_current_task > clear_active_branch_from_current_chat > explicit_project_or_repository_branch > main
+- do_not_infer_non_main_branch_from_stale_or_unrelated_context: true
+- ask_user_instead_of_guessing_when: main_missing|multiple_materially_plausible_branches_change_task_semantics|branch_context_conflicts
+- once_selected_for_task: keep_stable_until_user_or_material_repository_evidence_changes_it
+- make_explicit_when: selected_branch_is_not_main|context_could_be_ambiguous
+
+task_scope_resolution:
+- resolve_before_material_execution: objective|requested_completion|target_repository_or_repositories|branch|owner|mutation_class|runtime_need
+- explicit_user_scope: authoritative
+- inferred_scope: smallest_coherent_scope_supported_by_current_evidence
+- freeze_resolved_scope_for_change_set: true
+- reopen_scope_only_when: new_material_dependency|repository_state_changed|user_expands_scope|current_route_proves_insufficient
+- do_not_repeat_scope_discovery_after_freeze: true
+- materially_ambiguous_target_that_changes_write_destination: resolve_before_write
+- read_only_progress_when_write_target_is_ambiguous: allowed_when_safe
+
+repository_state_resolution:
+- current_repository_state: authoritative
+- before_write_resolve_when_material: repository|branch|base_or_head_sha|owner_contract|relevant_dependencies
+- retain_observed_refs_for_change_set: required
+- stale_base_before_write: refetch_and_reconcile_before_mutation
+- branch_or_owner_change_invalidates_affected_change_set_resolution: true
+- do_not_reconstruct_known_state_from_repeated_broad_search: true
+
+repository_discovery:
+- objective: locate_smallest_material_owner_and_dependency_set_with_minimum_repository_scan_cost
+- explicit_directory_target_overrides_narrowest_single_file_optimization: true
+- when_directory_is_requested: establish_complete_material_subtree_inventory_before_treating_discovery_as_complete
+- known_path_or_symbol: direct_read_or_exact_lookup_first
+- route_native_repository_map_or_search: prefer_when_available_before_shell_scan
+- AWA_MCP_Workspace:
+  - repository_discovery_and_search: delegate_to_current_workspace_contract_and_live_schema
+  - use_native_capability_when_available_and_suitable_before_reconstructing_equivalent_state
+  - returned_scope_or_truncation_is_not_complete_inventory_evidence: true
+  - use_supported_local_fallback_when_native_search_is_insufficient: true
+- unknown_code_location:
+  - prefer_repository_native_index_or_tracked_file_inventory_when_available: true
+  - local_git_workspace_tracked_inventory: git_ls_files_preferred_over_recursive_find
+  - text_search: ripgrep_or_route_native_equivalent_preferred
+  - symbol_or_heading_index: prefer_cached_incremental_index_when_available
+  - invalidate_incremental_index_by: head_change|dirty_path_fingerprint|file_add_remove_rename
+- broad_tree_or_content_scan: only_when_narrow_discovery_cannot_resolve_material_scope
+- full_file_read: only_when_narrow_ranges_or_symbol_owner_are_insufficient
+- tool_output_truncation: cannot_support_completeness_claim
+- discovery_result_should_preserve: path|symbol_or_anchor_when_available|owner|relevant_dependency_refs
+
+operation_classification:
+- classify_material_actions_before_execution: read_only|reversible_write|branch_or_ref_mutation|external_side_effect|destructive|long_running
+- idempotency_class_when_retry_possible: idempotent|conditionally_idempotent|non_idempotent|unknown
+- unknown_mutation_outcome: inspect_authoritative_state_before_retry
+- blind_retry_of_non_idempotent_or_unknown_mutation: prohibited
+- destructive_or_irreversible_boundary: require_applicable_explicit_approval_or_owner_policy
+- read_only_discovery_does_not_authorize_mutation: true
+
+cross_repository_execution:
+- apply_when: one_requested_outcome_spans_multiple_repositories
+- resolve_owner_and_branch_per_repository_before_change: required
+- build_dependency_order_between_repositories_when_material: true
+- parallelize_independent_repository_reads_tests_or_changes_when_safe: preferred
+- serialize_cross_repository_steps_when_one_repository_output_is_input_to_another: required
+- each_repository_keeps_its_own: base_head|working_branch|validation|commit|push_evidence
+- no_atomic_cross_repository_push_assumption: true
+- integration_completion_requires_all_affected_repositories_verified_at_current_heads: true
+- partial_cross_repository_completion: report_exact_completed_and_blocked_repositories
+
+chatgpt_work_mode:
+- apply_when: active_ChatGPT_product_mode_is_Work
+- role: native_ChatGPT_Work_execution_policy
+- precedence:
+  - overrides_AWA_MCP_workspace_or_project_preferences: true
+  - AWA_MCP_default: disabled_unless_explicit_current_user_command
+  - routes_without_explicit_current_user_command: AWA_MCP_Workspace|AWA_Work_disabled
+  - tool_family_without_explicit_current_user_command: awa_MCP_tools_including_workspace_*|work_*|github_*_through_AWA_disabled
+  - fallback_to_AWA_MCP_without_explicit_current_user_command: disabled
+  - explicit_AWA_MCP_command_exception:
+    - trigger: explicit_current_user_instruction_to_use_AWA_MCP
+    - scope: specifically_requested_operation_or_workflow_only
+    - implicit_inference_from_complexity_or_prior_usage: disabled
+    - later_unrelated_prompts_require_new_explicit_authorization: true
+  - allowed_execution_surface: native_ChatGPT_Work_capabilities_and_other_non_AWA_connected_tools_allowed_by_current_product_context|explicitly_authorized_AWA_MCP_scope
+- planning_and_execution:
+  - decompose_into_material_stages_when_multistep_or_long_running: required
+  - preserve_dependency_order: required
+  - checkpoints_and_parallelism_are_mandatory_where_capability_and_task_semantics_allow: true
+  - avoid_redundant_research_or_execution_when_valid_checkpoint_evidence_exists: true
+- checkpoints:
+  - mandatory_when: multistep|long_running|expensive|interruptible|material_partial_progress_exists
+  - use_native_Work_checkpoint_or_progress_persistence_when_available: required
+  - checkpoint_before: long_or_expensive_stage|destructive_or_high_impact_transition|dependency_boundary
+  - checkpoint_after: completed_material_stage|validated_intermediate_result
+  - checkpoint_content: completed_scope|current_state|material_evidence|remaining_work|resume_point
+  - resume_from_latest_valid_checkpoint: required
+  - do_not_repeat_completed_expensive_work_when_checkpoint_can_resume: true
+- parallelism:
+  - mandatory_when_independent_work_can_run_concurrently: true
+  - parallelize: independent_reads|independent_analysis|independent_validation|independent_repository_or_file_scopes
+  - prefer_bounded_parallelism_over_unbounded_fanout: true
+  - serialize_when: dependency_order|shared_mutable_state|same_path_write|branch_ref_mutation|approval_gate|destructive_side_effect|resource_contention_requires_it
+  - join_and_validate_parallel_results_before_dependent_stage: required
+- long_running_jobs:
+  - required_preflight: syntax_static -> short_smoke_test -> long_running_job
+  - syntax_or_smoke_failure_blocks_long_job: true
+  - short_smoke_should_use_same_material_code_path_and_runtime_profile_when_practical: true
+  - long_running_job_must_not_be_first_validation_step: true
+- completion:
+  - do_not_claim_completion_from_started_or_scheduled_work_alone: true
+  - require_observed_result_or_valid_checkpoint_evidence_for_completed_stages: true
+  - surface_actual_blocker_when_native_Work_cannot_continue: true
 
 routing_decision_order:
 - owner: awa-si/admin/workflow.md
@@ -39,22 +150,151 @@ routing_decision_order:
 - selected_route_transport: repository_tool_routing
 - prohibited: inferred_user_permission|unverified_workspace_reuse|fallback_to_disabled_AWA_tools|route_selection_by_circumventing_policy
 
+deployment_cadence:
+- goal: finish_related_implementation_and_validation_before_authorized_deployment
+- default_sequence: scope_inventory -> coherent_design -> implement_related_changes -> bundle_tests_and_performance_metrics_when_reasonable -> commit -> deploy_if_required_and_authorized -> verify
+- avoid: change_deploy_change_deploy_cycle_for_work_known_before_first_deployment
+- deployment_gate: user_request|established_approved_automation_or_repository_contract|applicable_authorization
+- pre_deploy: no_known_ready_related_change_left_unimplemented_in_current_requested_change_set
+- deployment_count: prefer_one_per_coherent_release_boundary_not_one_per_edit
+- post_deploy_modification: observed_failure|verified_regression|new_requirement_only
+- corrective_cycle: isolate_actual_failure -> focused_patch -> validation -> authorized_redeploy -> verify
+- do_not_expand_scope_after_deploy: speculative_cleanup|unrelated_features|untested_tuning
+- long_running_constraint: use_resumable_checkpoint_when_completion_is_not_currently_possible
+- production_boundary: preserve_release_gates|approvals|rollback_and_safety_contracts
+
+change_set_lifecycle:
+- unit: smallest_coherent_set_of_materially_related_changes
+- preferred_sequence: resolve -> inspect -> edit -> focused_validate -> broader_validate_if_required -> commit -> remote_verify
+- do_not_commit_unvalidated_material_code_when_validation_route_is_available: true
+- validation_failure: keep_change_set_open_until_fixed_or_actual_blocker_reported
+- equivalent_validation_without_state_change: do_not_repeat
+- docs_and_code_changed_for_same_contract: validate_as_one_change_set_when_practical
+- bundled_user_request: multiple_related_change_sets_may_execute_before_returning_control
+- independent_rollback_boundaries: may_use_separate_commits
+- completion_requires_no_known_unresolved_inconsistency_inside_requested_change_set: true
+
+edit_and_writeback:
+- smallest_coherent_change: required
+- unrelated_refactor_in_same_change: prohibited
+- docs_only_ci: avoid_unless_executable_examples_or_machine_checked_contracts_changed
+- one_coherent_change: one_coherent_commit_when_supported
+- commit_message: user_supplied_else_concise_factual
+- split_commits_only_if: user_requests|repo_requires|independent_rollback_boundary
+- pull_request: only_if_explicitly_requested|required_by_repo|direct_write_blocked_and_authorized_fallback
+- merge_pull_request: only_if_explicitly_requested
+- force_push_or_force_overwrite: prohibited
+- same_path_edits|shared_mutable_state|lockfile_mutation|branch_ref_mutation|final_writeback: serialize
+
+dependency_preflight:
+- before_running: scripts|tests|builds|benchmarks|training|replays
+- inspect: dependency_manifests|lockfiles|workspace_profile|runtime_version|system_tools
+- verify_in_target_environment: required_packages|installed_versions|importability|executables|native_libraries
+- missing_dependencies: report_exact_missing_packages_and_versions_then_install_or_prepare_in_target_environment_when_route_supports_it
+- after_installation: verify_imports|versions|executables|native_libraries_and_continue_requested_execution
+- installation_failure: report_exact_error_and_block_only_when_recovery_is_not_possible
+- do_not_start_main_script_until_required_dependencies_are_ready: true
+- recheck_when: dependency_manifest_or_environment_changes
+- failure: report_precise_missing_dependency_or_execution_route_blocker
+- AWA_workspace_repository_dependencies: reuse_the_bound_existing_workspace_and_its_persistent_environment; do_not_create_a_second_workspace_or_ephemeral_environment_merely_to_install_manifest_dependencies
+- AWA_workspace_environment_path: prefer_native_persistent_/work/env_and_/work/cache; reuse_compatible_installed_dependencies_before_installing
+- test_preflight: verify_required_test_plugins_and_imports_in_addition_to_manifest_packages; pytest_asyncio_is_required_when_tests_use_pytest_mark_asyncio
+- missing_dependency_recovery: synchronize_or_install_in_existing_authorized_workspace_then_rerun_original_test; if_dependency_is_undeclared_fix_the_relevant_test_or_dev_manifest
+- avoid_redundant_checks: reuse_valid_preflight_for_unchanged_module_bundle
+
+rights_preflight:
+- before_running: scripts|tests|builds|deployments|repository_writes|training|replays
+- verify_in_actual_execution_identity: filesystem_read_write_execute_permissions|directory_traversal|ownership|ACLs|workspace_mount_access|required_service_or_database_roles|repository_branch_permissions
+- check_targets: inputs|outputs|temporary_directories|cache|artifacts|runtime_sockets|external_resources_as_material
+- do_not_assume: root_access|sudo_access|host_access|credentials|privileges_from_workspace_creation
+- insufficient_rights: report_exact_denied_resource_and_required_permission_then_apply_only_safe_authorized_remediation
+- remediation: prefer_existing_owned_writable_locations|correct_scoped_permissions|approved_role_or_access_changes
+- prohibited: blanket_chmod_777|privilege_escalation|bypassing_security_controls|changing_unrelated_ownership
+- after_remediation: recheck_effective_access_then_continue_original_execution
+- unrecoverable_denial: stop_before_main_execution_and_report_blocker
+- avoid_redundant_checks: reuse_valid_preflight_when_identity|mounts|targets|permissions_unchanged
+
+environment_preflight:
+- before_running: scripts|tests|builds|deployments|training|replays|long_running_jobs
+- resolve_required_variables_from: repository_configuration_contract|declared_env_schema|runtime_or_workspace_profile|application_entrypoint
+- verify_in_actual_execution_environment: presence|nonempty_when_required|type_and_format|allowed_values|cross_variable_consistency|environment_scope
+- configuration_sources: use_existing_authorized_environment|approved_env_file_loading|secret_manager_or_runtime_injection_as_supported
+- missing_or_invalid_values: report_variable_names_and_validation_reasons_without_disclosing_sensitive_values
+- remediation: load_authorized_configuration_or_set_nonsecret_documented_defaults_when_safe|request_unavailable_secrets_or_authorization
+- prohibited: inventing_credentials|committing_env_secrets|printing_secret_values|silently_overriding_user_configuration
+- after_remediation: revalidate_in_target_process_context_then_continue_execution
+- failure: stop_before_main_execution_when_required_configuration_cannot_be_validated
+- avoid_redundant_checks: reuse_results_only_when_config_sources|process_environment|runtime_scope_unchanged
+
+long_running_execution:
+- apply_when: foreseeably_long|heavy|resource_intensive|benchmark|replay|large_test_suite|training|bulk_processing
+- preflight:
+  - required_sequence: dependency_preflight -> rights_preflight -> environment_preflight -> syntax_static -> short_focused_smoke -> long_job
+  - syntax_static: smallest_relevant_parser_import_compile_or_static_check
+  - short_focused_smoke: smallest_representative_runtime_check_using_same_material_code_path_and_runtime_profile_when_practical
+  - long_job_start_gate: syntax_static_and_short_focused_smoke_passed
+  - preflight_failure: fix_or_surface_blocker_before_long_job
+  - long_job_as_first_validation_step: prohibited
+  - do_not_spend_long_job_budget_on_basic_syntax_import_configuration_or_startup_failures: true
+- staging:
+  - split_into_resumable_bounded_stages_when_practical: true
+  - preserve_partial_evidence: required
+  - persist_material_intermediate_evidence_before_next_expensive_stage_when_loss_is_material: required
+- recovery:
+  - runtime_disappearance_without_durable_terminal_evidence: classify_as_unknown_or_lost
+  - durable_long_execution_materially_required: consider_GitHub_Actions_only_when_user_intent_and_repository_policy_allow
+  - patch_partial_remote_write: inspect_actual_remote_state_then_continue_or_compensate_without_blind_retry
+  - GitHub_Workspace_unavailable_outside_ChatGPT_Work_mode: AWA_MCP_Workspace_fallback_requires_current_authorization|capability_and_suitability_gates
+  - ChatGPT_Work_mode_AWA_fallback: explicit_current_user_AWA_MCP_command_only
+  - AWA_MCP_Workspace_unavailable_when_selected: surface_actual_blocker
+  - AWA_MCP_Workspace_recycled_or_missing: surface_blocker_and_do_not_create_replacement_automatically
+  - GitHub_Workspace_recovery: delegate_to_current_GitHub_Workspace_skill
+  - wrong_commit: prefer_revert_or_compensating_commit
+
+mcp_versioning:
+- owner: awa-si/awa@main:mcp/README.md|current_repository_release_and_deployment_contract
+- before_MCP_code_or_registration_change: inspect_and_apply_current_owner_versioning_and_activation_rules
+- version_or_commit_alone_is_not_live_runtime_verification: true
+
+verification:
+- evidence_ladder: syntax_static -> focused_behavior -> affected_scope -> integration_or_remote_when_material
+- choose_highest_required_evidence_not_maximum_available_evidence: true
+- same_evidence_level_may_be_skipped_when_unchanged_valid_result_is_still_applicable: true
+- remote_write_verification: verify_exact_changed_remote_state_or_head_not_merely_tool_success
+- generated_or_hosted_artifact_claim: bind_to_source_sha_or_run_identity_when_material
+- negative_verification_result: blocker_or_open_change_set_not_completion
+- order: syntax_static -> focused_tests -> affected_package_tests -> broader_suite
+- missing_validation_dependency:
+  - declared_dev_or_test_dependency_missing: install_then_rerun_same_check
+  - do_not_stop_before_install_and_rerun_when_current_route_allows_it: true
+  - if_current_route_cannot_install_dependencies: reclassify_to_an_allowed_route_when_permitted
+  - undeclared_or_unsafe_dependency_source: surface_actual_blocker
+- long_running_execution_preflight_applies_before_expensive_stage: true
+- never_claim_unobserved_execution: true
+- remote_ci: only_if_material
+- completion_claim: only_after_route_appropriate_remote_verification
+
+failure_and_recovery:
+- classify_failure_before_recovery: validation_failure|dependency_missing|permission_denied|stale_ref|tool_unavailable|runtime_lost|external_state_ambiguous|policy_block|user_decision_required
+- recover_using_owner_route_not_ad_hoc_substitution: required
+- stale_ref: refresh_current_state_then_reapply_or_reconcile_change
+- dependency_missing: follow_verification_missing_dependency_policy
+- permission_denied: do_not_reinterpret_as_missing_credentials_when_authenticated_boundary_exists
+- tool_or_runtime_unavailable: surface_actual_blocker_or_reclassify_to_allowed_equivalent_route
+- external_state_ambiguous: inspect_authoritative_state_before_retry
+- safety_or_policy_block: report_exact_blocked_operation_without_silent_bypass
+- recovery_must_not_weaken: correctness|security|approval|branch_protection|idempotency|repository_contract
 
 source_map:
-- workflow/repository.md: branch_resolution|task_scope_resolution|repository_state_resolution|repository_discovery|cross_repository_execution
 - workflow/routes.md: github_routing_gate|routing_acceptance_cases
 - workflow/github.md: github_capability_detection|github_patch|repository_tool_routing|github_workspace|github_actions
 - workflow/mcp.md: awa_mcp
-- workflow/execution.md: operation_classification|chatgpt_work_mode|deployment_cadence|change_set_lifecycle|edit_and_writeback|long_running_execution|mcp_versioning
-- workflow/preflight.md: dependency_preflight|rights_preflight|environment_preflight
-- workflow/verification.md: verification|failure_and_recovery
-- behavior.yaml: bundled_execution|performance_evidence|artifacts_and_logs
 
 loading:
 - entrypoint: workflow.md#routing_decision_order
-- detail_files: load_only_when_relevant_to_current_route_or_task
-- route_specs: workflow/routes.md|workflow/github.md_when_GitHub_route_material|workflow/mcp.md_when_AWA_MCP_route_material
+- common_workflow: loaded_with_workflow.md;not_a_separate_optional_source
+- route_details: load_only_relevant_workflow/routes.md|workflow/github.md|workflow/mcp.md
+- cross_task_rules: awa-si/admin/behavior.yaml
 - project_files: resolve_at_chatgpt_project_layer_not_through_AWA_MCP
-- behavior_owner: awa-si/admin/behavior.yaml
 - repository_agent: resolve_only_when_repository_context_active
 - do_not_infer_from_index: actual_tool_schema|permission|deployment_status
