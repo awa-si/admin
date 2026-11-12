@@ -99,7 +99,8 @@ regressions. To validate real paired checkouts, use
 --expected-admin-sha <exact-admin-HEAD> --expected-awa-sha <exact-awa-HEAD>`.
 The two SHA arguments are required; the validator fails on revision mismatch.
 It checks the Admin route owner, MCP local-only technical topics, the public
-instruction tool argument list, documentation parity, and the discovery/authority
-boundary. It never fetches a repository or activates MCP. CI must explicitly
+instruction tool argument list, documentation parity, the single canonical
+Knowledge and Browser documentation owners (including their generator markers),
+and the discovery/authority boundary. It never fetches a repository or activates MCP. CI must explicitly
 check out both repositories at known revisions and pass their verified SHAs;
 repository checkout permissions remain independently required.

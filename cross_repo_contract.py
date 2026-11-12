@@ -123,6 +123,27 @@ def check_contract(admin: Path, awa: Path) -> dict[str, object]:
     for obsolete in ("project", "ref"):
         _require(re.search(r"^\|\s*" + obsolete + r"\s*\|", docs, re.M) is None,
                  f"MCP tool docs retain obsolete argument {obsolete}")
+    # Consolidated Knowledge and Browser contracts must not have duplicate owners.
+    _require(not (awa / "mcp/docs/knowledge.md").exists(),
+             "retired Knowledge contract path remains")
+    _require(not (awa / "mcp/docs/browser-vision.md").exists(),
+             "retired Browser Vision path remains")
+    browser_path = awa / "mcp/docs/interfaces/browser.md"
+    browser = browser_path.read_text(encoding="utf-8") if browser_path.is_file() else ""
+    for label, content, begin, end in (
+        ("Knowledge", docs,
+         "<!-- BEGIN MAINTAINED KNOWLEDGE CONTRACT -->",
+         "<!-- END MAINTAINED KNOWLEDGE CONTRACT -->"),
+        ("Browser", browser,
+         "<!-- BEGIN GENERATED INTERFACE REFERENCE -->",
+         "<!-- END GENERATED INTERFACE REFERENCE -->"),
+    ):
+        _require(content.count(begin) == 1 and content.count(end) == 1,
+                 f"{label} canonical document markers missing or duplicated")
+    _require("## MCP Knowledge Plane" in docs,
+             "Knowledge contract content missing")
+    _require("## Browser vision" in browser,
+             "Browser Vision contract content missing")
     return {"status": "valid", "admin_owner": "awa-si/admin",
             "mcp_owner": "awa-si/awa", "technical_topics": sorted(topics),
             "tool_arguments": args}

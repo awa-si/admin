@@ -15,6 +15,7 @@ class CrossRepoContractTests(unittest.TestCase):
         self.awa = Path(self.temp.name) / "awa"
         self.awa.joinpath("mcp", "tools").mkdir(parents=True)
         self.awa.joinpath("mcp", "docs", "tools").mkdir(parents=True)
+        self.awa.joinpath("mcp", "docs", "interfaces").mkdir(parents=True)
         self.awa.joinpath("mcp", "workspace").mkdir(parents=True)
         self.awa.joinpath("AGENTS.md").write_text("# Agent\n")
         self.awa.joinpath("mcp", "workspace", "contract.md").write_text("# Workspace\n")
@@ -41,11 +42,24 @@ _KNOWLEDGE_SOURCES = {"instructions": {"boundary": "ChatGPT_loads_Admin_and_proj
 async def mcp_model(operation="schema"):
     return {}
 ''')
+        self._write("mcp/docs/interfaces/browser.md", """
+# Browser interface
+
+## Browser vision
+
+<!-- BEGIN GENERATED INTERFACE REFERENCE -->
+## Adapter reference
+<!-- END GENERATED INTERFACE REFERENCE -->
+""")
         self._write("mcp/docs/tools/mcp_instructions.md", '''
 | Argument | Required |
 | --- | --- |
 | topic | no |
 | compact | no |
+
+<!-- BEGIN MAINTAINED KNOWLEDGE CONTRACT -->
+## MCP Knowledge Plane — maintained contract
+<!-- END MAINTAINED KNOWLEDGE CONTRACT -->
 ''')
         self.admin = Path(__file__).resolve().parent
 
@@ -73,6 +87,26 @@ async def mcp_instructions(topic=None, project=None, compact=False):
     def test_missing_technical_source_fails(self) -> None:
         self.awa.joinpath("mcp", "workspace", "contract.md").unlink()
         with self.assertRaisesRegex(ContractError, "technical source missing"):
+            check_contract(self.admin, self.awa)
+
+    def test_missing_knowledge_contract_section_fails(self) -> None:
+        self._write("mcp/docs/tools/mcp_instructions.md", "| topic | no |\n| compact | no |\n")
+        with self.assertRaisesRegex(ContractError, "Knowledge canonical document markers"):
+            check_contract(self.admin, self.awa)
+
+    def test_retired_knowledge_copy_fails(self) -> None:
+        self._write("mcp/docs/knowledge.md", "# obsolete copy\n")
+        with self.assertRaisesRegex(ContractError, "retired Knowledge contract path"):
+            check_contract(self.admin, self.awa)
+
+    def test_missing_browser_contract_fails(self) -> None:
+        self.awa.joinpath("mcp/docs/interfaces/browser.md").unlink()
+        with self.assertRaisesRegex(ContractError, "Browser canonical document markers"):
+            check_contract(self.admin, self.awa)
+
+    def test_retired_browser_vision_copy_fails(self) -> None:
+        self._write("mcp/docs/browser-vision.md", "# obsolete copy\n")
+        with self.assertRaisesRegex(ContractError, "retired Browser Vision path"):
             check_contract(self.admin, self.awa)
 
     def test_docs_schema_drift_fails(self) -> None:
