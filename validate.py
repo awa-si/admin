@@ -92,7 +92,7 @@ def validate(repo: Path) -> dict:
         raise ValueError("workflow index must own the ordered route decision")
     expected_details = {
         "workflow/repository.md", "workflow/routes.md",
-        "workflow/github.md", "workflow/awa.md",
+        "workflow/github.md", "workflow/mcp.md",
         "workflow/execution.md", "workflow/preflight.md",
         "workflow/verification.md", "behavior.yaml",
     }
