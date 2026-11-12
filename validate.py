@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the dynamic ChatGPT source index and referenced Admin owners."""
+"""Validate the ordered ChatGPT use-case resolver and referenced owners."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -39,32 +39,39 @@ def _read(path: Path) -> dict:
 def validate(repo: Path) -> dict:
     core = _read(repo / "core.yaml")
     template = _read(repo / "projects" / "template.txt")
-    if (core.get("scope"), core.get("mode")) != ("chatgpt", "source_index"):
-        raise ValueError("core.yaml must be a non-normative source index")
-    if set(core) != {"version", "scope", "mode", "sources"}:
-        raise ValueError("core.yaml contains unexpected instruction sections")
-    sources = core["sources"]
-    if set(sources) != {
-        "behavior", "workflow", "coding", "research", "mcp",
-        "project", "repository_agent"
-    }:
-        raise ValueError("unexpected source ownership map")
-    for name, path in (
-        ("behavior", "behavior.yaml"),
-        ("workflow", "workflow.md"),
-        ("coding", "workflow/coding.md"),
-        ("research", "workflow/research.md"),
-    ):
-        if sources[name].get("path") != f"awa-si/admin/{path}":
+    if (core.get("scope"), core.get("mode"), core.get("version")) != ("chatgpt", "use_case_resolver", 2):
+        raise ValueError("core.yaml must be a version-2 use-case resolver")
+    if set(core) != {"version", "scope", "mode", "order", "resolution"}:
+        raise ValueError("core.yaml contains unexpected keys")
+    order = core["order"]
+    if not isinstance(order, list):
+        raise ValueError("core.order must be an ordered list")
+    expected_ids = ("behavior", "workflow", "coding", "research", "github", "mcp", "project", "repository_agent")
+    ids = tuple(entry.get("id") for entry in order if isinstance(entry, dict))
+    if ids != expected_ids or len(order) != len(expected_ids):
+        raise ValueError("core use-case resolution order is invalid")
+    sources = dict(zip(ids, order))
+    expected_paths = {
+        "behavior": "behavior.yaml",
+        "workflow": "workflow.md",
+        "coding": "workflow/coding.md",
+        "research": "workflow/research.md",
+        "github": "workflow/github.md",
+        "mcp": "workflow/mcp.md",
+    }
+    for name, relative in expected_paths.items():
+        if sources[name].get("path") != f"awa-si/admin/{relative}":
             raise ValueError(f"invalid source reference: {name}")
-        if not (repo / path).is_file():
-            raise ValueError(f"missing canonical source file: {path}")
+        if not (repo / relative).is_file():
+            raise ValueError(f"missing canonical source file: {relative}")
     if sources["behavior"].get("load") != "always":
         raise ValueError("behavior must always load")
-    for name in ("workflow", "coding", "research"):
+    for name in ("workflow", "coding", "research", "github", "mcp"):
         if not str(sources[name].get("load", "")).startswith("on_"):
             raise ValueError(f"{name} must load on demand")
-
+    for name in ("github", "mcp"):
+        if sources[name].get("requires") != "workflow":
+            raise ValueError(f"{name} must depend on workflow routing")
     if sources["mcp"].get("discovery") != "mcp_model":
         raise ValueError("MCP capability discovery must use mcp_model")
     if sources["mcp"].get("technical_sources") != "mcp_instructions":
@@ -73,11 +80,17 @@ def validate(repo: Path) -> dict:
         raise ValueError("project wildcard source missing")
     if sources["project"].get("read") != "enumerate_all_existing_files_then_read_each_completely":
         raise ValueError("project file loading is not exhaustive")
-
+    if sources["repository_agent"].get("path") != "<resolved_repository>/AGENTS.md":
+        raise ValueError("repository agent path missing")
+    resolution = core["resolution"]
+    if resolution.get("route_authority") != "awa-si/admin/workflow.md#routing_decision_order":
+        raise ValueError("workflow.md must remain the route authority")
+    if resolution.get("order_semantics") != "evaluation_order_not_instruction_priority":
+        raise ValueError("resolution order must not redefine instruction precedence")
     if template.get("authority") != "awa-si/admin/core.yaml":
         raise ValueError("project authority must point at core.yaml")
     if template.get("load", {}).get("index") != "awa-si/admin/core.yaml":
-        raise ValueError("project bootstrap must load core.yaml index")
+        raise ValueError("project bootstrap must load core.yaml")
     if template.get("load", {}).get("project") != sources["project"]["path"]:
         raise ValueError("project wildcard differs between bootstrap and core")
     if template.get("load", {}).get("project_mode") != sources["project"]["read"]:
