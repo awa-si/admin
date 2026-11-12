@@ -13,6 +13,33 @@ entrypoint:
   authorization: existing_global_and_provider_gates
   operation_contract: current_live_provider_schema
   no_implicit_activation: true
+decision_contract:
+  status: comparison_only
+  decision_owner: gpt
+  routing_owner: workflow.md#routing_decision_order
+  admission_owner: current_live_provider
+  source: workflow.md
+  ordered_gates:
+    - product_mode
+    - authorization
+    - target
+    - existing_workspace
+    - capability_need
+    - select_route
+    - native_admission
+  gate_source_keys:
+    - 1_product_mode
+    - 2_authorization
+    - 3_target
+    - 4_existing_workspace
+    - 5_capability_need
+    - 6_select_route
+    - 7_native_admission
+  guarantees:
+    - no_implicit_permission
+    - no_unverified_execution
+    - retain_existing_provider_admission
+  note: source_derived_navigation_not_a_second_normative_owner
 encoding:
   algorithm: exact_line_dictionary
   reconstruction: join_document_line_ids_with_LF
