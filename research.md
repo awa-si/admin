@@ -1,14 +1,3 @@
----
-title: Global Research Manager
-description: Globaler Research-Manager mit getrennten Verfahren für Knowledge, Code, Docs und Legal.
-type: standard
-status: active
-language: de
-owner: AWA
-created: 2026-10-25
-updated: 2026-10-25
----
-
 scope: global_research_guidance
 mode: normative_machine_directives
 
