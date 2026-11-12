@@ -27,11 +27,18 @@ python validate.py
 ```
 
 The experimental nested `admin/admin/` layout is retired. The compact runtime
-projection is **not yet normatively equivalent** to all 129 KB of source rules:
-unmapped details remain authoritative in their existing canonical owners.
-Nothing switches the production bootstrap or provider admission to YAML until
-semantic and routing acceptance checks pass. Do not inject the lossless
-`core.yaml` into GPT merely to reduce context.
+now includes explicit cross-cutting decision invariants, a source-coverage audit
+and an exhaustive structural inventory (128 operational sections across eight
+sources). The validator fails when a source section is added, removed or reordered
+without updating this inventory. This is **structural coverage, not semantic
+equivalence**: a short projection cannot yet substitute for the detailed source
+rules. The canonical owners remain normative, and `runtime.yaml` remains
+`comparison_only`.
+
+Before activation, build a directive-by-directive semantic mapping with
+conflict/precedence analysis and positive/negative acceptance tests for routes,
+permission boundaries and domain-specific exceptions. Do not use `core.yaml`
+as the GPT bootstrap payload merely to reduce context.
 
 
 ## Canonical owners
