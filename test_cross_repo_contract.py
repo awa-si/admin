@@ -20,21 +20,23 @@ class CrossRepoContractTests(unittest.TestCase):
         self.awa.joinpath("mcp", "workspace", "contract.md").write_text("# Workspace\n")
         self.awa.joinpath("mcp", "README.md").write_text(
             "awa-si/admin/core.yaml; AWA MCP never loads Admin project instructions.\n")
+        self._write("mcp/tools/model.py", '''
+SOURCE_REGISTRY = {
+    "mcp": {"path": "mcp/README.md"},
+    "workspace": {"path": "mcp/workspace/contract.md", "tool": "workspace_exec"},
+}
+''')
         self._write("mcp/instructions.py", '''
-class InstructionSource:
-    pass
+from .tools.model import SOURCE_REGISTRY, source_registry_fingerprint
 class InstructionResolver:
-    AWA_REPOSITORY = "awa-si/awa"
-    LOCAL_SOURCES: dict = {
-        "mcp": InstructionSource(AWA_REPOSITORY, "mcp/README.md", "local"),
-        "workspace": InstructionSource(AWA_REPOSITORY, "mcp/workspace/contract.md", "local"),
-    }
+    LOCAL_SOURCES = {topic: spec["path"] for topic, spec in SOURCE_REGISTRY.items()}
 ''')
         self._write("mcp/tools/instruction_tools.py", '''
 async def mcp_instructions(topic=None, compact=False):
     return {}
 ''')
         self._write("mcp/tools/model_tools.py", '''
+from .model import source_registry_fingerprint, technical_source_for_tool
 _KNOWLEDGE_SOURCES = {"instructions": {"boundary": "ChatGPT_loads_Admin_and_project_rules_outside_MCP"}}
 async def mcp_model(operation="schema"):
     return {}
@@ -54,6 +56,11 @@ async def mcp_model(operation="schema"):
         result = check_contract(self.admin, self.awa)
         self.assertEqual(result["status"], "valid")
         self.assertEqual(result["technical_topics"], ["mcp", "workspace"])
+
+    def test_missing_shared_registry_fails(self) -> None:
+        self._write("mcp/instructions.py", "class InstructionResolver: pass\n")
+        with self.assertRaisesRegex(ContractError, "not bound"):
+            check_contract(self.admin, self.awa)
 
     def test_obsolete_argument_fails(self) -> None:
         self._write("mcp/tools/instruction_tools.py", '''
