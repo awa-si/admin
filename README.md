@@ -13,6 +13,17 @@ updated: 2026-11-05
 
 `awa-si/admin` is the control plane for ChatGPT behavior, repository workflow, coding guidance, project deltas, and repository-agent resolution across managed projects.
 
+## Experimental YAML comparison (not active)
+
+[`admin/core.yaml`](admin/core.yaml) and [`admin/runtime.yaml`](admin/runtime.yaml)
+are parallel **lossless comparison candidates** for a future machine-validated,
+deduplicated runtime contract. Neither overrides the current canonical owners
+or changes bootstrap/routing. Run `python admin/validate.py` (requires PyYAML)
+and see [the comparison and validation contract](admin/README.md).
+The current scope is global and AWA-project instructions, not every managed
+project. Line-level deduplication does not imply semantic simplification or
+smaller GPT context.
+
 ## Canonical owners
 
 ```text
