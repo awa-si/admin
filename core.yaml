@@ -1,31 +1,46 @@
-# ChatGPT source router. No substantive instruction rules belong here.
-version: 1
+# Ordered ChatGPT use-case registry and source resolver; no substantive policies.
+version: 2
 scope: chatgpt
-mode: source_index
+mode: use_case_resolver
 
-sources:
-  behavior:
+order:
+  - id: behavior
     path: awa-si/admin/behavior.yaml
     load: always
-  workflow:
+  - id: workflow
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution
-  coding:
+    role: canonical_route_selection_and_known_case_details
+  - id: coding
     path: awa-si/admin/workflow/coding.md
     load: on_coding_or_implementation
-  research:
+  - id: research
     path: awa-si/admin/workflow/research.md
     load: on_research_or_material_fact_check
-  mcp:
+  - id: github
+    path: awa-si/admin/workflow/github.md
+    load: on_selected_GitHub_route
+    requires: workflow
+  - id: mcp
+    path: awa-si/admin/workflow/mcp.md
+    load: on_selected_AWA_MCP_route
+    requires: workflow
     discovery: mcp_model
     technical_sources: mcp_instructions
-    load: on_AWA_MCP_task
     owner: live_AWA_MCP_schema_and_canonical_AWA_contracts
-  project:
+  - id: project
     path: awa-si/admin/projects/<project>/*
     load: when_verified_project_context_exists
     read: enumerate_all_existing_files_then_read_each_completely
-  repository_agent:
+  - id: repository_agent
     path: <resolved_repository>/AGENTS.md
     load: when_repository_context_is_active
     fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
+
+resolution:
+  order_semantics: evaluation_order_not_instruction_priority
+  route_authority: awa-si/admin/workflow.md#routing_decision_order
+  source_loading: load_only_matching_cases_except_behavior
+  overlap: combine_matching_use_cases_without_duplicate_reads
+  unknown_case: retain_existing_workflow_and_authorization_gates
+  security: higher_priority_ChatGPT_instructions_and_existing_approvals_remain_authoritative
