@@ -4,7 +4,7 @@ mode: normative_machine_directives
 resolution:
 - owner: awa-si/admin/research.md
 - apply_when: research|technical_investigation|coding|software_development|architecture|algorithm_design|new_methods|material_refactoring|scientific_claim_validation
-- behavior_owner: awa-si/admin/core.yaml
+- behavior_owner: awa-si/admin/behavior.yaml
 - execution_owner: awa-si/admin/workflow.md
 - implementation_owner: awa-si/admin/coding.md
 - project_or_repository_override: explicit_only
