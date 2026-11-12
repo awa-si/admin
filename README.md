@@ -1,110 +1,30 @@
 # GPT Admin
 
-`awa-si/admin` is the control plane for ChatGPT behavior, repository workflow, coding guidance, project deltas, and repository-agent resolution across managed projects.
+`awa-si/admin/core.yaml` is the canonical global instruction contract, including behavior, workflow routing, coding, research, and repository-agent fallback policies.
 
-## Canonical global instruction hierarchy
+## ChatGPT Project bootstrap
 
-[`core.yaml`](core.yaml) is the normative global instruction owner. It contains
-hierarchical YAML rules migrated from the former plain-text instructions.
-[`validate.py`](validate.py) verifies structural invariants and parses YAML
-with duplicate-key rejection.
+Copy [`projects/template.txt`](projects/template.txt) into the ChatGPT Project Custom Instructions. Its only required global source is [`core.yaml`](core.yaml).
+
+After resolving the exposed project name to a verified directory slug, **enumerate `projects/<project>/*` and read every existing regular file completely**. Do not restrict discovery to predefined filenames. If the project directory does not exist, inherit global rules. Report any unreadable or truncated file rather than claiming complete loading.
+
+Load the resolved target repository's current `AGENTS.md` when repository context is active. Global routing is defined in `core.yaml#workflow.routing_decision_order`; live provider schemas determine available operations.
+
+## Canonical ownership
+
+- `core.yaml`: global instructions, workflow, coding, research and repository-agent policy
+- `projects/<project>/*`: complete project-specific delta
+- `<repository>/AGENTS.md`: current target-repository behavior, when present
+- `<repository>/<helper>`: technical and operational source of truth
+- `validate.py`: structural validation of global rules and project bootstrap
+
+The remaining root Markdown files hold the pre-consolidation source texts and are **not independent instruction authorities**. Project-specific deltas remain separate from global rules.
+
+## Validation
 
 ```sh
 python -m pip install PyYAML
 python validate.py
 ```
 
-## Canonical owners
-
-```text
-core.yaml                       global behavior + resolution
-workflow.md                           repository execution/workflow
-coding.md                             coding/design/performance guidance
-research.md                           knowledge/code/docs/legal research and evidence standards
-AGENTS.md                             Admin repository agent + fallback repository agent
-projects/<project>/instructions.txt   project behavior/repository delta
-projects/<project>/workflow.md        optional project workflow delta
-projects/<project>/coding.md          optional project coding delta
-<repository>/AGENTS.md                repository-specific AI behavior
-<repository>/<helper>                 substantive technical/domain contracts
-```
-
-Each active rule has one canonical owner. Project files are delta-only, parent rules remain active unless explicitly overridden, and current repository state is authoritative.
-
-`projects/template.txt` is a minimal ChatGPT Project Custom Instructions bootstrap, not a second policy owner. It loads `core.yaml` as the authoritative global instruction contract and resolves optional project/repository layers only when applicable.
-
-Project-specific instructions and repository bindings are optional. Resolve the project slug from available ChatGPT project context, not a guessed name. If project instructions exist, use their repository configuration to resolve an active target. Load a repository agent or the Admin fallback only when a repository is active.
-
-## Resolution order
-
-```text
-core.yaml
-→ workflow.md
-→ research.md                            # when applicable
-→ coding.md                              # when applicable
-→ projects/<project>/instructions.txt   # if present
-→ projects/<project>/workflow.md        # when present
-→ projects/<project>/coding.md          # when present and coding applies
-→ <resolved-repository>/AGENTS.md       # only with repository context; fallback if missing
-→ material helper / canonical owner
-→ current task
-```
-
-## Repository structure
-
-```text
-admin/
-├── core.yaml
-├── workflow.md
-├── coding.md
-├── research.md
-├── AGENTS.md
-├── README.md
-└── projects/
-    ├── template.txt
-    └── <project>/
-        ├── instructions.txt
-        ├── workflow.md        # optional
-        └── coding.md          # optional
-```
-
-## Workflow routes
-
-The canonical routing bootstrap is [`workflow.md#decision_bootstrap`](workflow.md#decision_bootstrap). Its single decision authority is [`workflow.md#routing_decision_order`](workflow.md#routing_decision_order): **product mode → authorization → repository and branch → eligible retained workspace → capability needs → selected route → native admission**. The [routing acceptance cases](workflow.md#routing_acceptance_cases) cover ordinary edits, existing-workspace reuse, permission failures, test execution, durable orchestration and deployment boundaries. These are policy examples, not live API specifications.
-
-- **Connected GitHub connector**: default when no suitable AWA workspace route has been selected and authorized, provided the connector can complete the requested work and verification. An existing workspace does not itself authorize its use; never create one solely for repository access.
-- `GitHub_Patch`: small deterministic repository changes without local execution, using the connected GitHub connector.
-- `GitHub_Workspace`: light-to-medium repository coding requiring a temporary local workspace, with connector-mediated remote access.
-- `AWA_MCP_Workspace`: heavy or long-running execution, special runtimes, or requirements that cannot be met through the connector/GitHub Workspace alone. Once selected, local Git is run inside AWA and authenticated remote operations use AWA workspace repository tools. In ChatGPT Work mode, explicit current-user authorization for AWA remains required.
-- `AWA_Work`: durable, approval-gated multi-step orchestration when specifically authorized and technically needed; an existing Workspace does not replace this route.
-- `GitHub_Actions`: hosted, durable, runner-specific, or remote-SHA-tied execution when materially required.
-
-`workflow.md` owns route selection and execution orchestration; tool and workspace mechanics belong to the current provider contracts. Repository scope alone does not justify creating an AWA workspace. Within an authorized AWA workspace, consult the current `mcp/workspace/contract.md` contract and live dispatcher schema for repository mapping, bounded search, execution and authenticated Git transport; historical handler names are not public tool calls.
-
-## AWA MCP authority and reference routing
-
-Admin owns route selection, authorizations, and completion criteria; it does not define MCP tool interfaces or implementation mechanics. Load the current canonical instruction, capability, and subsystem contracts before applicable AWA actions. The authoritative references are [AWA MCP gateway](https://github.com/awa-si/awa/blob/main/mcp/README.md), [Workspace contract](https://github.com/awa-si/awa/blob/main/mcp/workspace/contract.md), current AWA repository owners and live registered tool schemas. Neither discovery nor documentation alone grants execution permission.
-
-## ChatGPT Work mode
-
-Native ChatGPT Work mode does not use AWA MCP by default. AWA MCP is allowed only for the specifically requested scope when the current user explicitly commands its use. Work mode otherwise keeps its native checkpointing, bounded parallelism, long-running preflight, and completion rules.
-
-## Reload
-
-```text
-reload admin plane
-```
-
-Alias: `reload admin control plane`.
-
-A reload prefers the current AWA instruction resolver for global owners; capability discovery is delegated to the separate current discovery interface when needed. Project deltas and repository agents are read only when applicable. Use connected repository reads if AWA is unavailable. It does not invoke `mcp_reload` or restart the MCP runtime. Previously loaded copies become non-authoritative for that chat.
-
-```text
-reload mcp
-```
-
-`reload mcp` uses the current canonical MCP reload contract and then rereads applicable instructions. It does not authorize unrelated actions or prove a service process restart.
-
-## Public repository safety
-
-`awa-si/admin` is public. Never commit secrets, credentials, session material, secret-bearing URLs, or private/confidential data. Reference private canonical sources symbolically instead of copying them into Admin.
+The Admin repository is public. Do not commit secrets, credentials, sessions, private data or secret-bearing URLs.
