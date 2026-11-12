@@ -10,6 +10,7 @@ resolution:
 
 decision_bootstrap:
 - entrypoint: routing_decision_order
+- known_cases: known_use_cases;classification_only_not_authorization
 - authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
 - expand_on_demand: workflow/github.md|workflow/mcp.md_when_route_material
@@ -130,6 +131,7 @@ chatgpt_work_mode:
 routing_decision_order:
 - owner: awa-si/admin/workflow.md
 - role: sole_normative_precedence_for_repository_tool_and_execution_route_selection
+- known_case_lookup: known_use_cases_for_previously_defined_patterns;advisory_to_ordered_gates
 - evaluate_in_order:
   - 1_product_mode: apply_chatgpt_work_mode_first; its_AWA_tool_restriction_overrides_project_and_workspace_preferences
   - 2_authorization: check_explicit_user_intent|approval|provider_policy|route_permissions; prohibited_routes_are_never_candidates
@@ -150,6 +152,67 @@ routing_decision_order:
 - selected_route_transport: repository_tool_routing
 - prohibited: inferred_user_permission|unverified_workspace_reuse|fallback_to_disabled_AWA_tools|route_selection_by_circumventing_policy
 
+known_use_cases:
+- purpose: classify_previously_defined_execution_cases_without_replacing_routing_decision_order
+- coverage: previously_defined_cases_only;not_an_exhaustive_task_catalog
+- matching: match_explicit_case_conditions_against_observed_task_context;select_only_applicable_cases
+- precedence: authorization_and_product_mode_gates_remain_authoritative;cases_never_grant_capability_or_permission
+- route_decision: routing_decision_order_remains_sole_normative_route_precedence
+- cases:
+  - id: small_docs
+    category: repository_patch
+    given: not_Work_mode|GitHub_connector_available|known_small_docs_edit|no_local_execution|no_selected_AWA_workspace
+    expected: GitHub_Patch
+  - id: retained_workspace
+    category: workspace_reuse
+    given: not_Work_mode|authorized_healthy_owned_matching_AWA_workspace|runtime_tests_required|workspace_suitable
+    expected: AWA_MCP_Workspace_reuse
+  - id: existing_workspace_no_consent
+    category: workspace_authorization
+    given: retained_AWA_workspace_exists|ownership_or_consent_not_verified|GitHub_connector_sufficient|repository_only_work
+    expected: GitHub_Patch|no_workspace_access_or_mutation
+  - id: existing_workspace_not_suitable
+    category: workspace_suitability
+    given: authorized_retained_AWA_workspace|wrong_repository_or_incompatible_runtime|GitHub_Workspace_sufficient
+    expected: GitHub_Workspace|do_not_silently_switch_or_replace_retained_workspace
+  - id: light_execution_dependencies
+    category: bounded_execution
+    given: not_Work_mode|declared_dependencies|GitHub_Workspace_skill_allows_install|bounded_tests
+    expected: GitHub_Workspace|do_not_escalate_merely_for_dependency_installation
+  - id: work_mode_default
+    category: product_mode
+    given: Work_mode|no_explicit_current_AWA_command|repository_execution_needed
+    expected: native_ChatGPT_Work_only|AWA_MCP_Workspace_and_AWA_Work_prohibited
+  - id: work_mode_explicit_AWA
+    category: product_mode
+    given: Work_mode|explicit_current_user_AWA_MCP_command|authorized_suitable_route
+    expected: requested_AWA_route_only|native_provider_admission_required
+  - id: missing_authorization
+    category: authorization_gate
+    given: AWA_route_requested|missing_required_permission_or_approval
+    expected: block_or_request_authorization|never_auto_fallback_to_prohibited_route
+  - id: heavy_tests
+    category: heavy_execution
+    given: not_Work_mode|heavy_tests_or_special_runtime_required|GitHub_Workspace_insufficient|authorized_AWA_route
+    expected: AWA_MCP_Workspace|reuse_matching_existing_before_new
+  - id: durable_work
+    category: durable_orchestration
+    given: not_Work_mode|durable_dependent_steps_required|AWA_Work_permitted|underlying_workspace_may_exist
+    expected: AWA_Work|underlying_provider_admission_required|existing_workspace_not_a_substitute_for_durable_orchestration
+  - id: hosted_ci
+    category: hosted_verification
+    given: hosted_runner_evidence_required|GitHub_Actions_permitted|no_local_equivalent
+    expected: GitHub_Actions|current_repository_and_runner_permissions_required
+  - id: no_route
+    category: unavailable_route
+    given: required_execution|no_permitted_provider_or_authorization
+    expected: report_actual_blocker|do_not_fallback_to_prohibited_route
+  - id: deployment
+    category: deployment_gate
+    given: repository_change_validated|no_explicit_deploy_request_or_approved_workflow
+    expected: commit_and_remote_verify_only|deployment_prohibited
+- validation: check_each_case_against_ordered_gates_and_owner_contract|reject_contradictory_route_precedence|verify_work_mode_and_cross_chat_reuse_boundaries; examples_never_grant_capability_or_permission
+
 github_routing_gate:
 - candidate_routes_after_routing_decision_order_gates: Chat_Light|GitHub_Patch|GitHub_Workspace|AWA_MCP_Workspace|AWA_Work|GitHub_Actions
 - Chat_Light: use_for_non_coding_or_light_chat_work_without_repository_execution_or_workspace_need
@@ -168,49 +231,6 @@ github_routing_gate:
 - AWA_Work_semantic_completion_owner: GPT
 - GitHub_Actions_select_when: hosted_runner_or_durable_integration_evidence_material
 
-routing_acceptance_cases:
-- purpose: normative_route_decision_examples; apply_routing_decision_order_and_live_provider_gates; examples_never_grant_permission
-- cases:
-  - id: small_docs
-    given: not_Work_mode|GitHub_connector_available|known_small_docs_edit|no_local_execution|no_selected_AWA_workspace
-    expected: GitHub_Patch
-  - id: retained_workspace
-    given: not_Work_mode|authorized_healthy_owned_matching_AWA_workspace|runtime_tests_required|workspace_suitable
-    expected: AWA_MCP_Workspace_reuse
-  - id: existing_workspace_no_consent
-    given: retained_AWA_workspace_exists|ownership_or_consent_not_verified|GitHub_connector_sufficient|repository_only_work
-    expected: GitHub_Patch|no_workspace_access_or_mutation
-  - id: existing_workspace_not_suitable
-    given: authorized_retained_AWA_workspace|wrong_repository_or_incompatible_runtime|GitHub_Workspace_sufficient
-    expected: GitHub_Workspace|do_not_silently_switch_or_replace_retained_workspace
-  - id: light_execution_dependencies
-    given: not_Work_mode|declared_dependencies|GitHub_Workspace_skill_allows_install|bounded_tests
-    expected: GitHub_Workspace|do_not_escalate_merely_for_dependency_installation
-  - id: work_mode_default
-    given: Work_mode|no_explicit_current_AWA_command|repository_execution_needed
-    expected: native_ChatGPT_Work_only|AWA_MCP_Workspace_and_AWA_Work_prohibited
-  - id: work_mode_explicit_AWA
-    given: Work_mode|explicit_current_user_AWA_MCP_command|authorized_suitable_route
-    expected: requested_AWA_route_only|native_provider_admission_required
-  - id: missing_authorization
-    given: AWA_route_requested|missing_required_permission_or_approval
-    expected: block_or_request_authorization|never_auto_fallback_to_prohibited_route
-  - id: heavy_tests
-    given: not_Work_mode|heavy_tests_or_special_runtime_required|GitHub_Workspace_insufficient|authorized_AWA_route
-    expected: AWA_MCP_Workspace|reuse_matching_existing_before_new
-  - id: durable_work
-    given: not_Work_mode|durable_dependent_steps_required|AWA_Work_permitted|underlying_workspace_may_exist
-    expected: AWA_Work|underlying_provider_admission_required|existing_workspace_not_a_substitute_for_durable_orchestration
-  - id: hosted_ci
-    given: hosted_runner_evidence_required|GitHub_Actions_permitted|no_local_equivalent
-    expected: GitHub_Actions|current_repository_and_runner_permissions_required
-  - id: no_route
-    given: required_execution|no_permitted_provider_or_authorization
-    expected: report_actual_blocker|do_not_fallback_to_prohibited_route
-  - id: deployment
-    given: repository_change_validated|no_explicit_deploy_request_or_approved_workflow
-    expected: commit_and_remote_verify_only|deployment_prohibited
-- validation: check_each_case_against_ordered_gates_and_owner_contract|reject_contradictory_route_precedence|verify_work_mode_and_cross_chat_reuse_boundaries; examples_never_grant_capability_or_permission
 
 deployment_cadence:
 - goal: finish_related_implementation_and_validation_before_authorized_deployment
