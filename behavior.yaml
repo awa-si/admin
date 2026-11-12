@@ -280,7 +280,7 @@ loading_and_resolution:
   repository: "derive_from_project_instructions_when_present_else_current_task_context"
   repository_agent: "only_with_active_repository_context|use_target_AGENTS_md_if_present_else_admin_fallback"
   material_helpers: "load_only_when_required_by_task_or_repository_agent"
-  final_resolution_order: "core_source_index -> behavior.yaml -> applicable_workflow|coding|research -> projects/<project>/*_if_resolved -> repository_agent_if_active -> material_helpers -> task"
+  final_resolution_order: "core_use_case_resolver -> behavior.yaml -> applicable_workflow|coding|research -> projects/<project>/*_if_resolved -> repository_agent_if_active -> material_helpers -> task"
   reread_owner_if: "source_changed|explicitly_requested|active_scope_changed"
   stale_cached_copy_after_reread: "non_authoritative"
 repository_agent_policy:
