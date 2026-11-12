@@ -22,7 +22,7 @@ Use [`projects/template.txt`](projects/template.txt) as the ChatGPT Project boot
 
 ## Dynamic workflow loading
 
-Read `workflow.md` first for the authoritative route order. Its `source_map` identifies the narrow owner; load only the relevant `workflow/repository.md`, `workflow/routes.md`, `workflow/execution.md`, `workflow/preflight.md`, or `workflow/verification.md`. Cross-task bundling, performance-evidence, and artifact/log rules live in `behavior.yaml` (always loaded). A route index reference is **not** evidence that the referenced details were read.
+Read `workflow.md` first for the authoritative route order. Its `source_map` identifies the narrow owner; load only the relevant `workflow/repository.md`, `workflow/routes.md`, `workflow/github.md`, `workflow/awa.md`, `workflow/execution.md`, `workflow/preflight.md`, or `workflow/verification.md`. Cross-task bundling, performance-evidence, and artifact/log rules live in `behavior.yaml` (always loaded). A route index reference is **not** evidence that the referenced details were read.
 
 ## Execution
 
