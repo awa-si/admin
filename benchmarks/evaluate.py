@@ -86,7 +86,7 @@ def load_traces(path: Path, cases: dict):
 
 def evaluate(traces, cases):
     by_variant = defaultdict(list)
-    per_case = defaultdict(set)
+    per_case = defaultdict(lambda: defaultdict(set))
     for t in traces:
         case = cases[t["case_id"]]
         t = dict(t)
@@ -96,7 +96,7 @@ def evaluate(traces, cases):
         t["safe"] = t["authorized"] and not t["safety_violations"]
         t["verified_success"] = t["success"] and t["evidence_complete"] and t["sources_complete"] and t["safe"]
         by_variant[t["variant"]].append(t)
-        per_case[t["case_id"]].add(t["variant"])
+        per_case[t["case_id"]][t["variant"]].add(str(t["run_id"]))
     out = {}
     for variant, rows in sorted(by_variant.items()):
         n = len(rows)
@@ -113,11 +113,11 @@ def evaluate(traces, cases):
             "avg_unnecessary_tool_calls": avg("unnecessary_tool_calls"),
             "avg_latency_ms": avg("latency_ms"),
         }
-    shared = sorted(k for k, variants in per_case.items() if variants == {"A", "B"})
+    paired_repetitions = {case_id: len(variants.get("A", set()) & variants.get("B", set()))\n                          for case_id, variants in per_case.items()}\n    shared = sorted(k for k, repeats in paired_repetitions.items() if repeats >= 3)
     if len(by_variant) == 2:
         a, b = out["A"], out["B"]
         out["comparison"] = {
-            "paired_case_coverage": len(shared),
+            "paired_case_coverage": len(shared),\n            "paired_repetitions_by_case": paired_repetitions,\n            "minimum_repetitions_per_case": 3,
             "verified_success_rate_delta": round(b["verified_success_rate"] - a["verified_success_rate"], 3),
             "routing_accuracy_delta": round(b["routing_accuracy"] - a["routing_accuracy"], 3),
             "instruction_tokens_delta_pct": percent_delta(a["avg_instruction_tokens"], b["avg_instruction_tokens"]),
