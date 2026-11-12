@@ -1,0 +1,202 @@
+# Experimental execution-first projection, not an active instruction owner.
+schema_version: 1
+kind: decision_runtime_projection
+status: comparison_only
+language: en
+repository: awa-si/admin
+authority:
+  decision_owner: gpt
+  global_owner: instructions.txt
+  route_owner: workflow.md
+  provider_admission_owner: live_provider
+  repository_state: current_connected_repository
+  parent_rules: inherited_unless_explicit_override
+  no_second_dispatcher: true
+bootstrap:
+  required:
+    - instructions.txt
+    - workflow.md
+  conditional:
+    research: research.md
+    coding: coding.md
+    markdown_change: metadata.md
+    project: projects/{project}/instructions.txt
+    project_workflow: projects/{project}/workflow.md
+    project_coding: projects/{project}/coding.md
+    target_repository: "{repository}/AGENTS.md"
+  repository_fallback: AGENTS.md
+  cache:
+    reuse_verified_current_sources: true
+    reload_on_material_source_or_project_change: true
+    never_replace_unread_contract_with_summary: true
+  order:
+    - global
+    - global_workflow
+    - conditional_domain
+    - project_delta
+    - repository_agent
+    - task_owner
+decision:
+  source: workflow.md#routing_decision_order
+  order:
+    - id: product_mode
+      action: enforce_product_mode_and_chatgpt_work_restrictions
+    - id: authorization
+      action: verify_explicit_intent_provider_policy_and_approvals
+    - id: target
+      action: resolve_repository_branch_scope_and_canonical_owner
+    - id: existing_workspace
+      action: consider_only_authorized_healthy_matching_owned_workspace
+    - id: capability_need
+      action: classify_repository_only_local_execution_heavy_runtime_durable_or_hosted_ci
+    - id: select_route
+      action: select_suitable_permitted_route_without_implicit_fallback
+    - id: native_admission
+      action: confirm_current_provider_permissions_limits_capacity_and_receipts
+  routes:
+    - Chat_Light
+    - GitHub_Patch
+    - GitHub_Workspace
+    - AWA_MCP_Workspace
+    - AWA_Work
+    - GitHub_Actions
+  defaults:
+    prefer_connected_github_when_sufficient: true
+    do_not_create_workspace_for_repo_only_work: true
+    existing_workspace_is_not_permission: true
+    no_route: report_blocker
+  mutation:
+    verify_current_base_and_owner: true
+    reconcile_stale_or_uncertain_effects: true
+    deployment_requires_authorization: true
+execution:
+  sequence:
+    - resolve
+    - inspect
+    - preflight
+    - execute
+    - verify
+  preflight:
+    - permissions
+    - tool_contract
+    - runtime_requirements
+    - environment_boundary
+    - dependencies_when_material
+  verification:
+    - actual_provider_status
+    - changed_revision_or_result_receipt
+    - focused_tests_when_applicable
+    - regression_tests_when_material
+  evidence:
+    never_claim_unobserved_success: true
+    report_unavailable_source_or_permission: true
+    minimize_raw_intermediate_outputs: true
+domains:
+  research:
+    when: material_research_or_technical_design
+    owner: research.md
+    checks:
+      - use_relevant_authoritative_sources
+      - compare_alternatives
+      - distinguish_research_from_executed_validation
+  coding:
+    when: code_analysis_or_change
+    owner: coding.md
+    checks:
+      - inspect_existing_implementation_and_tests
+      - reuse_suitable_dependencies_before_custom_build
+      - preserve_public_contracts
+      - validate_change_and_performance_when_material
+  markdown:
+    when: creating_or_materially_editing_markdown
+    owner: metadata.md
+    checks:
+      - validate_file_metadata
+      - update_repository_registry_when_required
+  security:
+    owner: instructions.txt
+    checks:
+      - never_invent_permissions_secrets_or_provider_state
+      - never_commit_credentials_or_private_content_to_public_admin
+      - preserve_connector_and_data_access_boundaries
+  communication:
+    owner: instructions.txt
+    checks:
+      - accurate_status_and_uncertainties
+      - never_claim_background_work_without_live_capability
+  project_awa:
+    when: active_project_is_awa
+    owners:
+      - projects/awa/instructions.txt
+      - projects/awa/workflow.md
+    repository: awa-si/awa
+    branch: main
+    checks:
+      - apply_project_delta_only
+      - verify_loaded_python_code_after_service_restart
+      - distinguish_mcp_env_reload_from_code_restart
+source_coverage:
+  - path: instructions.txt
+    sections:
+      - file_metadata
+      - communication
+      - accuracy
+      - interactive_execution
+      - workspace_repository_write_boundary
+      - execution
+      - context
+      - dispute_and_escalation_strategy
+      - research
+      - plugin_and_skill_workflow_resolution
+      - connector_and_file_reading
+      - sharepoint_origin_file_workflow
+      - apple_icloud_workflow
+      - control_plane
+      - awa_mcp_information_delegation
+      - admin_plane_reload
+      - loading_and_resolution
+      - repository_agent_policy
+      - instruction_resolution_cache
+      - mcp_instruction_reload
+      - public_repo_safety
+      - openai_safety_blocks
+  - path: workflow.md
+    sections:
+      - decision_bootstrap
+      - routing_decision_order
+      - branch_resolution
+      - task_scope_resolution
+      - repository_state_resolution
+      - repository_discovery
+      - operation_classification
+      - chatgpt_work_mode
+      - github_routing_gate
+      - github_patch
+      - github_workspace
+      - awa_mcp
+      - github_actions
+      - deployment_cadence
+      - change_set_lifecycle
+      - dependency_preflight
+      - rights_preflight
+      - environment_preflight
+      - verification
+      - failure_and_recovery
+  - path: research.md
+    sections: [base, topic_routing, knowledge_research, code_research, docs_research, legal_research]
+  - path: coding.md
+    sections: [chatgpt_coding_execution, reuse_before_build, implementation_strategy, change_validation_scope, performance, security, verification, completion]
+  - path: metadata.md
+    sections: [metadata, registry, consistency]
+  - path: AGENTS.md
+    sections: [fallback_repository_agent, managed_scope, owner_map, startup, reasoning, public_safety, verification]
+  - path: projects/awa/instructions.txt
+    sections: [scope, inheritance, repository, project_delta]
+  - path: projects/awa/workflow.md
+    sections: [resolution, canonical_owners, routing, workspace, delivery]
+limitations:
+  normative_equivalence_verified: false
+  semantic_deduplication_review_required: true
+  all_source_sections_embedded: false
+  replaces_canonical_sources: false
+  safe_for_automatic_bootstrap: false
