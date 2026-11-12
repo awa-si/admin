@@ -13,33 +13,17 @@ updated: 2026-11-05
 
 `awa-si/admin` is the control plane for ChatGPT behavior, repository workflow, coding guidance, project deltas, and repository-agent resolution across managed projects.
 
-## Root-level YAML contract optimization (experimental)
+## Root-level YAML comparison snapshot
 
-The repository root now holds [`core.yaml`](core.yaml), a lossless snapshot
-of the eight global/AWA-project instruction sources for comparison, and
-[`runtime.yaml`](runtime.yaml), a much smaller English-language,
-execution-first decision projection. [`validate.py`](validate.py) checks
-source integrity, section coverage and the seven source-derived routing gates:
+[`core.yaml`](core.yaml) contains a non-normative snapshot of seven current
+Admin/AWA instruction owners. [`validate.py`](validate.py) checks snapshot
+integrity against those files. Canonical instruction owners remain authoritative;
+this snapshot is not an activated bootstrap replacement.
 
 ```sh
 python -m pip install PyYAML
 python validate.py
 ```
-
-The experimental nested `admin/admin/` layout is retired. The compact runtime
-now includes explicit cross-cutting decision invariants, a source-coverage audit
-and an exhaustive structural inventory (128 operational sections across eight
-sources). The validator fails when a source section is added, removed or reordered
-without updating this inventory. This is **structural coverage, not semantic
-equivalence**: a short projection cannot yet substitute for the detailed source
-rules. The canonical owners remain normative, and `runtime.yaml` remains
-`comparison_only`.
-
-Before activation, build a directive-by-directive semantic mapping with
-conflict/precedence analysis and positive/negative acceptance tests for routes,
-permission boundaries and domain-specific exceptions. Do not use `core.yaml`
-as the GPT bootstrap payload merely to reduce context.
-
 
 ## Canonical owners
 
@@ -48,7 +32,6 @@ instructions.txt                       global behavior + resolution
 workflow.md                           repository execution/workflow
 coding.md                             coding/design/performance guidance
 research.md                           knowledge/code/docs/legal research and evidence standards
-metadata.md                           Markdown-only file metadata contract
 AGENTS.md                             Admin repository agent + fallback repository agent
 projects/<project>/instructions.txt   project behavior/repository delta
 projects/<project>/workflow.md        optional project workflow delta
@@ -84,7 +67,6 @@ admin/
 ├── workflow.md
 ├── coding.md
 ├── research.md
-├── metadata.md
 ├── AGENTS.md
 ├── README.md
 └── projects/
