@@ -32,7 +32,6 @@ inherit:
 - global_workflow: awa-si/admin/workflow.md
 - global_research: awa-si/admin/research.md_when_applicable
 - global_coding: awa-si/admin/coding.md_when_applicable
-- global_metadata: awa-si/admin/metadata.md_when_markdown_work_applies
 - project_files_are_delta_only: true
 - parent_rules_remain_active_unless_explicitly_overridden: true
 
@@ -66,7 +65,6 @@ routing:
 
 loading:
 - order: global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project.instructions_if_present -> project.workflow_if_present -> project.coding_if_present_and_applicable -> repository_agent_or_fallback_if_repository_active -> material_helpers_if_available -> current_task
-- metadata_load_when: creating_or_materially_editing_markdown_md_files|metadata_or_registry_work
 - research_topics: base_when_research_applies|knowledge|code|docs|legal_as_relevant
 - optional_missing_sources: skip_without_blocking_unrelated_work
 - source_loading: read_actual_content_before_enforcing_a_referenced_contract|do_not_confuse_path_with_loaded_rules
