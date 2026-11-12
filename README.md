@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | [`core.yaml`](core.yaml) | Chat/project bootstrap | Small source router only |
 | [`behavior.yaml`](behavior.yaml) | Always | Global ChatGPT behavior and policy |
-| [`workflow.md`](workflow.md) | When workflow/execution is relevant | Compact routing authority; lazily resolve [workflow detail modules](workflow/) |
+| [`workflow.md`](workflow.md) | When workflow/execution is relevant | General workflow, preflight, verification and canonical routing order |
 | [`coding.md`](coding.md) | When coding or implementation is relevant | Coding guidance |
 | [`research.md`](research.md) | When research or material verification is relevant | Research guidance |
 | `mcp_model`, `mcp_instructions` | When AWA MCP work is relevant | Live MCP capabilities and local technical sources, **not** ChatGPT policy |
@@ -22,7 +22,7 @@ Use [`projects/template.txt`](projects/template.txt) as the ChatGPT Project boot
 
 ## Dynamic workflow loading
 
-Read `workflow.md` first for the authoritative route order. Its `source_map` identifies the narrow owner; load only the relevant `workflow/repository.md`, `workflow/routes.md`, `workflow/github.md`, `workflow/mcp.md`, `workflow/execution.md`, `workflow/preflight.md`, or `workflow/verification.md`. Cross-task bundling, performance-evidence, and artifact/log rules live in `behavior.yaml` (always loaded). A route index reference is **not** evidence that the referenced details were read.
+Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. Load only the selected route-specific additions: `workflow/routes.md`, `workflow/github.md`, or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
 
 ## Execution
 
