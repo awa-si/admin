@@ -327,3 +327,53 @@ openai_safety_blocks:
   retry: "only_if_permitted_and_not_an_attempt_to_circumvent_safety_checks"
   if_execution_status_unknown: "state_unknown_explicitly"
 
+bundled_execution:
+- apply_when: explicit_user_bundle_or_batch_instruction
+- scope: all_safe_materially_related_steps_requested_in_current_bundle
+- priority_model:
+  - P0: correctness|security|data_integrity|contract_violation|blocking_failure
+  - P1: requested_primary_behavior|material_bug|integration_failure|high_impact_architecture_or_maintainability
+  - P2: performance|reliability|tests|observability|moderate_debt|clarity
+  - P3: cleanup|style_consistency|non_blocking_refactor|documentation_polish|minor_optimization
+  - default_execution_order: P0 -> P1 -> P2 -> P3
+  - dependency_graph_precedes_priority_when_required: true
+  - same_priority: group_by_owner_or_coherent_change_set
+  - user_explicit_priority: may_override_default_classification_when_safe
+  - do_not_skip_requested_lower_priority_work_in_explicit_bundle_merely_because_higher_priority_work_completed: true
+  - blocked_lower_priority_item_does_not_block_independent_higher_or_same_priority_items: true
+- directory_scope:
+  - explicit_directory_path_means: full_named_subtree
+  - inventory_before_plan: all_material_tracked_files_in_subtree|local_manifests|tests|adjacent_owner_files_when_required
+  - use_native_repository_map_or_search_or_git_ls_files_to_establish_complete_scope: required
+  - bounded_search_truncation_or_scan_limit: must_expand_or_fallback_before_claiming_directory_inventory_complete
+  - inspection_phase: inspect_full_material_scope_and_group_requested_work_by_owner_or_change_set
+  - planning_phase: build_coherent_execution_plan_for_all_requested_actionable_work_before_writeback
+  - execution_phase: execute_all_safe_material_requested_work_in_scope
+  - validation_phase: validate_each_change_set_and_final_directory_scope
+  - completion_requires: no_known_ready_requested_work_left_in_explicit_directory_scope
+  - do_not_stop_after: first_file|first_item|first_commit|first_successful_validation_when_remaining_scope_is_ready
+  - micro_iteration_across_files: avoid_when_batch_execution_is_safe
+  - excluded_content: generated|vendored|binary|explicitly_excluded|repository_contract_excluded
+- prefer_fewer_larger_coherent_phases_over_micro_iterations: true
+- do_not_return_after_each_edit_validate_commit_cycle_when_requested_bundle_has_ready_followup_work: true
+- validation:
+  - run_at_natural_change_set_boundaries: true
+  - avoid_repeating_equivalent_checks_after_each_micro_edit: true
+  - final_bundle_validation_must_cover_all_material_changes: true
+- commits:
+  - prefer_one_coherent_commit_per_independent_change_set: true
+  - do_not_commit_every_micro_step_unless_repository_contract_or_recovery_boundary_requires_it: true
+- stop_only_when: bundle_complete|actual_blocker|required_user_decision|unsafe_or_irreversible_boundary
+- explicit_bundle_request_takes_precedence_over_default_single_milestone_turn_scope: true
+
+performance_evidence:
+- optimize_measured_bottlenecks_first: true
+- preserve_domain_semantics_and_contracts: required
+- compare_same_workload_before_after: true
+- focused_local_measurement_first_when_representative: true
+
+artifacts_and_logs:
+- workflow_artifacts: evidence_not_implicit_production_state
+- attach_when_relevant: run_or_head_sha|experiment_or_profile|schema_or_version
+- failed_run_debug: inspect_exact_failing_step_and_traceback_before_code_change
+- volatile_local_artifact_required_for_resume: insufficient_without_durable_preservation
