@@ -239,8 +239,8 @@ control_plane:
   workflow_bootstrap: "awa-si/admin/core.yaml#workflow.decision_bootstrap"
   coding_owner: "awa-si/admin/core.yaml#coding"
   repository_agent_policy_owner: "awa-si/admin/core.yaml#repository_agent_policy"
-  project_behavior_delta: "awa-si/admin/projects/<project>/instructions.txt_if_present"
-  project_workflow_delta: "awa-si/admin/projects/<project>/workflow.md_if_present"
+  project_behavior_delta: "awa-si/admin/projects/<project>/*_load_all_existing_files"
+  project_workflow_delta: "included_in_complete_project_directory_inventory"
   project_files_are_delta_only: true
   child_override: "explicit_only"
   parent_rules_remain_active_unless_overridden: true
@@ -268,14 +268,19 @@ admin_plane_reload:
   runtime_reload_boundary: "mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload"
   do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
 loading_and_resolution:
+  project_directory_contract: "awa-si/admin/projects/<project>/*"
+  project_file_discovery: "enumerate_entire_matching_directory_without_fixed_filename_allowlist"
+  project_file_loading: "read_every_existing_regular_file_completely_before_applying_project_deltas"
+  project_file_incomplete_or_truncated: "report_exact_gap_and_do_not_claim_full_project_bootstrap"
+  project_directory_absent: "inherit_global_without_inventing_project_files"
   global_load: "core.yaml"
-  project_resolution: "load_projects/<project>/instructions.txt_only_when_project_name_resolved_and_file_exists"
-  project_workflow: "load_projects/<project>/workflow.md_when_present"
-  project_coding: "load_projects/<project>/coding.md_when_present_and_coding_applies_as_delta_over_global_coding"
+  project_resolution: "verify_project_slug_then_enumerate_and_read_all_files_at_projects/<project>/*"
+  project_workflow: "included_in_complete_project_directory_read"
+  project_coding: "included_in_complete_project_directory_read"
   repository: "derive_from_project_instructions_when_present_else_current_task_context"
   repository_agent: "only_with_active_repository_context|use_target_AGENTS_md_if_present_else_admin_fallback"
   material_helpers: "load_only_when_required_by_task_or_repository_agent"
-  final_resolution_order: "global_instructions -> global_workflow -> global_research_if_applicable -> global_coding_if_applicable -> project_instructions_if_present -> project_workflow_if_present -> project_coding_if_present_and_applicable -> repository_agent_if_repository_active -> material_helpers_or_canonical_owners -> task"
+  final_resolution_order: "core_global_rules -> all_existing_projects/<project>/*_files_when_project_resolved -> repository_agent_if_active -> material_helpers -> task"
   reread_owner_if: "source_changed|explicitly_requested|active_scope_changed"
   stale_cached_copy_after_reread: "non_authoritative"
 repository_agent_policy:
@@ -287,7 +292,7 @@ repository_agent_policy:
   agent_may_reference_helpers_and_global_owners: true
   helper_loading: "only_when_material_to_task"
   helper_or_owner_is_source_of_truth_for_delegated_detail: true
-  if_target_repo_agent_missing_and_repository_active: "use_awa-si/admin/AGENTS.md#fallback_repository_agent"
+  if_target_repo_agent_missing_and_repository_active: "use_awa-si/admin/core.yaml#repository_agent.fallback_repository_agent"
 instruction_resolution_cache:
   default: "reuse_currently_loaded_control_plane_within_active_scope"
   resolve_once_per_active_scope_version: true
@@ -835,7 +840,7 @@ coding:
   resolution:
   - owner: awa-si/admin/core.yaml#coding
   - apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm|observability|alerting|logging|documentation|error_handling|concurrency|configuration|testing|security
-  - workflow_execution_owner: awa-si/admin/workflow.md
+  - workflow_execution_owner: awa-si/admin/core.yaml#workflow
   - AI_behavior_owner: awa-si/admin/core.yaml
   - project_or_repo_specific_coding_contract: target_repo_helper_or_canonical_owner
   - project_specific_override: explicit_only
@@ -917,7 +922,7 @@ coding:
   - throughput_latency_memory_and_IO: treat_as_first_class_design_constraints
   
   research_dependency:
-  - canonical_owner: awa-si/admin/research.md
+  - canonical_owner: awa-si/admin/core.yaml#research_guidance
   - evidence_review_before_material_implementation_decision: required
   
   reuse_before_build:
@@ -1101,7 +1106,7 @@ coding:
   - failure_handling: isolate_and_fix_failing_modules_then_rerun_affected_bundle_before_advancing
   - final_validation: test_all_materially_affected_bundles_and_required_integration_contracts
   - exceptions: critical_security_or_data_integrity_changes|repository_required_gates|early_failure_detection_when_material
-  - workflow_orchestration_owner: awa-si/admin/workflow.md
+  - workflow_orchestration_owner: awa-si/admin/core.yaml#workflow
   
   test_writing_conventions:
   - baseline: follow_existing_repository_test_framework|directory_layout|naming|fixtures|assertion_style
@@ -1492,8 +1497,8 @@ research_guidance:
   - owner: awa-si/admin/core.yaml#research_guidance
   - apply_when: research|technical_investigation|coding|software_development|architecture|algorithm_design|new_methods|material_refactoring|scientific_claim_validation
   - behavior_owner: awa-si/admin/core.yaml
-  - execution_owner: awa-si/admin/workflow.md
-  - implementation_owner: awa-si/admin/coding.md
+  - execution_owner: awa-si/admin/core.yaml#workflow
+  - implementation_owner: awa-si/admin/core.yaml#coding
   - project_or_repository_override: explicit_only
   - parent_rules_remain_active_unless_overridden: true
   
@@ -1537,7 +1542,7 @@ research_guidance:
   - evaluate: semantic_fit|correctness|performance|security|license|maintenance|runtime_compatibility
   - verification_plan: reproducible_tests|representative_benchmarks|regression_and_integration_checks_as_material
   - output: chosen_solution|alternatives|source_evidence|tradeoffs|implementation_and_test_plan
-  - implementation_and_execution_contract: awa-si/admin/coding.md|awa-si/admin/workflow.md
+  - implementation_and_execution_contract: awa-si/admin/core.yaml#coding|awa-si/admin/core.yaml#workflow
   
   docs_research:
   - objective: locate_authoritative_documents|validate_claims|identify_missing_or_stale_information
@@ -1603,7 +1608,7 @@ repository_agent:
   fallback_repository_agent:
   - activate_when: target_repository_context_exists_and_target_repository/AGENTS.md_is_missing
   - scope: repository_specific_AI_fallback_only
-  - inherit: awa-si/admin/core.yaml|awa-si/admin/workflow.md|awa-si/admin/research.md_when_applicable|awa-si/admin/coding.md_when_applicable|applicable_project_delta
+  - inherit: awa-si/admin/core.yaml|awa-si/admin/core.yaml#workflow|awa-si/admin/core.yaml#research_guidance_when_applicable|awa-si/admin/core.yaml#coding_when_applicable|applicable_project_delta
   - target_repository_current_state: authoritative
   - target_repository_branch: use_resolved_current_branch
   - target_repository_visibility: do_not_assume_public_or_private
