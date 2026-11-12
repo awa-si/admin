@@ -35,7 +35,7 @@ workspace:
 - live_schema: authoritative
 
 delivery:
-- lifecycle_and_deployment_gate: awa-si/admin/workflow/execution.md#deployment_cadence
+- lifecycle_and_deployment_gate: awa-si/admin/workflow.md#deployment_cadence
 - code_or_registration_change: process_restart_or_redeploy_per_canonical_runtime_contract
 - configuration_reload_as_code_activation: prohibited
 - runtime_claim: verify_process_and_live_capability_evidence
