@@ -5,7 +5,7 @@ resolution:
 - owner: awa-si/admin/coding.md
 - apply_when: code_design|implementation|refactor|performance_work|dependency_selection|new_method_or_algorithm|observability|alerting|logging|documentation|error_handling|concurrency|configuration|testing|security
 - workflow_execution_owner: awa-si/admin/workflow.md
-- AI_behavior_owner: awa-si/admin/instructions.txt
+- AI_behavior_owner: awa-si/admin/core.yaml
 - project_or_repo_specific_coding_contract: target_repo_helper_or_canonical_owner
 - project_specific_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
