@@ -2,12 +2,12 @@
 
 `awa-si/admin` is the control plane for ChatGPT behavior, repository workflow, coding guidance, project deltas, and repository-agent resolution across managed projects.
 
-## Root-level YAML comparison snapshot
+## Canonical global instruction hierarchy
 
-[`core.yaml`](core.yaml) contains a non-normative snapshot of seven current
-Admin/AWA instruction owners. [`validate.py`](validate.py) checks snapshot
-integrity against those files. Canonical instruction owners remain authoritative;
-this snapshot is not an activated bootstrap replacement.
+[`core.yaml`](core.yaml) is the normative global instruction owner. It contains
+hierarchical YAML rules migrated from the former plain-text instructions.
+[`validate.py`](validate.py) verifies structural invariants and parses YAML
+with duplicate-key rejection.
 
 ```sh
 python -m pip install PyYAML
@@ -17,7 +17,7 @@ python validate.py
 ## Canonical owners
 
 ```text
-instructions.txt                       global behavior + resolution
+core.yaml                       global behavior + resolution
 workflow.md                           repository execution/workflow
 coding.md                             coding/design/performance guidance
 research.md                           knowledge/code/docs/legal research and evidence standards
@@ -36,7 +36,7 @@ Project-specific instructions and repository bindings are optional. Resolve the 
 ## Resolution order
 
 ```text
-instructions.txt
+core.yaml
 → workflow.md
 → research.md                            # when applicable
 → coding.md                              # when applicable
@@ -52,7 +52,7 @@ instructions.txt
 
 ```text
 admin/
-├── instructions.txt
+├── core.yaml
 ├── workflow.md
 ├── coding.md
 ├── research.md
@@ -61,7 +61,7 @@ admin/
 └── projects/
     ├── template.txt
     └── <project>/
-        ├── instructions.txt
+        ├── core.yaml
         ├── workflow.md        # optional
         └── coding.md          # optional
 ```
