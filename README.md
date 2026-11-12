@@ -90,3 +90,16 @@ python validate.py
 The validator checks the registry structure and canonical owner references; execution of the validator and remote-state verification are separate steps.
 
 This repository is public. Never commit secrets, credentials, tokens, private keys, session material or confidential data.
+
+## Cross-repository MCP contract validation
+
+Run `python -m unittest test_cross_repo_contract` for offline negative/positive
+regressions. To validate real paired checkouts, use
+`python cross_repo_contract.py --admin-root /path/to/admin --awa-root /path/to/awa
+--expected-admin-sha <exact-admin-HEAD> --expected-awa-sha <exact-awa-HEAD>`.
+The two SHA arguments are required; the validator fails on revision mismatch.
+It checks the Admin route owner, MCP local-only technical topics, the public
+instruction tool argument list, documentation parity, and the discovery/authority
+boundary. It never fetches a repository or activates MCP. CI must explicitly
+check out both repositories at known revisions and pass their verified SHAs;
+repository checkout permissions remain independently required.
