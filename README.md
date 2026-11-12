@@ -22,7 +22,7 @@ Use [`projects/template.txt`](projects/template.txt) as the ChatGPT Project boot
 
 ## Dynamic workflow loading
 
-Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. Load only the selected route-specific additions: `workflow/routes.md`, `workflow/github.md`, or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
+Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. Route selection rules and acceptance cases are included in `workflow.md`. Load only the selected route-specific additions: `workflow/github.md` or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
 
 ## Execution
 
