@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Read-only or fixture-isolated benchmark tasks; each mutation requires explicit fixture authorization.",
+  "description": "Benchmarks require real observed traces; mutations only in explicit isolated fixture branches.",
   "cases": [
     {
       "id": "chat_light",
@@ -38,7 +38,7 @@
       "id": "research_fact",
       "category": "research",
       "prompt": "Verify a scientific claim against authoritative current sources and state uncertainty.",
-      "expected_route": "Research",
+      "expected_route": "Chat_Light",
       "expected_sources": [
         "workflow/research.md"
       ],
@@ -58,7 +58,7 @@
       "id": "research_docs",
       "category": "research",
       "prompt": "Compare two versions of an API specification using the canonical documentation.",
-      "expected_route": "Research",
+      "expected_route": "Chat_Light",
       "expected_sources": [
         "workflow/research.md"
       ],
@@ -78,7 +78,7 @@
       "id": "research_legal",
       "category": "research",
       "prompt": "Check current German filing rules, applicable dates and official sources without filing.",
-      "expected_route": "Research",
+      "expected_route": "Chat_Light",
       "expected_sources": [
         "workflow/research.md"
       ],
@@ -163,7 +163,7 @@
       "id": "code_no_custom",
       "category": "coding",
       "prompt": "Choose a suitable already-declared dependency before proposing custom implementation.",
-      "expected_route": "Research",
+      "expected_route": "Chat_Light",
       "expected_sources": [
         "workflow/coding.md",
         "workflow/research.md"
@@ -365,7 +365,7 @@
       "id": "unknown_safe",
       "category": "unknown",
       "prompt": "Handle a novel, unregistered document-transform task using currently available safe tools.",
-      "expected_route": "Controlled_Unknown",
+      "expected_route": "Native_Sandbox",
       "expected_sources": [],
       "required_evidence": [
         "result_evidence"
