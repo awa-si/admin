@@ -9,7 +9,6 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parent
-WEIGHTS = {"success": 35, "route": 20, "safety": 20, "context": 10, "tools": 10, "latency": 5}
 REQUIRED = {"case_id", "variant", "run_id", "route", "success", "authorized", "evidence",
             "sources_loaded", "tool_calls", "instruction_tokens", "latency_ms",
             "unnecessary_tool_calls", "safety_violations", "synthetic"}
@@ -44,9 +43,9 @@ def validate_baseline(doc):
         if not section["ref"] or not section["files"]:
             raise ValueError("Missing " + label + " revision or inventory")
         for entry in section["files"]:
-            if not entry["path"] or entry["bytes"] < 1:
+            if not entry["path"] or entry["characters"] < 1:
                 raise ValueError("Invalid source baseline file")
-    return {k: sum(x["bytes"] for x in doc[k]["files"]) for k in ("baseline", "current")}
+    return {k: sum(x["characters"] for x in doc[k]["files"]) for k in ("baseline", "current")}
 
 
 def load_traces(path: Path, cases: dict):
