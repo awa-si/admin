@@ -367,19 +367,8 @@ sources:
       - retry: only_if_permitted_and_not_an_attempt_to_circumvent_safety_checks
       - if_execution_status_unknown: state_unknown_explicitly
   - path: "workflow.md"
-    git_blob_sha: "4b4dd984e02c7a9ad39de44f1b9b848aeab4545b"
+    git_blob_sha: "c56238d24c498f792e74895d94ede28a32154e04"
     content: |
-      ---
-      title: Global Workflow
-      description: Execution, repository routing, preflight and verification rules.
-      type: standard
-      status: active
-      language: en
-      owner: AWA
-      created: 2026-10-26
-      updated: 2026-11-05
-      ---
-      
       scope: global_workflow
       mode: normative_machine_directives
       
@@ -885,19 +874,8 @@ sources:
       - failed_run_debug: inspect_exact_failing_step_and_traceback_before_code_change
       - volatile_local_artifact_required_for_resume: insufficient_without_durable_preservation
   - path: "research.md"
-    git_blob_sha: "4702aec81ffdb5bac5d71a910357fee3b57e6110"
+    git_blob_sha: "4af9242c28c36b30d9c7681f2556e79127098c58"
     content: |
-      ---
-      title: Global Research Manager
-      description: Globaler Research-Manager mit getrennten Verfahren für Knowledge, Code, Docs und Legal.
-      type: standard
-      status: active
-      language: de
-      owner: AWA
-      created: 2026-10-25
-      updated: 2026-10-25
-      ---
-      
       scope: global_research_guidance
       mode: normative_machine_directives
       
@@ -1007,19 +985,8 @@ sources:
       - quality_gate: law_and_facts_separated|sources_identified|uncertainty_and_counterarguments_stated
       
   - path: "coding.md"
-    git_blob_sha: "c046e349a0aa9b114a2712860ea320d76539055f"
+    git_blob_sha: "fe3c2f57830f58f8625be2655c8fcd139374105d"
     content: |
-      ---
-      title: Global Coding Standard
-      description: Reusable development, dependency, testing and performance rules.
-      type: standard
-      status: active
-      language: en
-      owner: AWA
-      created: 2026-10-26
-      updated: 2026-10-26
-      ---
-      
       scope: global_coding_guidance
       mode: normative_machine_directives
       
@@ -1675,19 +1642,8 @@ sources:
       completion:
       - requires: reuse_options_considered|dependency_choice_justified_when_material|algorithmic_complexity_reviewed|hot_path_allocations_reviewed|IO_round_trips_reviewed|bounded_concurrency_considered|async_lifecycle_and_cancellation_considered_when_material|native_or_vectorized_options_considered_when_material|performance_budget_or_measurement_considered_when_material|custom_code_only_when_needed|code_quality_gate_passed|repo_specific_contracts_preserved|relevant_logging_observability_documentation_synced|relevant_verification_observed
   - path: "AGENTS.md"
-    git_blob_sha: "0a5e554ee1a407b0f274cd733184825046cadc56"
+    git_blob_sha: "1a6051dfe795bbbeadfc5c0510bb6b8070e8771a"
     content: |
-      ---
-      title: Admin repository agent
-      description: AI behavior and fallback repository-agent routing for the Admin control plane.
-      type: instructions
-      status: active
-      language: en
-      owner: AWA
-      created: 2026-10-26
-      updated: 2026-10-26
-      ---
-      
       # ADMIN — AGENT
       
       scope: repository_agent
@@ -1815,18 +1771,8 @@ sources:
           deployment_commit_unavailable: report_unverified_code_revision_without_claiming_confirmed_deployment
           require_service_restart_for_loaded_Python_code_changes: true
   - path: "projects/awa/workflow.md"
-    git_blob_sha: "37faf03bbba2dac817250b9472f3bdb9468b1156"
+    git_blob_sha: "26e075c46e897e8c8bcbf005c6449841dbd913aa"
     content: |
-      ---
-      title: AWA Project Workflow
-      description: AWA-specific workflow delta delegating MCP mechanics to canonical repository contracts.
-      type: standard
-      status: active
-      language: en
-      owner: AWA
-      created: 2026-10-31
-      updated: 2026-11-05
-      ---
       scope: project_workflow_delta
       project: awa
       mode: normative_machine_directives
