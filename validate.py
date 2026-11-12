@@ -83,19 +83,14 @@ def validate(repo: Path) -> dict:
     if template.get("load", {}).get("project_mode") != sources["project"]["read"]:
         raise ValueError("project loading mode differs between bootstrap and core")
 
-    # The short workflow file is a routing index; every detail has one owner.
+    # Common workflow rules load together; only route-specific details are conditional.
     workflow_index = _read(repo / "workflow.md")
     source_map = workflow_index.get("source_map")
     if not isinstance(source_map, list) or not source_map:
         raise ValueError("workflow index must define a nonempty source_map")
     if "routing_decision_order" not in workflow_index:
         raise ValueError("workflow index must own the ordered route decision")
-    expected_details = {
-        "workflow/repository.md", "workflow/routes.md",
-        "workflow/github.md", "workflow/mcp.md",
-        "workflow/execution.md", "workflow/preflight.md",
-        "workflow/verification.md", "behavior.yaml",
-    }
+    expected_details = {"workflow/routes.md", "workflow/github.md", "workflow/mcp.md"}
     mapped = {}
     for entry in source_map:
         if not isinstance(entry, dict) or len(entry) != 1:
@@ -108,8 +103,17 @@ def validate(repo: Path) -> dict:
         mapped[path] = listed.split("|")
     if set(mapped) != expected_details:
         raise ValueError("workflow source_map does not cover all owner modules")
-    defined = {"scope", "mode", "resolution", "decision_bootstrap",
-               "routing_decision_order", "source_map", "loading"}
+    defined = set(workflow_index)
+    required_common = {
+        "branch_resolution", "task_scope_resolution", "repository_state_resolution",
+        "repository_discovery", "cross_repository_execution", "operation_classification",
+        "chatgpt_work_mode", "deployment_cadence", "change_set_lifecycle",
+        "edit_and_writeback", "dependency_preflight", "rights_preflight",
+        "environment_preflight", "long_running_execution", "mcp_versioning",
+        "verification", "failure_and_recovery",
+    }
+    if not required_common.issubset(defined):
+        raise ValueError("general workflow sections must stay in workflow.md")
     for path, section_names in mapped.items():
         detail = _read(repo / path)
         for name in section_names:
@@ -118,13 +122,13 @@ def validate(repo: Path) -> dict:
             if name not in detail:
                 raise ValueError(f"workflow section missing in {path}: {name}")
             defined.add(name)
-    for path in expected_details - {"behavior.yaml"}:
+    for path in expected_details:
         detail = _read(repo / path)
         if set(detail) != set(mapped[path]):
             raise ValueError(f"unmapped or duplicated section in {path}")
     if workflow_index.get("loading", {}).get("entrypoint") != "workflow.md#routing_decision_order":
         raise ValueError("workflow entrypoint must remain the canonical router")
-    if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "awa.md").read_text(encoding="utf-8"):
+    if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "mcp.md").read_text(encoding="utf-8"):
         raise ValueError("MCP technical source must not be a global instruction resolver")
 
     # Behavior is the only universal policy owner; the core index has none.
