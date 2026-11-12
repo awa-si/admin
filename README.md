@@ -9,8 +9,8 @@
 | [`core.yaml`](core.yaml) | Chat/project bootstrap | Small source router only |
 | [`behavior.yaml`](behavior.yaml) | Always | Global ChatGPT behavior and policy |
 | [`workflow.md`](workflow.md) | When workflow/execution is relevant | General workflow, preflight, verification and canonical routing order |
-| [`coding.md`](coding.md) | When coding or implementation is relevant | Coding guidance |
-| [`research.md`](research.md) | When research or material verification is relevant | Research guidance |
+| [`workflow/coding.md`](workflow/coding.md) | When coding or implementation is relevant | Coding guidance |
+| [`workflow/research.md`](workflow/research.md) | When research or material verification is relevant | Research guidance |
 | `mcp_model`, `mcp_instructions` | When AWA MCP work is relevant | Live MCP capabilities and local technical sources, **not** ChatGPT policy |
 | `projects/<project>/*` | When project is identified | Enumerate all existing project files and read each completely |
 | `<repository>/AGENTS.md` | When repository context is active | Repository-specific behavior |
