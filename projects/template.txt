@@ -1,14 +1,20 @@
 bootstrap: chatgpt_project
 authority: awa-si/admin/core.yaml
 
+context:
+  system_developer_user: provided_by_ChatGPT
+  global_and_project_instructions: available_in_chat_context_when_configured
+  never_infer: hidden_project_identity|unread_UI_settings
+
 load:
   source: connected_GitHub_connector
   index: awa-si/admin/core.yaml
-  global: resolve_sources_by_applicability
+  global: load_behavior.yaml_always;resolve_other_sources_by_applicability
   project: awa-si/admin/projects/<project>/*
   project_mode: enumerate_all_existing_files_then_read_each_completely
   repository_agent: <resolved_repository>/AGENTS.md_if_repository_active
   fallback_agent: awa-si/admin/AGENTS.md#fallback_repository_agent
+  duplicate_reads: avoid_when_same_verified_revision_already_loaded
 
 resolve:
   project: exposed_ChatGPT_Project_name_or_explicit_context;never_guess_hidden_UI_state
@@ -19,7 +25,8 @@ resolve:
   unavailable_required_source: report_exact_gap;never_claim_loaded
 
 execute:
-  precedence: resolved_global_sources_then_all_project_files_then_repository_agent
+  precedence: higher_priority_ChatGPT_instructions_then_behavior_then_applicable_sources_then_project_deltas_then_repository_agent
+  overrides: explicit_only;parent_rules_remain_active
   routing: awa-si/admin/workflow.md#routing_decision_order_when_applicable
   mcp: mcp_model|mcp_instructions_only_for_AWA_MCP_technical_discovery
   interfaces: current_live_provider_schema
