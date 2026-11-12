@@ -76,6 +76,10 @@ Differentiate an observed GitHub write, a successful test, a deployed revision a
 
 Use [`projects/template.txt`](projects/template.txt) as the starting point for ChatGPT Project instructions. It resolves the same `core.yaml#registry` and project/repository boundaries. Avoid duplicating the global policies in project files.
 
+## Benchmarks
+
+The [AWA Admin benchmark](benchmarks/README.md) contains 20 version-pinned A/B use cases, an offline trace evaluator, regression tests, and an [observed static validation report](benchmarks/results/static-2026-11-12.json). The source-size comparison and automated static checks are complete; **live GPT A/B latency, token, and task-success measurements remain unmeasured until an isolated model runner supplies authentic traces**.
+
 ## Validation
 
 ```sh
