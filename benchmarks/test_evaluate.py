@@ -67,8 +67,18 @@ class BenchmarkTests(unittest.TestCase):
     def test_comparison_requires_both_variants(self):
         both = evaluate.evaluate(
             [observed("chat_light", "A"), observed("chat_light", "B")], CASES)
-        self.assertEqual(both["comparison"]["paired_case_coverage"], 1)
+        self.assertEqual(both["comparison"]["paired_case_coverage"], 0)
+        self.assertEqual(both["comparison"]["paired_repetitions_by_case"]["chat_light"], 1)
         self.assertFalse(both["comparison"]["complete_20_case_paired_comparison"])
+
+    def test_three_paired_repetitions_complete_one_case(self):
+        rows = []
+        for repetition in range(1, 4):
+            for variant in ("A", "B"):
+                rows.append(observed("chat_light", variant, run_id=str(repetition)))
+        result = evaluate.evaluate(rows, CASES)["comparison"]
+        self.assertEqual(result["paired_case_coverage"], 1)
+        self.assertEqual(result["paired_repetitions_by_case"]["chat_light"], 3)
 
     def test_source_loading_is_required(self):
         row = observed("code_single_patch", sources_loaded=[])
