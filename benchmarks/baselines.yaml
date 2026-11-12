@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "repo": "awa-si/admin",
+  "baseline": {
+    "ref": "8a23a90d4541d82ab04f4955cdfde3a1dd5bf227",
+    "files": [
+      {
+        "path": "core.yaml",
+        "bytes": 940
+      },
+      {
+        "path": "behavior.yaml",
+        "bytes": 25507
+      },
+      {
+        "path": "workflow.md",
+        "bytes": 37605
+      },
+      {
+        "path": "coding.md",
+        "bytes": 48092
+      },
+      {
+        "path": "research.md",
+        "bytes": 7127
+      }
+    ]
+  },
+  "current": {
+    "ref": "main",
+    "files": [
+      {
+        "path": "core.yaml",
+        "bytes": 2094
+      },
+      {
+        "path": "behavior.yaml",
+        "bytes": 29039
+      },
+      {
+        "path": "workflow.md",
+        "bytes": 33770
+      },
+      {
+        "path": "workflow/coding.md",
+        "bytes": 48110
+      },
+      {
+        "path": "workflow/research.md",
+        "bytes": 7158
+      },
+      {
+        "path": "workflow/github.md",
+        "bytes": 5150
+      },
+      {
+        "path": "workflow/mcp.md",
+        "bytes": 3417
+      }
+    ]
+  },
+  "note": "Observed source-text byte counts (JavaScript string lengths for ASCII/UTF-8 mixes); not token counts, latency, or GPT runtime quality. Recompute before reporting final."
+}
