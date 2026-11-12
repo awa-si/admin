@@ -37,31 +37,37 @@ def _function(nodes: list[ast.stmt], name: str) -> ast.AsyncFunctionDef:
 
 
 def _topics(tree: ast.Module) -> dict[str, str]:
-    resolver = _class(tree, "InstructionResolver")
-    source_map = next(
-        node.value for node in resolver.body
-        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
-        and node.target.id == "LOCAL_SOURCES"
+    """Read the declarative SOURCE_REGISTRY without importing MCP runtime code."""
+    registry = next(
+        node.value for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "SOURCE_REGISTRY"
+                for target in node.targets)
     )
-    _require(isinstance(source_map, ast.Dict), "technical topic inventory must be a literal dict")
+    try:
+        entries = ast.literal_eval(registry)
+    except (ValueError, TypeError, SyntaxError, RecursionError) as exc:
+        raise ContractError("SOURCE_REGISTRY must be literal data") from exc
+    _require(isinstance(entries, dict) and "mcp" in entries,
+             "SOURCE_REGISTRY is missing required source")
+    _require(len(set(entries)) == len(entries), "duplicate source topic")
     found = {}
-    for key, value in zip(source_map.keys, source_map.values):
-        _require(isinstance(key, ast.Constant) and isinstance(key.value, str),
-                 "topic keys must be literal strings")
-        _require(isinstance(value, ast.Call) and len(value.args) >= 3,
-                 "topic sources must use explicit InstructionSource entries")
-        repository, path, source = value.args[:3]
-        _require(isinstance(repository, (ast.Constant, ast.Name)),
-                 "repository identity must be a constant")
-        _require(isinstance(path, ast.Constant) and isinstance(path.value, str),
-                 "technical source path must be literal")
-        _require(isinstance(source, ast.Constant) and source.value == "local",
-                 "technical source must remain local")
-        found[key.value] = path.value
-    _require(len(found) == len(source_map.keys) and "mcp" in found,
-             "missing or duplicate technical source")
+    registered_tools = []
+    for topic, spec in entries.items():
+        _require(isinstance(topic, str) and isinstance(spec, dict),
+                 "invalid technical source entry")
+        _require(set(spec).issubset({"path", "tool"}) and isinstance(spec.get("path"), str),
+                 f"invalid technical source fields: {topic}")
+        found[topic] = spec["path"]
+        if "tool" in spec:
+            _require(isinstance(spec["tool"], str) and spec["tool"],
+                     f"invalid technical tool: {topic}")
+            registered_tools.append(spec["tool"])
+    _require(len(set(found.values())) == len(found),
+             "duplicate technical source path")
+    _require(len(set(registered_tools)) == len(registered_tools),
+             "duplicate tool owner mapping")
     return found
-
 
 def check_contract(admin: Path, awa: Path) -> dict[str, object]:
     admin, awa = admin.resolve(), awa.resolve()
@@ -81,7 +87,10 @@ def check_contract(admin: Path, awa: Path) -> dict[str, object]:
     _require("live_tool_schema" in directions["authority_order"],
              "Live invocation schema boundary missing")
 
-    topics = _topics(_module(awa / "mcp" / "instructions.py"))
+    topics = _topics(_module(awa / "mcp" / "tools" / "model.py"))
+    resolver_code = (awa / "mcp" / "instructions.py").read_text(encoding="utf-8")
+    _require("SOURCE_REGISTRY" in resolver_code and "source_registry_fingerprint" in resolver_code,
+             "instruction resolver is not bound to model source registry")
     for name, relative in topics.items():
         parts = Path(relative)
         _require(not parts.is_absolute() and ".." not in parts.parts,
@@ -98,6 +107,8 @@ def check_contract(admin: Path, awa: Path) -> dict[str, object]:
     model = _module(awa / "mcp" / "tools" / "model_tools.py")
     _function(model.body, "mcp_model")
     model_code = (awa / "mcp" / "tools" / "model_tools.py").read_text(encoding="utf-8")
+    _require("source_registry_fingerprint" in model_code and "technical_source_for_tool" in model_code,
+             "mcp_model does not consume the shared source registry")
     _require("ChatGPT_loads_Admin_and_project_rules_outside_MCP" in model_code,
              "MCP discovery boundary missing")
     gateway = (awa / "mcp" / "README.md").read_text(encoding="utf-8")
