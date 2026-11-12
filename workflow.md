@@ -1,14 +1,3 @@
----
-title: Global Workflow
-description: Execution, repository routing, preflight and verification rules.
-type: standard
-status: active
-language: en
-owner: AWA
-created: 2026-10-26
-updated: 2026-11-05
----
-
 scope: global_workflow
 mode: normative_machine_directives
 
