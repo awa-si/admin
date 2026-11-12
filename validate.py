@@ -166,19 +166,26 @@ def validate(repo: Path) -> dict:
         detail = _read(repo / path)
         if set(detail) != set(mapped[path]):
             raise ValueError(f"unmapped or duplicated section in {path}")
-    boundary = workflow_index["tool_discovery_boundary"]
+    def directive_map(items: object, owner: str) -> dict:
+        if not isinstance(items, list) or any(not isinstance(item, dict) or len(item) != 1 for item in items):
+            raise ValueError(f"invalid directive list in {owner}")
+        return {key: value for item in items for key, value in item.items()}
+
+    boundary = directive_map(workflow_index["tool_discovery_boundary"], "tool_discovery_boundary")
     if boundary.get("owner") != "awa-si/admin/workflow.md":
         raise ValueError("workflow must own general tool-discovery boundary")
     if "Code_Interpreter" not in str(boundary.get("native_execution_first", "")):
         raise ValueError("native execution must consider available Code Interpreter")
     if "client" not in str(boundary.get("discovery", "")):
         raise ValueError("tool discovery must remain client delegated")
-    if "Native_Sandbox" not in str(workflow_index["github_routing_gate"].get("candidate_routes_after_routing_decision_order_gates", "")):
+    gate = directive_map(workflow_index["github_routing_gate"], "github_routing_gate")
+    if "Native_Sandbox" not in str(gate.get("candidate_routes_after_routing_decision_order_gates", "")):
         raise ValueError("native sandbox route missing")
-    mcp_detail = _read(repo / "workflow/mcp.md")["awa_mcp"]
-    if not isinstance(mcp_detail.get("discovery_boundary"), dict):
+    mcp_detail = directive_map(_read(repo / "workflow/mcp.md")["awa_mcp"], "awa_mcp")
+    discovery = mcp_detail.get("discovery_boundary")
+    if not isinstance(discovery, dict):
         raise ValueError("AWA MCP route must declare the provider-discovery boundary")
-    if "global_tool_search" not in str(mcp_detail["discovery_boundary"].get("client_owner", "")):
+    if "global_tool_search" not in str(discovery.get("client_owner", "")):
         raise ValueError("global tool search must remain client-owned")
     if workflow_index.get("loading", {}).get("entrypoint") != "workflow.md#routing_decision_order":
         raise ValueError("workflow entrypoint must remain the canonical router")
