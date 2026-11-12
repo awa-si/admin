@@ -11,7 +11,7 @@ resolution:
 decision_bootstrap:
 - entrypoint: routing_decision_order
 - known_cases: known_use_cases;classification_only_not_authorization
-- research_source: awa-si/admin/research.md_when_research_or_material_investigation_applies
+- research_source: awa-si/admin/workflow/research.md_when_research_or_material_investigation_applies
 - authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
 - expand_on_demand: workflow/github.md|workflow/mcp.md_when_route_material
@@ -163,7 +163,7 @@ known_use_cases:
   - id: research
     category: evidence_and_investigation
     given: research|technical_investigation|material_fact_verification|architecture_or_algorithm_research|code_research|docs_research|legal_research
-    expected: load_awa-si/admin/research.md|apply_base_and_relevant_topic_rules|select_execution_route_only_if_material|do_not_treat_research_as_implementation_or_runtime_verification
+    expected: load_awa-si/admin/workflow/research.md|apply_base_and_relevant_topic_rules|select_execution_route_only_if_material|do_not_treat_research_as_implementation_or_runtime_verification
   - id: small_docs
     category: repository_patch
     given: not_Work_mode|GitHub_connector_available|known_small_docs_edit|no_local_execution|no_selected_AWA_workspace
