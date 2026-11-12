@@ -248,7 +248,7 @@ control_plane:
   substantive_domain_technical_business_operational_contract: "narrowest_target_repository_helper_or_canonical_owner"
 awa_mcp_information_delegation:
   admin_owns: "user_intent|route_selection|authorization_boundaries|repository_precedence|completion_policy"
-  canonical_instruction_source: "current_AWA_MCP_instruction_resolver"
+  technical_documentation_source: "AWA_MCP_mcp_instructions_for_local_technical_docs_only"
   canonical_capability_source: "current_AWA_MCP_discovery_and_live_tool_schema"
   technical_contracts: "awa-si/awa@main:mcp/README.md|applicable_current_AWA_subsystem_contract"
   "operation_names|arguments|timeouts|capacity|runtime_state|tool_registration|implementation_details": "delegated_to_canonical_AWA_sources_not_redefined_in_admin"
