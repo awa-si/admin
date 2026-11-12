@@ -8,7 +8,7 @@ mode: normative_machine_directives
 fallback_repository_agent:
 - activate_when: target_repository_context_exists_and_target_repository/AGENTS.md_is_missing
 - scope: repository_specific_AI_fallback_only
-- inherit: awa-si/admin/core.yaml_source_index|awa-si/admin/behavior.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/research.md_when_applicable|awa-si/admin/coding.md_when_applicable|applicable_project_delta
+- inherit: awa-si/admin/core.yaml_source_index|awa-si/admin/behavior.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable|applicable_project_delta
 - target_repository_current_state: authoritative
 - target_repository_branch: use_resolved_current_branch
 - target_repository_visibility: do_not_assume_public_or_private
@@ -35,8 +35,8 @@ owner_map:
 - source_router: core.yaml
 - global_behavior: behavior.yaml
 - global_execution_workflow: workflow.md
-- global_coding: coding.md
-- global_research: research.md
+- global_coding: workflow/coding.md
+- global_research: workflow/research.md
 - human_orientation: README.md
 - project_behavior_delta: projects/<project>/instructions.txt
 - project_workflow_delta: projects/<project>/workflow.md
