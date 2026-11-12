@@ -25,7 +25,7 @@ class InstructionSource:
     pass
 class InstructionResolver:
     AWA_REPOSITORY = "awa-si/awa"
-    LOCAL_SOURCES = {
+    LOCAL_SOURCES: dict = {
         "mcp": InstructionSource(AWA_REPOSITORY, "mcp/README.md", "local"),
         "workspace": InstructionSource(AWA_REPOSITORY, "mcp/workspace/contract.md", "local"),
     }
