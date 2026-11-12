@@ -1,14 +1,3 @@
----
-title: OREON Project Workflow
-description: Generischer projektspezifischer Ablauf für Repository-, Architektur-, Dokumentations- und Implementierungsarbeiten.
-type: standard
-status: active
-language: de
-owner: AWA
-created: 2026-10-26
-updated: 2026-10-26
----
-
 scope: oreon_project_workflow
 mode: normative_machine_directives
 
