@@ -32,12 +32,11 @@ StrictLoader.add_constructor(
 def _count_directives(value: dict) -> int:
     total = 0
     for item in value.values():
+        total += 1
         if isinstance(item, dict):
             total += _count_directives(item)
-        else:
-            if not isinstance(item, (str, bool, int)):
-                raise ValueError("invalid directive type")
-            total += 1
+        elif not isinstance(item, (str, bool, int)):
+            raise ValueError("invalid directive type")
     return total
 
 
