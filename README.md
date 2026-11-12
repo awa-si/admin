@@ -43,6 +43,22 @@ core.yaml  (registry / resolver)
 
 Project and repository rules extend applicable parent rules; overrides must be explicit. Higher-priority ChatGPT instructions remain authoritative. Repository state and live provider schemas determine the actual available operations.
 
+## Tool discovery responsibility
+
+Admin does not maintain a second inventory of client, MCP, or plugin tool schemas. [`workflow.md#tool_discovery_boundary`](workflow.md) separates the responsibilities:
+
+| Layer | Owns |
+| --- | --- |
+| OpenAI client / current host | Exposes available tools, dynamically searches deferred tools when supported, and supplies current invocation schemas |
+| `core.yaml` | Matches use cases to applicable instruction sources, without cataloging tool parameters |
+| `workflow.md` | Chooses a permitted execution route and defines required evidence |
+| `workflow/mcp.md` | Defines the **AWA-specific** discovery boundary; live AWA provider contracts and tool schemas remain authoritative for technical invocation |
+| Capability provider | Authenticates, authorizes, admits operations, executes, and returns observable results |
+
+Evaluate a currently available native sandbox (including Code Interpreter) before provisioning an external workspace for isolated calculations, analysis, temporary Python processing or artifact creation. A sandbox does **not** imply repository access, persistent host state, or deployment rights. Repository mutations continue through an authorized repository route. Tool discovery alone never grants permission or proves execution.
+
+OpenAI's [Tool Search](https://developers.openai.com/api/docs/guides/tools-tool-search) and [Code Interpreter](https://developers.openai.com/api/docs/guides/tools-code-interpreter) guides document **API capabilities**; they do not establish that every documented option is exposed by the current ChatGPT client. Always use the actual available tool surface.
+
 ## Execution and verification
 
 Use the smallest permitted route that can complete the requested outcome, including its necessary tests or verification. `workflow.md` owns the shared lifecycle; provider-specific mechanics stay with their respective route files. For AWA MCP, use `mcp_model` for live capability discovery and `mcp_instructions` for **local technical documentation only**, not Admin policy loading. Discovery is not authorization or execution admission.
