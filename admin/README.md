@@ -33,6 +33,21 @@ Both include the verified **global + AWA-project** instruction scope:
 are outside this comparison. Missing optional `projects/awa/coding.md` is not
 invented.
 
+## Initial measured comparison (2026-11-12)
+
+| Measure | Original sources | `core.yaml` | `runtime.yaml` |
+| --- | ---: | ---: | ---: |
+| Source characters | 129,335 | Lossless | Lossless |
+| Artifact characters | — | 141,801 | 150,748 |
+| Source lines represented | 1,903 | 1,903 | 1,903 |
+| Unique dictionary lines | — | — | 1,692 |
+| Repeated line occurrences eliminated from dictionary | — | — | 211 |
+
+The dictionary removes repeated line storage but adds index/provenance overhead,
+so the experimental runtime artifact is **larger** than the sources. Neither
+candidate is approved as a context-saving GPT bootstrap. Follow-up semantic
+consolidation must pass the same no-rule-loss and routing acceptance gates.
+
 ## Validation
 
 ```bash
