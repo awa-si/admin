@@ -11,7 +11,7 @@ registry:
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution
     role: canonical_route_selection_and_known_case_details
-    children:
+    cases:
       - id: coding
         path: awa-si/admin/workflow/coding.md
         load: on_coding_or_implementation
@@ -29,6 +29,11 @@ registry:
         discovery: mcp_model
         technical_sources: mcp_instructions
         owner: live_AWA_MCP_schema_and_canonical_AWA_contracts
+      - id: unknown
+        path: awa-si/admin/workflow.md
+        load: on_unmatched_case_needing_execution_decision
+        section: unknown_case_handling
+        reuse_loaded_source: true
   - id: project
     path: awa-si/admin/projects/<project>/*
     load: when_verified_project_context_exists
@@ -39,10 +44,10 @@ registry:
     fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
 
 resolution:
-  registry_semantics: ordered_parent_child_source_graph_not_instruction_priority
-  child_loading: evaluate_each_child_condition_independently;parent_not_implicitly_loaded
+  registry_semantics: ordered_parent_case_source_graph_not_instruction_priority
+  case_loading: evaluate_each_case_condition_independently;parent_not_implicitly_loaded
   route_authority: awa-si/admin/workflow.md#routing_decision_order
   source_loading: load_only_matching_cases_except_behavior
   overlap: combine_matching_use_cases_without_duplicate_reads
-  unknown_case: retain_existing_workflow_and_authorization_gates
+  unknown_case: workflow.md#unknown_case_handling;never_bypass_authorization_or_live_provider_admission
   security: higher_priority_ChatGPT_instructions_and_existing_approvals_remain_authoritative
