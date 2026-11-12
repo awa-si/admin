@@ -113,11 +113,14 @@ def evaluate(traces, cases):
             "avg_unnecessary_tool_calls": avg("unnecessary_tool_calls"),
             "avg_latency_ms": avg("latency_ms"),
         }
-    paired_repetitions = {case_id: len(variants.get("A", set()) & variants.get("B", set()))\n                          for case_id, variants in per_case.items()}\n    shared = sorted(k for k, repeats in paired_repetitions.items() if repeats >= 3)
+    paired_repetitions = {case_id: len(variants.get("A", set()) & variants.get("B", set()))
+                          for case_id, variants in per_case.items()}
+    shared = sorted(k for k, repeats in paired_repetitions.items() if repeats >= 3)
     if len(by_variant) == 2:
         a, b = out["A"], out["B"]
         out["comparison"] = {
-            "paired_case_coverage": len(shared),\n            "paired_repetitions_by_case": paired_repetitions,\n            "minimum_repetitions_per_case": 3,
+            "paired_case_coverage": len(shared),\n            "paired_repetitions_by_case": paired_repetitions,
+            "minimum_repetitions_per_case": 3,
             "verified_success_rate_delta": round(b["verified_success_rate"] - a["verified_success_rate"], 3),
             "routing_accuracy_delta": round(b["routing_accuracy"] - a["routing_accuracy"], 3),
             "instruction_tokens_delta_pct": percent_delta(a["avg_instruction_tokens"], b["avg_instruction_tokens"]),
