@@ -47,7 +47,6 @@ owner_map:
 - global_execution_workflow: workflow.md
 - global_coding: coding.md
 - global_research: research.md
-- global_file_metadata: metadata.md
 - human_orientation: README.md
 - project_behavior_delta: projects/<project>/instructions.txt
 - project_workflow_delta: projects/<project>/workflow.md
