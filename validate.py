@@ -109,6 +109,12 @@ def validate(repo: Path) -> dict:
     if template.get("load", {}).get("project_mode") != sources["project"]["read"]:
         raise ValueError("project loading mode differs between bootstrap and core")
 
+    def directive_map(items: object, owner: str) -> dict:
+        if not isinstance(items, list) or any(not isinstance(item, dict) or len(item) != 1 for item in items):
+            raise ValueError(f"invalid directive list in {owner}")
+        return {key: value for item in items for key, value in item.items()}
+
+
     # Common workflow rules load together; only route-specific details are conditional.
     workflow_index = _read(repo / "workflow.md")
     source_map = workflow_index.get("source_map")
@@ -117,7 +123,7 @@ def validate(repo: Path) -> dict:
     for required in ("routing_decision_order", "github_routing_gate", "known_use_cases"):
         if required not in workflow_index:
             raise ValueError(f"workflow.md must own routing section: {required}")
-    use_cases = workflow_index["known_use_cases"]
+    use_cases = directive_map(workflow_index["known_use_cases"], "known_use_cases")
     cases = use_cases.get("cases")
     if not isinstance(cases, list) or not cases:
         raise ValueError("known use cases must be a nonempty list")
@@ -166,10 +172,6 @@ def validate(repo: Path) -> dict:
         detail = _read(repo / path)
         if set(detail) != set(mapped[path]):
             raise ValueError(f"unmapped or duplicated section in {path}")
-    def directive_map(items: object, owner: str) -> dict:
-        if not isinstance(items, list) or any(not isinstance(item, dict) or len(item) != 1 for item in items):
-            raise ValueError(f"invalid directive list in {owner}")
-        return {key: value for item in items for key, value in item.items()}
 
     boundary = directive_map(workflow_index["tool_discovery_boundary"], "tool_discovery_boundary")
     if boundary.get("owner") != "awa-si/admin/workflow.md":
@@ -187,7 +189,7 @@ def validate(repo: Path) -> dict:
         raise ValueError("AWA MCP route must declare the provider-discovery boundary")
     if "global_tool_search" not in str(discovery.get("client_owner", "")):
         raise ValueError("global tool search must remain client-owned")
-    if workflow_index.get("loading", {}).get("entrypoint") != "workflow.md#routing_decision_order":
+    if directive_map(workflow_index["loading"], "loading").get("entrypoint") != "workflow.md#routing_decision_order":
         raise ValueError("workflow entrypoint must remain the canonical router")
     if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "mcp.md").read_text(encoding="utf-8"):
         raise ValueError("MCP technical source must not be a global instruction resolver")
