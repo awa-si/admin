@@ -6,6 +6,7 @@ Requires PyYAML. This does not activate the runtime candidate.
 from __future__ import annotations
 
 import hashlib
+import re
 from pathlib import Path
 import sys
 
@@ -78,16 +79,31 @@ def validate(repo: Path) -> dict:
         total += len(content.encode("utf-8"))
 
     sections = runtime["source_coverage"]
+    assert len(sections) == len(seen)
     assert set(item["path"] for item in sections) == seen
+    structural_sections = 0
+    excluded_headers = {"scope", "mode", "repository", "level", "project", "branch"}
     for item in sections:
-        text = (repo / item["path"]).read_text(encoding="utf-8")
-        for key in item["sections"]:
-            if not (
-                f"## {key}" in text
-                or f"\n{key}:" in "\n" + text
-                or f"\n- {key}:" in "\n" + text
-            ):
-                raise ValueError(f"coverage key absent from source: {item['path']}:{key}")
+        name = item["path"]
+        source = (repo / name).read_text(encoding="utf-8")
+        if name == "instructions.txt":
+            expected_sections = re.findall(r"^## ([a-z][a-z0-9_]*)", source, re.M)
+        else:
+            body = re.sub(r"\\A---\\n.*?\\n---\\n", "", source, count=1, flags=re.S)
+            expected_sections = [
+                key for key in re.findall(r"^([a-z][a-z0-9_]*):", body, re.M)
+                if key not in excluded_headers
+            ]
+        actual = item["sections"]
+        if len(actual) != len(set(actual)) or actual != expected_sections:
+            raise ValueError(
+                f"incomplete or out-of-order section inventory: {name}; "
+                f"expected={expected_sections!r}, actual={actual!r}"
+            )
+        structural_sections += len(actual)
+    assert runtime["limitations"]["source_inventory_complete"] is True
+    assert runtime["limitations"]["semantic_projection_is_not_a_lossless_transformation"] is True
+    assert runtime["limitations"]["normative_equivalence_verified"] is False
 
     expected = [
         "product_mode", "authorization", "target", "existing_workspace",
@@ -103,7 +119,7 @@ def validate(repo: Path) -> dict:
         "source_count": len(sources),
         "source_utf8_bytes": total,
         "runtime_utf8_bytes": (repo / "runtime.yaml").stat().st_size,
-        "coverage_sections": sum(len(item["sections"]) for item in sections),
+        "coverage_sections": structural_sections,
         "semantic_equivalence": "not_verified",
         "bootstrap_activation": "unchanged",
     }
