@@ -14,10 +14,10 @@ repository:
 project_delta:
 - workspace_policy:
     route_selection: awa-si/admin/workflow.md#routing_decision_order
-    administrative_boundary: awa-si/admin/workflow.md#awa_mcp
+    administrative_boundary: awa-si/admin/workflow/routes.md#awa_mcp
     technical_reference: awa-si/awa@main:mcp/workspace/contract.md
 - redeployment_verification:
-    after_user_reports_redeploy: reload_AWA_MCP_instruction_resolver_and_check_workspace_policy
+    after_user_reports_redeploy: reload_ChatGPT_Admin_sources_via_connected_GitHub_connector_then_check_workspace_policy
     distinguish_mcp_reload_from_service_process_restart: true
     verify_deployed_document_and_process_start_when_available: true
     deployment_commit_unavailable: report_unverified_code_revision_without_claiming_confirmed_deployment
