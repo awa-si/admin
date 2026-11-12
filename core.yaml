@@ -1,9 +1,9 @@
-# Ordered ChatGPT use-case registry and source resolver; no substantive policies.
-version: 2
+# ChatGPT use-case registry and source resolver; no substantive instruction policy.
+version: 3
 scope: chatgpt
 mode: use_case_resolver
 
-order:
+registry:
   - id: behavior
     path: awa-si/admin/behavior.yaml
     load: always
@@ -11,23 +11,24 @@ order:
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution
     role: canonical_route_selection_and_known_case_details
-  - id: coding
-    path: awa-si/admin/workflow/coding.md
-    load: on_coding_or_implementation
-  - id: research
-    path: awa-si/admin/workflow/research.md
-    load: on_research_or_material_fact_check
-  - id: github
-    path: awa-si/admin/workflow/github.md
-    load: on_selected_GitHub_route
-    requires: workflow
-  - id: mcp
-    path: awa-si/admin/workflow/mcp.md
-    load: on_selected_AWA_MCP_route
-    requires: workflow
-    discovery: mcp_model
-    technical_sources: mcp_instructions
-    owner: live_AWA_MCP_schema_and_canonical_AWA_contracts
+    children:
+      - id: coding
+        path: awa-si/admin/workflow/coding.md
+        load: on_coding_or_implementation
+      - id: research
+        path: awa-si/admin/workflow/research.md
+        load: on_research_or_material_fact_check
+      - id: github
+        path: awa-si/admin/workflow/github.md
+        load: on_selected_GitHub_route
+        requires: workflow
+      - id: mcp
+        path: awa-si/admin/workflow/mcp.md
+        load: on_selected_AWA_MCP_route
+        requires: workflow
+        discovery: mcp_model
+        technical_sources: mcp_instructions
+        owner: live_AWA_MCP_schema_and_canonical_AWA_contracts
   - id: project
     path: awa-si/admin/projects/<project>/*
     load: when_verified_project_context_exists
@@ -38,7 +39,8 @@ order:
     fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
 
 resolution:
-  order_semantics: evaluation_order_not_instruction_priority
+  registry_semantics: ordered_parent_child_source_graph_not_instruction_priority
+  child_loading: evaluate_each_child_condition_independently;parent_not_implicitly_loaded
   route_authority: awa-si/admin/workflow.md#routing_decision_order
   source_loading: load_only_matching_cases_except_behavior
   overlap: combine_matching_use_cases_without_duplicate_reads
