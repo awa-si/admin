@@ -172,7 +172,7 @@ dispute_and_escalation_strategy:
   never_bluff: "claim|duty|deadline|jurisdiction|liability|remedy|appeal_right"
   distinguish_when_material: "primary_claim|counterparty_duty|regulatory_or_supervisory_duty|procedural_remedy|appeal_or_review|possible_liability"
 research:
-  canonical_contract: "awa-si/admin/core.yaml#research_guidance"
+  canonical_contract: "awa-si/admin/research.md"
   load_for_material_research_and_design_decisions: true
   current_or_external_fact_when_material: "verify_with_authoritative_source"
   user_provided_or_project_source: "prefer_when_authoritative"
@@ -234,11 +234,11 @@ apple_icloud_workflow:
   credentials: "never_store_or_commit_app_specific_passwords|tokens|session_material"
   authentication_secret_handling: "keep_inside_plugin_connection_boundary"
 control_plane:
-  behavior_owner: "awa-si/admin/core.yaml"
-  workflow_owner: "awa-si/admin/core.yaml#workflow"
-  workflow_bootstrap: "awa-si/admin/core.yaml#workflow.decision_bootstrap"
-  coding_owner: "awa-si/admin/core.yaml#coding"
-  repository_agent_policy_owner: "awa-si/admin/core.yaml#repository_agent_policy"
+  behavior_owner: "awa-si/admin/behavior.yaml"
+  workflow_owner: "awa-si/admin/workflow.md"
+  workflow_bootstrap: "awa-si/admin/workflow.md#decision_bootstrap"
+  coding_owner: "awa-si/admin/coding.md"
+  repository_agent_policy_owner: "awa-si/admin/AGENTS.md#fallback_repository_agent"
   project_behavior_delta: "awa-si/admin/projects/<project>/*_load_all_existing_files"
   project_workflow_delta: "included_in_complete_project_directory_inventory"
   project_files_are_delta_only: true
@@ -255,12 +255,12 @@ awa_mcp_information_delegation:
   "before_material_AWA_action": "load_applicable_current_contract|verify_tool_availability_and_authorization"
   discovery_results: "observation_only_not_action_authorization"
   missing_or_changed_interface: "resolve_current_owner_or_report_actual_blocker|never_reconstruct_legacy_contract"
-  routing_owner: "awa-si/admin/core.yaml#workflow.routing_decision_order"
+  routing_owner: "awa-si/admin/workflow.md#routing_decision_order"
 admin_plane_reload:
   command: "reload admin plane"
   aliases: "reload admin control plane"
-  preferred_bootstrap: "AWA_MCP.mcp_instructions_without_arguments"
-  returned_documents: "read_current_canonical_admin_sources|verify_completeness|use_mcp_model_for_current_AWA_tool_capability_capacity_and_execution_discovery"
+  preferred_bootstrap: "read_awa-si/admin/core.yaml_via_connected_GitHub_connector"
+  returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_AWA_capability_discovery"
   optional_project_delta: "resolve_active_ChatGPT_project_then_load_if_accessible"
   repository_agent: "load_only_when_resolved_repository_context_is_active"
   fallback: "use_connected_repository_or_project_files_if_AWA_bootstrap_is_unavailable_or_incomplete"
@@ -273,14 +273,14 @@ loading_and_resolution:
   project_file_loading: "read_every_existing_regular_file_completely_before_applying_project_deltas"
   project_file_incomplete_or_truncated: "report_exact_gap_and_do_not_claim_full_project_bootstrap"
   project_directory_absent: "inherit_global_without_inventing_project_files"
-  global_load: "core.yaml"
+  global_load: "core.yaml -> behavior.yaml -> workflow.md_when_execution_applies -> coding.md_when_coding_applies -> research.md_when_research_applies"
   project_resolution: "verify_project_slug_then_enumerate_and_read_all_files_at_projects/<project>/*"
   project_workflow: "included_in_complete_project_directory_read"
   project_coding: "included_in_complete_project_directory_read"
   repository: "derive_from_project_instructions_when_present_else_current_task_context"
   repository_agent: "only_with_active_repository_context|use_target_AGENTS_md_if_present_else_admin_fallback"
   material_helpers: "load_only_when_required_by_task_or_repository_agent"
-  final_resolution_order: "core_global_rules -> all_existing_projects/<project>/*_files_when_project_resolved -> repository_agent_if_active -> material_helpers -> task"
+  final_resolution_order: "core_source_index -> behavior.yaml -> applicable_workflow|coding|research -> projects/<project>/*_if_resolved -> repository_agent_if_active -> material_helpers -> task"
   reread_owner_if: "source_changed|explicitly_requested|active_scope_changed"
   stale_cached_copy_after_reread: "non_authoritative"
 repository_agent_policy:
@@ -292,7 +292,7 @@ repository_agent_policy:
   agent_may_reference_helpers_and_global_owners: true
   helper_loading: "only_when_material_to_task"
   helper_or_owner_is_source_of_truth_for_delegated_detail: true
-  if_target_repo_agent_missing_and_repository_active: "use_awa-si/admin/core.yaml#repository_agent.fallback_repository_agent"
+  if_target_repo_agent_missing_and_repository_active: "use_awa-si/admin/AGENTS.md#fallback_repository_agent"
 instruction_resolution_cache:
   default: "reuse_currently_loaded_control_plane_within_active_scope"
   resolve_once_per_active_scope_version: true
