@@ -1,6 +1,6 @@
 # GPT Admin
 
-`core.yaml` is a **ordered use-case registry and source resolver**, not an instruction body. ChatGPT loads it at chat/project level and resolves the relevant canonical owners in declared order, loading only matching sources. AWA MCP does not bootstrap Admin policies.
+`core.yaml` is an **ordered use-case registry and source resolver**, not an instruction body. ChatGPT loads it at chat/project level and resolves the relevant canonical owners in declared order, loading only matching sources. AWA MCP does not bootstrap Admin policies.
 
 ## Canonical sources
 
@@ -22,7 +22,7 @@ Use [`projects/template.txt`](projects/template.txt) as the ChatGPT Project boot
 
 ## Dynamic workflow loading
 
-Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. The top-level use-case registry and ordered source resolution are in `core.yaml`; detailed known route scenarios remain in `workflow.md`. Case matching is advisory: authorization, product-mode, and native provider admission still govern execution. Load only the selected route-specific additions: `workflow/github.md` or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
+Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. The ordered parent/child use-case registry and source resolution are in `core.yaml`; detailed known route scenarios remain in `workflow.md`. Case matching is advisory: authorization, product-mode, and native provider admission still govern execution. Load only the selected route-specific additions: `workflow/github.md` or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
 
 ## Execution
 
