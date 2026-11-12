@@ -63,6 +63,19 @@ def check(root: Path, *, verify_sources: bool = True) -> dict:
     assert runtime.get("encoding", {}).get("algorithm") == "exact_line_dictionary"
     assert runtime.get("encoding", {}).get("normalization") == "none"
     assert runtime.get("entrypoint", {}).get("no_implicit_activation") is True
+    decision = runtime.get("decision_contract", {})
+    assert decision.get("status") == "comparison_only"
+    assert decision.get("decision_owner") == "gpt"
+    assert decision.get("routing_owner") == "workflow.md#routing_decision_order"
+    assert decision.get("admission_owner") == "current_live_provider"
+    expected_gates = [
+        "product_mode", "authorization", "target", "existing_workspace",
+        "capability_need", "select_route", "native_admission",
+    ]
+    assert decision.get("ordered_gates") == expected_gates
+    assert decision.get("gate_source_keys") == [
+        f"{index}_{gate}" for index, gate in enumerate(expected_gates, start=1)
+    ]
 
     originals = core.get("sources")
     documents = runtime.get("documents")
@@ -102,6 +115,10 @@ def check(root: Path, *, verify_sources: bool = True) -> dict:
         line_count += len(line_ids)
 
     assert covered == set(range(len(dictionary))), "unreferenced dictionary lines"
+    workflow = next(x["content"] for x in originals if x["path"] == "workflow.md")
+    assert "routing_decision_order:" in workflow
+    for gate in decision["gate_source_keys"]:
+        assert f"- {gate}:" in workflow, f"unsupported decision gate: {gate}"
     return {
         "status": "valid",
         "sources": len(originals),
