@@ -88,9 +88,21 @@ def validate(repo: Path) -> dict:
     source_map = workflow_index.get("source_map")
     if not isinstance(source_map, list) or not source_map:
         raise ValueError("workflow index must define a nonempty source_map")
-    for required in ("routing_decision_order", "github_routing_gate", "routing_acceptance_cases"):
+    for required in ("routing_decision_order", "github_routing_gate", "known_use_cases"):
         if required not in workflow_index:
             raise ValueError(f"workflow.md must own routing section: {required}")
+    use_cases = workflow_index["known_use_cases"]
+    cases = use_cases.get("cases")
+    if not isinstance(cases, list) or not cases:
+        raise ValueError("known use cases must be a nonempty list")
+    case_ids = [case.get("id") for case in cases if isinstance(case, dict)]
+    if len(case_ids) != len(cases) or len(set(case_ids)) != len(cases):
+        raise ValueError("known use cases require unique identifiers")
+    for case in cases:
+        if not all(case.get(field) for field in ("id", "category", "given", "expected")):
+            raise ValueError("known use case missing an essential field")
+    if use_cases.get("route_decision") != "routing_decision_order_remains_sole_normative_route_precedence":
+        raise ValueError("known cases must not override routing decision order")
     expected_details = {"workflow/github.md", "workflow/mcp.md"}
     mapped = {}
     for entry in source_map:
