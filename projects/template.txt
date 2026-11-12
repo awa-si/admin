@@ -4,23 +4,22 @@ authority: awa-si/admin/core.yaml
 load:
   source: connected_GitHub_connector_or_authorized_AWA_instruction_resolver
   required: awa-si/admin/core.yaml
-  conditional:
-    - awa-si/admin/projects/<project>/instructions.txt_if_present
-    - awa-si/admin/projects/<project>/workflow.md_if_present
-    - awa-si/admin/projects/<project>/coding.md_if_applicable
-    - <resolved_repository>/AGENTS.md_if_repository_active
+  project: awa-si/admin/projects/<project>/*
+  project_mode: enumerate_all_existing_files_then_read_each_completely
+  repository_agent: <resolved_repository>/AGENTS.md_if_repository_active
   fallback_agent: awa-si/admin/core.yaml#repository_agent
 
 resolve:
   project: exposed_ChatGPT_Project_name_or_explicit_context;never_guess_hidden_UI_state
   slug: lowercase_hyphenated;verify_against_projects_directory
   repository: project_instructions_or_current_task_context;never_assume
-  missing_optional_project_files: inherit_global
+  project_absent: inherit_global
+  unreadable_project_file: report_exact_gap;never_claim_complete_load
   unavailable_required_source: report_exact_gap;never_claim_loaded
 
 execute:
-  precedence: core.yaml_then_applicable_project_deltas_then_repository_agent
-  rules: inherit_parent_unless_explicit_override
+  precedence: core.yaml_then_all_project_files_then_repository_agent
+  rules: parent_inherited_unless_explicit_override
   routing: core.yaml#workflow.routing_decision_order
   interfaces: current_live_provider_schema
-  reload: only_on_source_or_scope_change_or_explicit_request
+  reload: on_source_or_scope_change_or_explicit_request
