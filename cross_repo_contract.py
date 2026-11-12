@@ -56,7 +56,11 @@ def _topics(tree: ast.Module) -> dict[str, str]:
     for topic, spec in entries.items():
         _require(isinstance(topic, str) and isinstance(spec, dict),
                  "invalid technical source entry")
-        _require(set(spec).issubset({"path", "tool"}) and isinstance(spec.get("path"), str),
+        required = {"path", "summary", "read_when"}
+        _require(set(spec) in (required, required | {"tool"})
+                 and isinstance(spec.get("path"), str)
+                 and all(isinstance(spec.get(field), str) and spec[field].strip()
+                         for field in ("summary", "read_when")),
                  f"invalid technical source fields: {topic}")
         found[topic] = spec["path"]
         if "tool" in spec:

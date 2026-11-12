@@ -23,8 +23,11 @@ class CrossRepoContractTests(unittest.TestCase):
             "awa-si/admin/core.yaml; AWA MCP never loads Admin project instructions.\n")
         self._write("mcp/tools/model.py", '''
 SOURCE_REGISTRY = {
-    "mcp": {"path": "mcp/README.md"},
-    "workspace": {"path": "mcp/workspace/contract.md", "tool": "workspace_exec"},
+    "mcp": {"path": "mcp/README.md", "summary": "MCP gateway overview",
+            "read_when": "When discovering MCP sources"},
+    "workspace": {"path": "mcp/workspace/contract.md", "tool": "workspace_exec",
+                  "summary": "Workspace technical contract",
+                  "read_when": "Before workspace operations"},
 }
 ''')
         self._write("mcp/instructions.py", '''
@@ -70,6 +73,23 @@ async def mcp_model(operation="schema"):
         result = check_contract(self.admin, self.awa)
         self.assertEqual(result["status"], "valid")
         self.assertEqual(result["technical_topics"], ["mcp", "workspace"])
+
+    def test_missing_source_guidance_fails(self) -> None:
+        model = self.awa / "mcp/tools/model.py"
+        model.write_text(model.read_text().replace(
+            '"summary": "MCP gateway overview",', ""
+        ), encoding="utf-8")
+        with self.assertRaisesRegex(ContractError, "invalid technical source fields"):
+            check_contract(self.admin, self.awa)
+
+    def test_unknown_registry_key_fails(self) -> None:
+        model = self.awa / "mcp/tools/model.py"
+        model.write_text(model.read_text().replace(
+            '"read_when": "When discovering MCP sources"',
+            '"read_when": "When discovering MCP sources", "allow": True'
+        ), encoding="utf-8")
+        with self.assertRaisesRegex(ContractError, "invalid technical source fields"):
+            check_contract(self.admin, self.awa)
 
     def test_missing_shared_registry_fails(self) -> None:
         self._write("mcp/instructions.py", "class InstructionResolver: pass\n")
