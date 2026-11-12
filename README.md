@@ -1,32 +1,57 @@
 # GPT Admin
 
-`core.yaml` is an **ordered use-case registry and source resolver**, not an instruction body. ChatGPT loads it at chat/project level and resolves the relevant canonical owners in declared order, loading only matching sources. AWA MCP does not bootstrap Admin policies.
+`awa-si/admin` is the ChatGPT control plane for shared behavior, use-case resolution, workflow execution, and project/repository-specific instructions. **`core.yaml` is the authoritative use-case registry and source resolver, not an instruction body.** Read the current files through the connected GitHub connector. AWA MCP is not an alternative source for Admin policy.
 
-## Canonical sources
+## Registry and ownership
 
-| Source | Loading | Ownership |
-| --- | --- | --- |
-| [`core.yaml`](core.yaml) | Chat/project bootstrap | Ordered use-case registry and source resolver only |
-| [`behavior.yaml`](behavior.yaml) | Always | Global ChatGPT behavior and policy |
-| [`workflow.md`](workflow.md) | When workflow/execution is relevant | General workflow, preflight, verification and canonical routing order |
-| [`workflow/coding.md`](workflow/coding.md) | When coding or implementation is relevant | Coding guidance |
-| [`workflow/research.md`](workflow/research.md) | When research or material verification is relevant | Research guidance |
-| `mcp_model`, `mcp_instructions` | When AWA MCP work is relevant | Live MCP capabilities and local technical sources, **not** ChatGPT policy |
-| `projects/<project>/*` | When project is identified | Enumerate all existing project files and read each completely |
-| `<repository>/AGENTS.md` | When repository context is active | Repository-specific behavior |
-| [`AGENTS.md`](AGENTS.md) | If the active target repository has no agent | Fallback repository-agent policy |
+The `core.yaml#registry` is an **ordered parent/child source graph**. Its order guides source evaluation; it does **not** supersede ChatGPT's instruction hierarchy. A child is considered independently when its load condition matches: nesting under `workflow` does **not** automatically load `workflow.md`.
 
-## Project Custom Instructions
+```text
+core.yaml  (registry / resolver)
+├── behavior.yaml                  always
+├── workflow.md                    workflow or execution
+│   ├── workflow/coding.md         coding or implementation
+│   ├── workflow/research.md       research or fact verification
+│   ├── workflow/github.md         selected GitHub route
+│   └── workflow/mcp.md            selected AWA MCP route
+├── projects/<project>/*           verified ChatGPT project
+└── <repository>/AGENTS.md         active repository context
+    └── fallback: admin/AGENTS.md  if target agent is absent
+```
 
-Use [`projects/template.txt`](projects/template.txt) as the ChatGPT Project bootstrap. It references only the core index and loads project files after verifying the exposed project slug. Never guess hidden UI state. Optional project deltas extend their parent rules unless explicitly overridden.
+| Source | Responsibility |
+| --- | --- |
+| [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
+| [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
+| [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
+| [`workflow/coding.md`](workflow/coding.md) | Coding and implementation guidance |
+| [`workflow/research.md`](workflow/research.md) | Research guidance for knowledge, code, documentation and legal investigations |
+| [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
+| [`workflow/mcp.md`](workflow/mcp.md) | AWA-MCP-specific route and delegated technical contracts |
+| [`projects/template.txt`](projects/template.txt) | ChatGPT Project bootstrap pointing to the registry |
+| `projects/<project>/*` | Verified project deltas; **enumerate every existing file and read each completely** |
+| `<repository>/AGENTS.md` | Active repository agent; fall back to [`AGENTS.md`](AGENTS.md) when absent |
 
-## Dynamic workflow loading
+## Source resolution
 
-Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. The ordered parent/child use-case registry and source resolution are in `core.yaml`; detailed known route scenarios remain in `workflow.md`. Case matching is advisory: authorization, product-mode, and native provider admission still govern execution. Load only the selected route-specific additions: `workflow/github.md` or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
+1. Load `core.yaml` from the connected GitHub repository, then load `behavior.yaml` **always**.
+2. Evaluate relevant registry entries by task intent, scope and current product context. Load only matching files. Combine overlapping use cases without redundant reads.
+3. Use `workflow.md#routing_decision_order` as the **sole normative execution-route precedence** when routing is material. The known cases in `workflow.md` aid classification but never grant permissions.
+4. Load `workflow/github.md` or `workflow/mcp.md` only for an applicable, permitted provider route. The registry declares that these routes require workflow routing. Coding and research modules can be loaded directly when their cases match.
+5. When a ChatGPT Project is explicitly identified or exposed, verify its slug and read **all** existing files under `projects/<project>/*`. Never infer hidden UI project state. For an active target repository, read its `AGENTS.md` if present, otherwise use the Admin fallback.
+6. For unknown cases, preserve the existing workflow and authorization gates; do not invent permission, capability or completion evidence. Report unavailable required sources and incomplete reads precisely.
 
-## Execution
+Project and repository rules extend applicable parent rules; overrides must be explicit. Higher-priority ChatGPT instructions remain authoritative. Repository state and live provider schemas determine the actual available operations.
 
-The ChatGPT layer chooses which source files are material and reads them using the connected GitHub connector. MCP tool discovery and technical contracts are consulted only when an AWA MCP action is relevant; capability discovery alone grants no action authorization. Live provider schemas govern available operations.
+## Execution and verification
+
+Use the smallest permitted route that can complete the requested outcome, including its necessary tests or verification. `workflow.md` owns the shared lifecycle; provider-specific mechanics stay with their respective route files. For AWA MCP, use `mcp_model` for live capability discovery and `mcp_instructions` for **local technical documentation only**, not Admin policy loading. Discovery is not authorization or execution admission.
+
+Differentiate an observed GitHub write, a successful test, a deployed revision and an active runtime. Claim completion only to the level supported by actual evidence. Deployment and other material side effects require their applicable authorization.
+
+## Project bootstrap
+
+Use [`projects/template.txt`](projects/template.txt) as the starting point for ChatGPT Project instructions. It resolves the same `core.yaml#registry` and project/repository boundaries. Avoid duplicating the global policies in project files.
 
 ## Validation
 
@@ -35,4 +60,6 @@ python -m pip install PyYAML
 python validate.py
 ```
 
-This repository is public. Never commit secrets, tokens, credentials, session material, or confidential data.
+The validator checks the registry structure and canonical owner references; execution of the validator and remote-state verification are separate steps.
+
+This repository is public. Never commit secrets, credentials, tokens, private keys, session material or confidential data.
