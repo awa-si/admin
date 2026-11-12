@@ -11,7 +11,7 @@ decision_bootstrap:
 - entrypoint: routing_decision_order
 - authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
-- expand_on_demand: workflow/repository.md|workflow/routes.md|workflow/execution.md|workflow/preflight.md|workflow/verification.md
+- expand_on_demand: workflow/repository.md|workflow/routes.md|workflow/github.md|workflow/awa.md|workflow/execution.md|workflow/preflight.md|workflow/verification.md
 - default: prefer_connected_GitHub_connector_for_sufficient_repository_only_work; do_not_create_AWA_workspace_without_material_execution_need_or_explicit_selection
 - never_infer: workspace_permission|mutating_authorization|deploy_approval|runtime_availability_from_discovery
 - invalidation: affected_scope_or_authority_change_only
@@ -42,7 +42,9 @@ routing_decision_order:
 
 source_map:
 - workflow/repository.md: branch_resolution|task_scope_resolution|repository_state_resolution|repository_discovery|cross_repository_execution
-- workflow/routes.md: github_capability_detection|github_routing_gate|routing_acceptance_cases|github_patch|awa_mcp|repository_tool_routing|github_workspace|github_actions
+- workflow/routes.md: github_routing_gate|routing_acceptance_cases
+- workflow/github.md: github_capability_detection|github_patch|repository_tool_routing|github_workspace|github_actions
+- workflow/awa.md: awa_mcp
 - workflow/execution.md: operation_classification|chatgpt_work_mode|deployment_cadence|change_set_lifecycle|edit_and_writeback|long_running_execution|mcp_versioning
 - workflow/preflight.md: dependency_preflight|rights_preflight|environment_preflight
 - workflow/verification.md: verification|failure_and_recovery
@@ -51,7 +53,7 @@ source_map:
 loading:
 - entrypoint: workflow.md#routing_decision_order
 - detail_files: load_only_when_relevant_to_current_route_or_task
-- route_specs: workflow/routes.md
+- route_specs: workflow/routes.md|workflow/github.md_when_GitHub_route_material|workflow/awa.md_when_AWA_MCP_route_material
 - project_files: resolve_at_chatgpt_project_layer_not_through_AWA_MCP
 - behavior_owner: awa-si/admin/behavior.yaml
 - repository_agent: resolve_only_when_repository_context_active
