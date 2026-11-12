@@ -61,7 +61,7 @@ admin/
 └── projects/
     ├── template.txt
     └── <project>/
-        ├── core.yaml
+        ├── instructions.txt
         ├── workflow.md        # optional
         └── coding.md          # optional
 ```
