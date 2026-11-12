@@ -8,7 +8,7 @@ mode: normative_machine_directives
 fallback_repository_agent:
 - activate_when: target_repository_context_exists_and_target_repository/AGENTS.md_is_missing
 - scope: repository_specific_AI_fallback_only
-- inherit: awa-si/admin/core.yaml_source_index|awa-si/admin/behavior.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable|applicable_project_delta
+- inherit: awa-si/admin/core.yaml_use_case_resolver|awa-si/admin/behavior.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable|applicable_project_delta
 - target_repository_current_state: authoritative
 - target_repository_branch: use_resolved_current_branch
 - target_repository_visibility: do_not_assume_public_or_private
@@ -32,7 +32,7 @@ managed_scope:
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
 
 owner_map:
-- source_router: core.yaml
+- source_router_and_use_case_registry: core.yaml
 - global_behavior: behavior.yaml
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
@@ -69,7 +69,7 @@ reasoning:
 - when_admin_change_affects_managed_projects_or_repositories: inspect_downstream_semantic_impact
 
 layering:
-- follow_resolution_order_from: core.yaml#sources
+- follow_resolution_order_from: core.yaml#order
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
 - project_files: delta_only
