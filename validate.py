@@ -85,6 +85,15 @@ def validate(repo: Path) -> dict:
         raise ValueError("project bootstrap must point to core.yaml")
     if template.get("load", {}).get("required") != "awa-si/admin/core.yaml":
         raise ValueError("project bootstrap must have a single global source")
+    if template.get("load", {}).get("project") != "awa-si/admin/projects/<project>/*":
+        raise ValueError("project bootstrap must discover all files via wildcard")
+    if template.get("load", {}).get("project_mode") != "enumerate_all_existing_files_then_read_each_completely":
+        raise ValueError("project bootstrap must fully read every project file")
+    loading = core.get("loading_and_resolution", {})
+    if loading.get("project_directory_contract") != "awa-si/admin/projects/<project>/*":
+        raise ValueError("core project wildcard contract mismatch")
+    if "read_every_existing_regular_file" not in loading.get("project_file_loading", ""):
+        raise ValueError("core must require complete file reads")
     if template.get("execute", {}).get("routing") != "core.yaml#workflow.routing_decision_order":
         raise ValueError("routing must resolve to core.yaml")
 
