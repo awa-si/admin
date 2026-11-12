@@ -1,4 +1,4 @@
-# Canonical global instruction hierarchy; migrated from core.yaml.
+# Canonical global instruction hierarchy.
 scope: "global"
 level: 0
 mode: "normative"
