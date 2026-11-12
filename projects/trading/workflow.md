@@ -1,14 +1,3 @@
----
-title: Trading Project Workflow
-description: Machine-readable multi-repository handoff and parallel chat workflow.
-type: standard
-status: active
-language: en
-owner: AWA
-created: 2026-10-31
-updated: 2026-10-31
----
-
 scope: project_workflow_delta
 project: trading
 mode: normative_machine_directives
