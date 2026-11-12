@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
-"""Validate the comparison-only Admin source snapshot against canonical files.
-
-Requires PyYAML. This validator does not activate the snapshot.
-"""
+"""Validate the canonical Admin global-instruction hierarchy."""
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 import sys
 
 try:
     import yaml
 except ImportError as exc:
-    raise SystemExit("PyYAML is required for Admin snapshot validation") from exc
+    raise SystemExit("PyYAML is required for Admin YAML validation") from exc
 
 
 class StrictLoader(yaml.SafeLoader):
@@ -20,12 +16,12 @@ class StrictLoader(yaml.SafeLoader):
 
 
 def _unique_mapping(loader, node):
-    result = {}
+    output = {}
     for key, value in loader.construct_pairs(node, deep=True):
-        if key in result:
+        if key in output:
             raise ValueError(f"duplicate YAML key: {key}")
-        result[key] = value
-    return result
+        output[key] = value
+    return output
 
 
 StrictLoader.add_constructor(
@@ -33,44 +29,52 @@ StrictLoader.add_constructor(
 )
 
 
-def _blob_sha(content: str) -> str:
-    data = content.encode("utf-8")
-    return hashlib.sha1(
-        b"blob " + str(len(data)).encode("ascii") + b"\0" + data
-    ).hexdigest()
+def _count_directives(value: dict) -> int:
+    total = 0
+    for item in value.values():
+        if isinstance(item, dict):
+            total += _count_directives(item)
+        else:
+            if not isinstance(item, (str, bool, int)):
+                raise ValueError("invalid directive type")
+            total += 1
+    return total
 
 
 def validate(repo: Path) -> dict:
     core = yaml.load((repo / "core.yaml").read_text(encoding="utf-8"), Loader=StrictLoader)
     if not isinstance(core, dict):
-        raise ValueError("expected YAML mapping in core.yaml")
-    assert core["schema_version"] == 1
-    assert core["kind"] == "exhaustive_source_snapshot"
-    assert core["status"] == "comparison_only"
-    sources = core["sources"]
-    assert len(sources) == core["source_count"] == 7
+        raise ValueError("core.yaml must contain a YAML mapping")
+    if core.get("scope") != "global" or core.get("level") != 0 or core.get("mode") != "normative":
+        raise ValueError("invalid global instruction identity")
 
-    seen = set()
-    total = 0
-    for item in sources:
-        path = item["path"]
-        relative = Path(path)
-        if relative.is_absolute() or ".." in relative.parts or path in seen:
-            raise ValueError(f"unsafe or duplicate source path: {path}")
-        seen.add(path)
-        content = item["content"]
-        if not isinstance(content, str):
-            raise ValueError(f"invalid content: {path}")
-        assert (repo / path).read_text(encoding="utf-8") == content, path
-        assert _blob_sha(content) == item["git_blob_sha"], path
-        total += len(content.encode("utf-8"))
+    expected_sections = [
+        "communication", "accuracy", "interactive_execution",
+        "workspace_repository_write_boundary", "execution", "context",
+        "dispute_and_escalation_strategy", "research",
+        "plugin_and_skill_workflow_resolution", "connector_and_file_reading",
+        "sharepoint_origin_file_workflow", "apple_icloud_workflow",
+        "control_plane", "awa_mcp_information_delegation",
+        "admin_plane_reload", "loading_and_resolution",
+        "repository_agent_policy", "instruction_resolution_cache",
+        "mcp_instruction_reload", "public_repo_safety", "openai_safety_blocks",
+    ]
+    actual_sections = [key for key in core if key not in {"scope", "level", "mode"}]
+    if actual_sections != expected_sections:
+        raise ValueError("global section hierarchy changed; review ownership and order")
+    for section in expected_sections:
+        if not isinstance(core[section], dict) or not core[section]:
+            raise ValueError(f"empty or invalid section: {section}")
+    count = _count_directives({section: core[section] for section in expected_sections})
+    if count != 298:
+        raise ValueError(f"directive count changed: {count}; expected 298")
 
     return {
-        "status": "source_verified",
-        "source_count": len(seen),
-        "source_utf8_bytes": total,
-        "bootstrap_activation": "unchanged",
-        "semantic_equivalence": "not_verified",
+        "status": "valid",
+        "source": "core.yaml",
+        "sections": len(expected_sections),
+        "directives": count,
+        "authority": "normative",
     }
 
 
