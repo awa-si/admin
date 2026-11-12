@@ -119,7 +119,8 @@ def evaluate(traces, cases):
     if len(by_variant) == 2:
         a, b = out["A"], out["B"]
         out["comparison"] = {
-            "paired_case_coverage": len(shared),\n            "paired_repetitions_by_case": paired_repetitions,
+            "paired_case_coverage": len(shared),
+            "paired_repetitions_by_case": paired_repetitions,
             "minimum_repetitions_per_case": 3,
             "verified_success_rate_delta": round(b["verified_success_rate"] - a["verified_success_rate"], 3),
             "routing_accuracy_delta": round(b["routing_accuracy"] - a["routing_accuracy"], 3),
