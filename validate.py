@@ -36,7 +36,7 @@ StrictLoader.add_constructor(
 def _blob_sha(content: str) -> str:
     data = content.encode("utf-8")
     return hashlib.sha1(
-        b"blob " + str(len(data)).encode("ascii") + b"\\0" + data
+        b"blob " + str(len(data)).encode("ascii") + b"\0" + data
     ).hexdigest()
 
 
