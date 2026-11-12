@@ -1,7 +1,7 @@
 scope: project_odoo_coding
 mode: normative_project_delta
 owner: awa-si/admin/projects/odoo/coding.md
-inherits: awa-si/admin/coding.md
+inherits: awa-si/admin/workflow/coding.md
 repository: awa-si/odoo@main
 parent_rules_remain_active: true
 
