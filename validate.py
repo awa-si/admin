@@ -92,6 +92,7 @@ def validate(repo: Path) -> dict:
         raise ValueError("workflow index must own the ordered route decision")
     expected_details = {
         "workflow/repository.md", "workflow/routes.md",
+        "workflow/github.md", "workflow/awa.md",
         "workflow/execution.md", "workflow/preflight.md",
         "workflow/verification.md", "behavior.yaml",
     }
@@ -123,7 +124,7 @@ def validate(repo: Path) -> dict:
             raise ValueError(f"unmapped or duplicated section in {path}")
     if workflow_index.get("loading", {}).get("entrypoint") != "workflow.md#routing_decision_order":
         raise ValueError("workflow entrypoint must remain the canonical router")
-    if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "routes.md").read_text(encoding="utf-8"):
+    if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "awa.md").read_text(encoding="utf-8"):
         raise ValueError("MCP technical source must not be a global instruction resolver")
 
     # Behavior is the only universal policy owner; the core index has none.
