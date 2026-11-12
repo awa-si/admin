@@ -6,58 +6,58 @@
     "files": [
       {
         "path": "core.yaml",
-        "bytes": 940
+        "characters": 940
       },
       {
         "path": "behavior.yaml",
-        "bytes": 25507
+        "characters": 25507
       },
       {
         "path": "workflow.md",
-        "bytes": 37605
+        "characters": 37605
       },
       {
         "path": "coding.md",
-        "bytes": 48092
+        "characters": 48092
       },
       {
         "path": "research.md",
-        "bytes": 7127
+        "characters": 7127
       }
     ]
   },
   "current": {
-    "ref": "main",
+    "ref": "f97f4d0eb145113844866dc16e83532896a637c1",
     "files": [
       {
         "path": "core.yaml",
-        "bytes": 2094
+        "characters": 2094
       },
       {
         "path": "behavior.yaml",
-        "bytes": 29039
+        "characters": 29039
       },
       {
         "path": "workflow.md",
-        "bytes": 33770
+        "characters": 33770
       },
       {
         "path": "workflow/coding.md",
-        "bytes": 48110
+        "characters": 48110
       },
       {
         "path": "workflow/research.md",
-        "bytes": 7158
+        "characters": 7158
       },
       {
         "path": "workflow/github.md",
-        "bytes": 5150
+        "characters": 5150
       },
       {
         "path": "workflow/mcp.md",
-        "bytes": 3417
+        "characters": 3417
       }
     ]
   },
-  "note": "Observed source-text byte counts (JavaScript string lengths for ASCII/UTF-8 mixes); not token counts, latency, or GPT runtime quality. Recompute before reporting final."
+  "note": "UTF-16 JavaScript string length per source at the pinned revisions (near ASCII character count); not byte size, token counts, runtime latency, or quality."
 }
