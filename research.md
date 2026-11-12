@@ -72,7 +72,6 @@ docs_research:
 - owner_resolution: follow_repository_registry_and_graph_when_defined|do_not_create_parallel_canonical_owner
 - choose: reuse_existing_doc|update_or_extend_canonical_owner|create_new_doc_only_when_gap_justified
 - output: authoritative_sources|discrepancies|affected_references|recommended_document_changes
-- markdown_metadata_owner: awa-si/admin/metadata.md
 - do_not_duplicate_canonical_content: true
 
 legal_research:
