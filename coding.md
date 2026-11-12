@@ -596,13 +596,6 @@ refactoring:
 - refactor_when_needed_for: correctness|testability|material_complexity_reduction|measured_performance|clearer_ownership
 - speculative_refactor_without_material_value: avoid
 
-file_metadata:
-- canonical_contract: awa-si/admin/metadata.md
-- apply_when: creating_new_markdown_md_file|materially_editing_existing_markdown_md_file
-- source_code_and_other_non_markdown_files: excluded
-- inherit_repository_specific_metadata_overrides_only_when_explicit: true
-- preserve_format_and_parser_compatibility: required
-
 documentation:
 - audience: developers_and_maintainers
 - language: concise_precise_technical_developer_language
