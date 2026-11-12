@@ -1,12 +1,12 @@
 # GPT Admin
 
-`core.yaml` is a **dynamic source index**, not an instruction body. ChatGPT loads it at chat/project level and resolves the relevant canonical owners on demand. AWA MCP does not bootstrap Admin policies.
+`core.yaml` is a **ordered use-case registry and source resolver**, not an instruction body. ChatGPT loads it at chat/project level and resolves the relevant canonical owners in declared order, loading only matching sources. AWA MCP does not bootstrap Admin policies.
 
 ## Canonical sources
 
 | Source | Loading | Ownership |
 | --- | --- | --- |
-| [`core.yaml`](core.yaml) | Chat/project bootstrap | Small source router only |
+| [`core.yaml`](core.yaml) | Chat/project bootstrap | Ordered use-case registry and source resolver only |
 | [`behavior.yaml`](behavior.yaml) | Always | Global ChatGPT behavior and policy |
 | [`workflow.md`](workflow.md) | When workflow/execution is relevant | General workflow, preflight, verification and canonical routing order |
 | [`workflow/coding.md`](workflow/coding.md) | When coding or implementation is relevant | Coding guidance |
@@ -22,7 +22,7 @@ Use [`projects/template.txt`](projects/template.txt) as the ChatGPT Project boot
 
 ## Dynamic workflow loading
 
-Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. Route selection rules and the classified registry of **known use cases** are included in `workflow.md`. Case matching is advisory: authorization, product-mode, and native provider admission still govern execution. Load only the selected route-specific additions: `workflow/github.md` or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
+Read `workflow.md` when execution or routing is relevant. It contains all common execution, repository, preflight, verification and recovery rules. The top-level use-case registry and ordered source resolution are in `core.yaml`; detailed known route scenarios remain in `workflow.md`. Case matching is advisory: authorization, product-mode, and native provider admission still govern execution. Load only the selected route-specific additions: `workflow/github.md` or `workflow/mcp.md` as needed. Cross-task bundling, performance-evidence, and artifact/log rules remain in `behavior.yaml` (always loaded). A route reference is **not** evidence that its contents were read.
 
 ## Execution
 
