@@ -1,4 +1,4 @@
-# Canonical global instruction hierarchy; migrated from instructions.txt.
+# Canonical global instruction hierarchy; migrated from core.yaml.
 scope: "global"
 level: 0
 mode: "normative"
@@ -234,11 +234,11 @@ apple_icloud_workflow:
   credentials: "never_store_or_commit_app_specific_passwords|tokens|session_material"
   authentication_secret_handling: "keep_inside_plugin_connection_boundary"
 control_plane:
-  behavior_owner: "awa-si/admin/instructions.txt"
+  behavior_owner: "awa-si/admin/core.yaml"
   workflow_owner: "awa-si/admin/workflow.md"
   workflow_bootstrap: "awa-si/admin/workflow.md#decision_bootstrap"
   coding_owner: "awa-si/admin/coding.md"
-  repository_agent_policy_owner: "awa-si/admin/instructions.txt#repository_agent_policy"
+  repository_agent_policy_owner: "awa-si/admin/core.yaml#repository_agent_policy"
   project_behavior_delta: "awa-si/admin/projects/<project>/instructions.txt_if_present"
   project_workflow_delta: "awa-si/admin/projects/<project>/workflow.md_if_present"
   project_files_are_delta_only: true
@@ -268,7 +268,7 @@ admin_plane_reload:
   runtime_reload_boundary: "mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload"
   do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
 loading_and_resolution:
-  global_load: "instructions.txt -> workflow.md -> research.md_when_applicable -> coding.md_when_applicable"
+  global_load: "core.yaml -> workflow.md -> research.md_when_applicable -> coding.md_when_applicable"
   project_resolution: "load_projects/<project>/instructions.txt_only_when_project_name_resolved_and_file_exists"
   project_workflow: "load_projects/<project>/workflow.md_when_present"
   project_coding: "load_projects/<project>/coding.md_when_present_and_coding_applies_as_delta_over_global_coding"
