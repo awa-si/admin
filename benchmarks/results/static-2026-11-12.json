@@ -1,0 +1,30 @@
+{
+  "report_type": "static_validation_only",
+  "generated_at": "2026-11-12",
+  "source_repo": "awa-si/admin",
+  "baseline_commit": "8a23a90d4541d82ab04f4955cdfde3a1dd5bf227",
+  "current_commit": "f97f4d0eb145113844866dc16e83532896a637c1",
+  "benchmark_cases": 20,
+  "source_text_characters": {
+    "baseline": 119271,
+    "current": 128738,
+    "delta_percent": 7.94
+  },
+  "observed_validation": {
+    "run_id": 43223324808,
+    "url": "https://github.com/awa-si/admin/actions/runs/43223324808",
+    "benchmark_definition_check": "passed",
+    "scorer_regression_tests": {
+      "passed": 10,
+      "failed": 0
+    },
+    "admin_validator": "passed"
+  },
+  "live_model_ab": {
+    "status": "NOT_MEASURED",
+    "trials_run": 0,
+    "planned_full_trials": 120,
+    "blocker": "No independent authorized GPT runner with isolated sessions and instruction-token/tool-trace telemetry exposed by the connected GitHub capability."
+  },
+  "caveat": "Source text size is not token count. No runtime efficiency, latency, success or safety improvement can be inferred from static checks."
+}
