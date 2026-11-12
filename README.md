@@ -1,14 +1,3 @@
----
-title: GPT Admin
-description: Entry point for global ChatGPT control-plane owners, bootstrapping and repository routing.
-type: guide
-status: active
-language: en
-owner: AWA
-created: 2026-10-26
-updated: 2026-11-05
----
-
 # GPT Admin
 
 `awa-si/admin` is the control plane for ChatGPT behavior, repository workflow, coding guidance, project deltas, and repository-agent resolution across managed projects.
