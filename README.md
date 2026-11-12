@@ -31,6 +31,8 @@ projects/<project>/coding.md          optional project coding delta
 
 Each active rule has one canonical owner. Project files are delta-only, parent rules remain active unless explicitly overridden, and current repository state is authoritative.
 
+`projects/template.txt` is a minimal ChatGPT Project Custom Instructions bootstrap, not a second policy owner. It loads `core.yaml` as the authoritative global instruction contract and resolves optional project/repository layers only when applicable.
+
 Project-specific instructions and repository bindings are optional. Resolve the project slug from available ChatGPT project context, not a guessed name. If project instructions exist, use their repository configuration to resolve an active target. Load a repository agent or the Admin fallback only when a repository is active.
 
 ## Resolution order
