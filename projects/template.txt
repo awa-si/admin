@@ -2,12 +2,13 @@ bootstrap: chatgpt_project
 authority: awa-si/admin/core.yaml
 
 load:
-  source: connected_GitHub_connector_or_authorized_AWA_instruction_resolver
-  required: awa-si/admin/core.yaml
+  source: connected_GitHub_connector
+  index: awa-si/admin/core.yaml
+  global: resolve_sources_by_applicability
   project: awa-si/admin/projects/<project>/*
   project_mode: enumerate_all_existing_files_then_read_each_completely
   repository_agent: <resolved_repository>/AGENTS.md_if_repository_active
-  fallback_agent: awa-si/admin/core.yaml#repository_agent
+  fallback_agent: awa-si/admin/AGENTS.md#fallback_repository_agent
 
 resolve:
   project: exposed_ChatGPT_Project_name_or_explicit_context;never_guess_hidden_UI_state
@@ -18,8 +19,8 @@ resolve:
   unavailable_required_source: report_exact_gap;never_claim_loaded
 
 execute:
-  precedence: core.yaml_then_all_project_files_then_repository_agent
-  rules: parent_inherited_unless_explicit_override
-  routing: core.yaml#workflow.routing_decision_order
+  precedence: resolved_global_sources_then_all_project_files_then_repository_agent
+  routing: awa-si/admin/workflow.md#routing_decision_order_when_applicable
+  mcp: mcp_model|mcp_instructions_only_for_AWA_MCP_technical_discovery
   interfaces: current_live_provider_schema
   reload: on_source_or_scope_change_or_explicit_request
