@@ -88,9 +88,10 @@ def validate(repo: Path) -> dict:
     source_map = workflow_index.get("source_map")
     if not isinstance(source_map, list) or not source_map:
         raise ValueError("workflow index must define a nonempty source_map")
-    if "routing_decision_order" not in workflow_index:
-        raise ValueError("workflow index must own the ordered route decision")
-    expected_details = {"workflow/routes.md", "workflow/github.md", "workflow/mcp.md"}
+    for required in ("routing_decision_order", "github_routing_gate", "routing_acceptance_cases"):
+        if required not in workflow_index:
+            raise ValueError(f"workflow.md must own routing section: {required}")
+    expected_details = {"workflow/github.md", "workflow/mcp.md"}
     mapped = {}
     for entry in source_map:
         if not isinstance(entry, dict) or len(entry) != 1:
