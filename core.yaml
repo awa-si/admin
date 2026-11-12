@@ -1,27 +1,20 @@
-# Comparison-only, lossless migration candidate; not activated as instructions.
+# Comparison-only snapshot of current canonical sources; not an active instruction owner.
 schema_version: 1
 kind: exhaustive_source_snapshot
 status: comparison_only
 language: en
 repository: awa-si/admin
 scope: global_and_awa_project
-source_count: 8
+source_count: 7
 sources:
   - path: "instructions.txt"
-    git_blob_sha: "fa5029edbaea86df37844dc6fcfb05feb2be5a08"
+    git_blob_sha: "b9be8166ea43a01486039e2705680668651efdb4"
     content: |
       # Global ChatGPT Instructions
       
       scope: global
       level: 0
       mode: normative
-      
-      ## file_metadata
-      - global_contract: awa-si/admin/metadata.md
-      - applies_to: new_or_materially_edited_markdown_md_files_across_managed_repositories
-      - non_markdown_including_source_code: excluded
-      - load_when: creating_or_materially_editing_markdown_md_files|metadata_or_registry_work
-      - repository_specific_override: explicit_only
       
       ## communication
       - lead_with: conclusion|answer|recommended_action
@@ -892,7 +885,7 @@ sources:
       - failed_run_debug: inspect_exact_failing_step_and_traceback_before_code_change
       - volatile_local_artifact_required_for_resume: insufficient_without_durable_preservation
   - path: "research.md"
-    git_blob_sha: "6246ebd733cb7cf854c3f83ac8ac783086d3d46c"
+    git_blob_sha: "4702aec81ffdb5bac5d71a910357fee3b57e6110"
     content: |
       ---
       title: Global Research Manager
@@ -968,7 +961,6 @@ sources:
       - owner_resolution: follow_repository_registry_and_graph_when_defined|do_not_create_parallel_canonical_owner
       - choose: reuse_existing_doc|update_or_extend_canonical_owner|create_new_doc_only_when_gap_justified
       - output: authoritative_sources|discrepancies|affected_references|recommended_document_changes
-      - markdown_metadata_owner: awa-si/admin/metadata.md
       - do_not_duplicate_canonical_content: true
       
       legal_research:
@@ -1015,8 +1007,8 @@ sources:
       - quality_gate: law_and_facts_separated|sources_identified|uncertainty_and_counterarguments_stated
       
   - path: "coding.md"
-    git_blob_sha: "e75cd25a3ac71dc4eda5b82a92d21ed94c5d0a0f"
-    content: |-
+    git_blob_sha: "c046e349a0aa9b114a2712860ea320d76539055f"
+    content: |
       ---
       title: Global Coding Standard
       description: Reusable development, dependency, testing and performance rules.
@@ -1615,13 +1607,6 @@ sources:
       - refactor_when_needed_for: correctness|testability|material_complexity_reduction|measured_performance|clearer_ownership
       - speculative_refactor_without_material_value: avoid
       
-      file_metadata:
-      - canonical_contract: awa-si/admin/metadata.md
-      - apply_when: creating_new_markdown_md_file|materially_editing_existing_markdown_md_file
-      - source_code_and_other_non_markdown_files: excluded
-      - inherit_repository_specific_metadata_overrides_only_when_explicit: true
-      - preserve_format_and_parser_compatibility: required
-      
       documentation:
       - audience: developers_and_maintainers
       - language: concise_precise_technical_developer_language
@@ -1689,52 +1674,8 @@ sources:
       
       completion:
       - requires: reuse_options_considered|dependency_choice_justified_when_material|algorithmic_complexity_reviewed|hot_path_allocations_reviewed|IO_round_trips_reviewed|bounded_concurrency_considered|async_lifecycle_and_cancellation_considered_when_material|native_or_vectorized_options_considered_when_material|performance_budget_or_measurement_considered_when_material|custom_code_only_when_needed|code_quality_gate_passed|repo_specific_contracts_preserved|relevant_logging_observability_documentation_synced|relevant_verification_observed
-  - path: "metadata.md"
-    git_blob_sha: "080e67c06b64752f74b47abf17ebcb7132b04d55"
-    content: |-
-      ---
-      title: Metadaten- und Registervertrag
-      description: Globaler Dateimetadatenvertrag mit repositoryspezifischer Registerpflege.
-      type: standard
-      status: active
-      language: de
-      owner: AWA
-      created: 2026-09-26
-      updated: 2026-10-25
-      ---
-      
-      scope: global_file_metadata_contract
-      repository: awa-si/admin
-      mode: normative_machine_directives
-      
-      metadata:
-      - applies_to: every_new_or_materially_edited_markdown_md_file
-      - format: YAML_frontmatter
-      - required_fields: title|description|type|status|language|owner|created|updated
-      - allowed_status: draft|active|review|archived
-      - created: immutable
-      - updated: refresh_on_material_change
-      - non_markdown_including_code_and_configuration: excluded
-      - existing_markdown_without_metadata: add_on_next_material_edit
-      - metadata_must_not_duplicate_domain_content: true
-      
-      registry:
-      - path: repository_defined_index_or_registry_if_present
-      - role: repository_specific_map_and_file_registry_not_a_global_mandate
-      - update_same_operation_when: relevant_file_create|move|rename|archive|delete|material_registry_relevant_change
-      - entry_fields: path|type|status|purpose|updated_date
-      - domain_detail: keep_in_owned_file
-      - agent_description: AI_operating_rules_only
-      
-      consistency:
-      - metadata_and_registry_must_match_current_file_state: true
-      - do_not_create_parallel_registry: true
-      - global_metadata_applies_independently_of_registry_presence: true
-      - repository_specific_metadata_schema: explicit_local_override_only
-      - generated_or_machine_managed_files: preserve_parser_and_tool_compatibility
-      - repository_specific_fact_or_case_detail: keep_in_owned_file_not_metadata_or_agent
   - path: "AGENTS.md"
-    git_blob_sha: "1a046a3139b4780e99b83eddba3775f9353e8107"
+    git_blob_sha: "0a5e554ee1a407b0f274cd733184825046cadc56"
     content: |
       ---
       title: Admin repository agent
@@ -1785,7 +1726,6 @@ sources:
       - global_execution_workflow: workflow.md
       - global_coding: coding.md
       - global_research: research.md
-      - global_file_metadata: metadata.md
       - human_orientation: README.md
       - project_behavior_delta: projects/<project>/instructions.txt
       - project_workflow_delta: projects/<project>/workflow.md
