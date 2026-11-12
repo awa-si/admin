@@ -83,6 +83,49 @@ def validate(repo: Path) -> dict:
     if template.get("load", {}).get("project_mode") != sources["project"]["read"]:
         raise ValueError("project loading mode differs between bootstrap and core")
 
+    # The short workflow file is a routing index; every detail has one owner.
+    workflow_index = _read(repo / "workflow.md")
+    source_map = workflow_index.get("source_map")
+    if not isinstance(source_map, list) or not source_map:
+        raise ValueError("workflow index must define a nonempty source_map")
+    if "routing_decision_order" not in workflow_index:
+        raise ValueError("workflow index must own the ordered route decision")
+    expected_details = {
+        "workflow/repository.md", "workflow/routes.md",
+        "workflow/execution.md", "workflow/preflight.md",
+        "workflow/verification.md", "behavior.yaml",
+    }
+    mapped = {}
+    for entry in source_map:
+        if not isinstance(entry, dict) or len(entry) != 1:
+            raise ValueError("invalid workflow source_map entry")
+        path, listed = next(iter(entry.items()))
+        if path not in expected_details or not isinstance(listed, str):
+            raise ValueError(f"invalid workflow source_map target: {path}")
+        if path in mapped:
+            raise ValueError(f"duplicate workflow source_map path: {path}")
+        mapped[path] = listed.split("|")
+    if set(mapped) != expected_details:
+        raise ValueError("workflow source_map does not cover all owner modules")
+    defined = {"scope", "mode", "resolution", "decision_bootstrap",
+               "routing_decision_order", "source_map", "loading"}
+    for path, section_names in mapped.items():
+        detail = _read(repo / path)
+        for name in section_names:
+            if name in defined:
+                raise ValueError(f"duplicate workflow owner section: {name}")
+            if name not in detail:
+                raise ValueError(f"workflow section missing in {path}: {name}")
+            defined.add(name)
+    for path in expected_details - {"behavior.yaml"}:
+        detail = _read(repo / path)
+        if set(detail) != set(mapped[path]):
+            raise ValueError(f"unmapped or duplicated section in {path}")
+    if workflow_index.get("loading", {}).get("entrypoint") != "workflow.md#routing_decision_order":
+        raise ValueError("workflow entrypoint must remain the canonical router")
+    if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "routes.md").read_text(encoding="utf-8"):
+        raise ValueError("MCP technical source must not be a global instruction resolver")
+
     # Behavior is the only universal policy owner; the core index has none.
     behavior = _read(repo / "behavior.yaml")
     if behavior.get("mode") != "normative" or "communication" not in behavior:
