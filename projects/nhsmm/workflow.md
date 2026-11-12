@@ -1,14 +1,3 @@
----
-title: NHSMM Project Workflow
-description: Machine-readable NHSMM testing and performance workflow.
-type: standard
-status: active
-language: en
-owner: AWA
-created: 2026-10-31
-updated: 2026-10-31
----
-
 scope: project_workflow_delta
 project: nhsmm
 mode: normative_machine_directives
