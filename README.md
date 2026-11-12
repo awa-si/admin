@@ -4,7 +4,7 @@
 
 ## Registry and ownership
 
-The `core.yaml#registry` is an **ordered parent/child source graph**. Its order guides source evaluation; it does **not** supersede ChatGPT's instruction hierarchy. A child is considered independently when its load condition matches: nesting under `workflow` does **not** automatically load `workflow.md`.
+The `core.yaml#registry` is an **ordered parent/case source graph**. Its order guides source evaluation; it does **not** supersede ChatGPT's instruction hierarchy. Each case is evaluated independently when its load condition matches: nesting under `workflow` does **not** automatically load `workflow.md`. The `unknown` case reuses `workflow.md` for an uncovered execution requirement; it does not introduce another tool provider.
 
 ```text
 core.yaml  (registry / resolver)
@@ -13,7 +13,8 @@ core.yaml  (registry / resolver)
 │   ├── workflow/coding.md         coding or implementation
 │   ├── workflow/research.md       research or fact verification
 │   ├── workflow/github.md         selected GitHub route
-│   └── workflow/mcp.md            selected AWA MCP route
+│   ├── workflow/mcp.md            selected AWA MCP route
+│   └── unknown → workflow.md      unmatched execution case
 ├── projects/<project>/*           verified ChatGPT project
 └── <repository>/AGENTS.md         active repository context
     └── fallback: admin/AGENTS.md  if target agent is absent
@@ -35,7 +36,7 @@ core.yaml  (registry / resolver)
 ## Source resolution
 
 1. Load `core.yaml` from the connected GitHub repository, then load `behavior.yaml` **always**.
-2. Evaluate relevant registry entries by task intent, scope and current product context. Load only matching files. Combine overlapping use cases without redundant reads.
+2. Evaluate relevant registry entries by task intent, scope and current product context. Load only matching files. For mixed requests, combine matching cases using `workflow.md#mixed_case_handling`, without redundant reads. For unmatched execution needs, use `workflow.md#unknown_case_handling` while retaining authorization and verification gates.
 3. Use `workflow.md#routing_decision_order` as the **sole normative execution-route precedence** when routing is material. The known cases in `workflow.md` aid classification but never grant permissions.
 4. Load `workflow/github.md` or `workflow/mcp.md` only for an applicable, permitted provider route. The registry declares that these routes require workflow routing. Coding and research modules can be loaded directly when their cases match.
 5. When a ChatGPT Project is explicitly identified or exposed, verify its slug and read **all** existing files under `projects/<project>/*`. Never infer hidden UI project state. For an active target repository, read its `AGENTS.md` if present, otherwise use the Admin fallback.
@@ -58,6 +59,12 @@ Admin does not maintain a second inventory of client, MCP, or plugin tool schema
 Evaluate a currently available native sandbox (including Code Interpreter) before provisioning an external workspace for isolated calculations, analysis, temporary Python processing or artifact creation. A sandbox does **not** imply repository access, persistent host state, or deployment rights. Repository mutations continue through an authorized repository route. Tool discovery alone never grants permission or proves execution.
 
 OpenAI's [Tool Search](https://developers.openai.com/api/docs/guides/tools-tool-search) and [Code Interpreter](https://developers.openai.com/api/docs/guides/tools-code-interpreter) guides document **API capabilities**; they do not establish that every documented option is exposed by the current ChatGPT client. Always use the actual available tool surface.
+
+## Mixed and unknown cases
+
+`workflow.md#mixed_case_handling` composes multiple applicable cases into a dependency-aware plan. Research/coding cases and GitHub/MCP execution routes are distinct dimensions; the presence of one does not grant permission to use another. Apply every material case's source and verification contract without duplicated reads.
+
+`workflow.md#unknown_case_handling` covers only work not adequately described by a registered case. It may use current client tool discovery and select a suitable authorized route, but never guesses tools, skips provider admission, or interprets a discovered capability as permission.
 
 ## Execution and verification
 
