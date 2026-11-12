@@ -197,9 +197,10 @@ def validate(repo: Path) -> dict:
     if "Native_Sandbox" not in str(gate.get("candidate_routes_after_routing_decision_order_gates", "")):
         raise ValueError("native sandbox route missing")
     mcp_detail = directive_map(_read(repo / "workflow/mcp.md")["awa_mcp"], "awa_mcp")
-    discovery = mcp_detail.get("discovery_boundary")
-    if not isinstance(discovery, dict):
+    discovery_entries = mcp_detail.get("discovery_boundary")
+    if not isinstance(discovery_entries, list):
         raise ValueError("AWA MCP route must declare the provider-discovery boundary")
+    discovery = directive_map(discovery_entries, "awa_mcp.discovery_boundary")
     if "global_tool_search" not in str(discovery.get("client_owner", "")):
         raise ValueError("global tool search must remain client-owned")
     if directive_map(workflow_index["loading"], "loading").get("entrypoint") != "workflow.md#routing_decision_order":
