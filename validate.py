@@ -51,16 +51,16 @@ def validate(repo: Path) -> dict:
     top_ids = tuple(entry.get("id") for entry in registry)
     if top_ids != ("behavior", "workflow", "project", "repository_agent"):
         raise ValueError("core top-level registry order is invalid")
-    workflow_children = registry[1].get("children")
-    if not isinstance(workflow_children, list) or len(workflow_children) != 4:
-        raise ValueError("workflow registry must contain four child use cases")
-    if any(not isinstance(child, dict) for child in workflow_children):
-        raise ValueError("workflow registry children must be mappings")
-    child_ids = tuple(child.get("id") for child in workflow_children)
-    if child_ids != ("coding", "research", "github", "mcp"):
-        raise ValueError("workflow child order is invalid")
-    sources = {entry["id"]: entry for entry in registry + workflow_children}
-    if len(sources) != 8:
+    workflow_cases = registry[1].get("cases")
+    if not isinstance(workflow_cases, list) or len(workflow_cases) != 5:
+        raise ValueError("workflow registry must contain five cases")
+    if any(not isinstance(case, dict) for case in workflow_cases):
+        raise ValueError("workflow registry cases must be mappings")
+    case_ids = tuple(case.get("id") for case in workflow_cases)
+    if case_ids != ("coding", "research", "github", "mcp", "unknown"):
+        raise ValueError("workflow cases order is invalid")
+    sources = {entry["id"]: entry for entry in registry + workflow_cases}
+    if len(sources) != 9:
         raise ValueError("duplicate use-case identifier in registry")
     expected_paths = {
         "behavior": "behavior.yaml",
@@ -69,6 +69,7 @@ def validate(repo: Path) -> dict:
         "research": "workflow/research.md",
         "github": "workflow/github.md",
         "mcp": "workflow/mcp.md",
+        "unknown": "workflow.md",
     }
     for name, relative in expected_paths.items():
         if sources[name].get("path") != f"awa-si/admin/{relative}":
@@ -77,16 +78,20 @@ def validate(repo: Path) -> dict:
             raise ValueError(f"missing canonical source file: {relative}")
     if sources["behavior"].get("load") != "always":
         raise ValueError("behavior must always load")
-    for name in ("workflow", "coding", "research", "github", "mcp"):
+    for name in ("workflow", "coding", "research", "github", "mcp", "unknown"):
         if not str(sources[name].get("load", "")).startswith("on_"):
             raise ValueError(f"{name} must load on demand")
     for name in ("github", "mcp"):
         if sources[name].get("requires") != "workflow":
             raise ValueError(f"{name} must depend on workflow routing")
-    if core["resolution"].get("registry_semantics") != "ordered_parent_child_source_graph_not_instruction_priority":
+    if core["resolution"].get("registry_semantics") != "ordered_parent_case_source_graph_not_instruction_priority":
         raise ValueError("registry must not override instruction precedence")
-    if core["resolution"].get("child_loading") != "evaluate_each_child_condition_independently;parent_not_implicitly_loaded":
-        raise ValueError("child use cases must retain independent loading")
+    if core["resolution"].get("case_loading") != "evaluate_each_case_condition_independently;parent_not_implicitly_loaded":
+        raise ValueError("registry cases must retain independent loading")
+    if sources["unknown"].get("section") != "unknown_case_handling" or sources["unknown"].get("reuse_loaded_source") is not True:
+        raise ValueError("unknown case must reuse the canonical workflow fallback")
+    if core["resolution"].get("unknown_case") != "workflow.md#unknown_case_handling;never_bypass_authorization_or_live_provider_admission":
+        raise ValueError("unknown case cannot bypass authorization or admission")
     if sources["mcp"].get("discovery") != "mcp_model":
         raise ValueError("MCP capability discovery must use mcp_model")
     if sources["mcp"].get("technical_sources") != "mcp_instructions":
@@ -155,7 +160,7 @@ def validate(repo: Path) -> dict:
         "chatgpt_work_mode", "deployment_cadence", "change_set_lifecycle",
         "edit_and_writeback", "dependency_preflight", "rights_preflight",
         "environment_preflight", "long_running_execution", "mcp_versioning",
-        "tool_discovery_boundary",
+        "tool_discovery_boundary", "mixed_case_handling", "unknown_case_handling",
         "verification", "failure_and_recovery",
     }
     if not required_common.issubset(defined):
@@ -173,6 +178,14 @@ def validate(repo: Path) -> dict:
         if set(detail) != set(mapped[path]):
             raise ValueError(f"unmapped or duplicated section in {path}")
 
+    mixed = directive_map(workflow_index["mixed_case_handling"], "mixed_case_handling")
+    unknown = directive_map(workflow_index["unknown_case_handling"], "unknown_case_handling")
+    if "all_applicable" not in str(mixed.get("case_detection", "")):
+        raise ValueError("mixed-case routing must preserve all applicable cases")
+    if "routing_decision_order" not in str(mixed.get("authority", "")):
+        raise ValueError("mixed cases must preserve route authority")
+    if "authorization" not in str(unknown.get("preserve", "")):
+        raise ValueError("unknown cases must preserve authorization gates")
     boundary = directive_map(workflow_index["tool_discovery_boundary"], "tool_discovery_boundary")
     if boundary.get("owner") != "awa-si/admin/workflow.md":
         raise ValueError("workflow must own general tool-discovery boundary")
