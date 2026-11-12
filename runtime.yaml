@@ -135,6 +135,86 @@ domains:
       - apply_project_delta_only
       - verify_loaded_python_code_after_service_restart
       - distinguish_mcp_env_reload_from_code_restart
+policy_projection:
+  # Compressed decision invariants, not an independent replacement for owners.
+  precedence:
+    order: system_and_provider > global > explicit_project_delta > repository_agent > material_owner > task
+    project_inheritance: parent_rules_remain_active_unless_explicitly_overridden
+    material_truth: current_repository_and_live_provider
+    repository_agent: repository_behavior_only_not_domain_or_api_specification
+  user_intent_and_scope:
+    preserve_existing_decisions: true
+    question_when: material_ambiguity_blocks_safe_progress
+    stop_when: coherent_requested_outcome_verified_or_actual_blocker
+    bundled_directory_scope: inventory_entire_named_subtree_and_complete_related_work
+    default: one_coherent_change_set_including_validation_and_delivery
+    prioritize: [security_and_correctness, requested_behavior, reliability, cleanup]
+    progress: short_material_updates_not_verbose_tool_narration
+  repository_and_workspace:
+    connected_github_required_for_github_operations: true
+    branch: explicit_user_branch_then_verified_active_branch_then_project_default
+    stale_write: reconcile_base_before_mutation
+    existing_workspace: only_verified_healthy_matching_owned_and_authorized
+    workspace_creation: only_when_local_execution_or_runtime_need_justifies_it
+    github_only_change: prefer_connected_github_connector
+    external_operations: require_live_schema_and_actual_permission_not_discovery_alone
+    repository_runtime_writes: prohibited_except_authorized_source_changes
+    caches_builds_logs_and_temp: outside_repository_worktree
+    deploy: explicit_request_or_preapproved_workflow_only
+    bundle: inspect_then_edit_related_files_then_validate_once_then_commit_then_authorized_deploy
+    live_code_change: verify_process_restart_or_redeploy_not_config_reload
+  safety_and_integrity:
+    public_admin: prevent_secrets_credentials_private_data_and_secret_bearing_urls
+    provider_block: report_error_and_unknown_execution_status_immediately
+    unsupported_capability: report_actual_blocker_never_invent_interface_or_fallback
+    source_empty_extract: inspect_metadata_then_raw_with_same_identifier_ocr_last
+    remote_result: verify_actual_revision_and_minimal_sufficient_evidence
+    uncertainty: distinguish_verified_estimated_inferred_and_missing
+    irreversible_change: require_appropriate_authorization
+  research_and_implementation:
+    research_source: research.md
+    coding_source: coding.md
+    metadata_source: metadata.md_for_material_markdown_changes
+    prefer_primary_current_sources: true
+    reuse_existing_components_and_libraries_before_new_implementation: true
+    preserve_contracts_and_semantics_on_refactor: true
+    dependency_toolchain_and_versions: validate_before_change_when_material
+    performance: evidence_based_with_representative_measures
+    async_concurrency: bounded_and_failure_safe
+    testing: focused_first_expand_for_material_regression_risk
+    code_quality: readable_small_cohesive_changes_without_unnecessary_abstraction
+    docs_and_register: update_when_required_by_material_contract_change
+  connected_services:
+    apple: read_live_apple_workflow_for_each_new_apple_task
+    sharepoint: use_current_sharepoint_origin_workflow_and_connector
+    plugins: current_plugin_skill_workflow_owns_domain_sequence
+    mcp: consult_current_AWA_instruction_and_tool_schema_before_material_action
+    mcp_reload: separate_explicit_runtime_action_not_admin_instruction_reload
+    credentials: remain_inside_connector_or_secret_boundary
+  legal_and_disputes:
+    preserve_valid_claims_defenses_deadlines_evidence_and_review_paths: true
+    consider_civil_administrative_supervisory_and_judicial_routes_when_material: true
+    escalation: jurisdiction_and_proportionality_gated_never_bluff
+    prefer_traceable_written_evidence: true
+coverage_audit:
+  source_snapshot: core.yaml
+  source_shas: verified_against_connected_github
+  classification:
+    structural_inventory: source_coverage
+    execution_summary: decision_and_policy_projection
+    verbatim_semantics: canonical_source_files_only
+  checks_required_before_activation:
+    - explicit_semantic_rule_mapping_for_every_source_directive
+    - negative_and_positive_route_acceptance_cases
+    - privilege_and_authorization_boundary_tests
+    - source_precedence_and_override_conflict_tests
+    - verification_of_no_rule_loss_and_no_duplicate_owner
+    - current_provider_and_project_compatibility
+  known_non_equivalence:
+    - detailed_coding_heuristics_and_language_specific_gates
+    - full_research_topic_assurance_and_legal_procedures
+    - workflow_edge_cases_and_hosted_execution_preflights
+    - source_specific_operational_exceptions
 source_coverage:
   - path: instructions.txt
     sections:
@@ -162,41 +242,129 @@ source_coverage:
       - openai_safety_blocks
   - path: workflow.md
     sections:
+      - resolution
       - decision_bootstrap
-      - routing_decision_order
       - branch_resolution
       - task_scope_resolution
       - repository_state_resolution
       - repository_discovery
       - operation_classification
+      - cross_repository_execution
       - chatgpt_work_mode
+      - github_capability_detection
+      - routing_decision_order
       - github_routing_gate
+      - routing_acceptance_cases
       - github_patch
-      - github_workspace
       - awa_mcp
+      - repository_tool_routing
+      - github_workspace
       - github_actions
+      - bundled_execution
       - deployment_cadence
       - change_set_lifecycle
+      - edit_and_writeback
       - dependency_preflight
       - rights_preflight
       - environment_preflight
+      - long_running_execution
+      - mcp_versioning
       - verification
+      - performance_evidence
       - failure_and_recovery
+      - artifacts_and_logs
   - path: research.md
-    sections: [base, topic_routing, knowledge_research, code_research, docs_research, legal_research]
+    sections:
+      - resolution
+      - base
+      - topic_routing
+      - knowledge_research
+      - code_research
+      - docs_research
+      - legal_research
+      - topic_knowledge_assurance
+      - topic_code_assurance
+      - topic_docs_assurance
+      - topic_legal_assurance
   - path: coding.md
-    sections: [chatgpt_coding_execution, reuse_before_build, implementation_strategy, change_validation_scope, performance, security, verification, completion]
+    sections:
+      - resolution
+      - chatgpt_coding_execution
+      - language_and_toolchain_versions
+      - package_manager_provisioning
+      - priorities
+      - research_dependency
+      - reuse_before_build
+      - library_selection_gate
+      - development_staging
+      - implementation_strategy
+      - async_io
+      - async_and_concurrency
+      - parallelism
+      - async_contracts
+      - change_validation_scope
+      - module_bundle_testing
+      - test_writing_conventions
+      - test_performance_metrics
+      - async_testing
+      - performance
+      - native_and_compiled_implementations
+      - algorithm_and_data_layout
+      - memory_and_allocations
+      - io_network_and_storage
+      - database_and_query_performance
+      - caching_and_precomputation
+      - runtime_and_language_choice
+      - libraries_and_dependencies
+      - code_quality
+      - structure_and_modularity
+      - control_flow_and_readability
+      - coupling_and_duplication
+      - boundaries_and_contracts
+      - failure_and_resources
+      - security
+      - logging_and_observability
+      - refactoring
+      - file_metadata
+      - documentation
+      - verification
+      - quality_review_gate
+      - completion
   - path: metadata.md
-    sections: [metadata, registry, consistency]
+    sections:
+      - metadata
+      - registry
+      - consistency
   - path: AGENTS.md
-    sections: [fallback_repository_agent, managed_scope, owner_map, startup, reasoning, public_safety, verification]
+    sections:
+      - fallback_repository_agent
+      - role
+      - managed_scope
+      - owner_map
+      - agent_content_policy
+      - startup
+      - reasoning
+      - layering
+      - public_safety
+      - edit_behavior
+      - verification
+      - completion
   - path: projects/awa/instructions.txt
-    sections: [scope, inheritance, repository, project_delta]
+    sections:
+      - inheritance
+      - project_delta
   - path: projects/awa/workflow.md
-    sections: [resolution, canonical_owners, routing, workspace, delivery]
+    sections:
+      - resolution
+      - canonical_owners
+      - routing
+      - workspace
+      - delivery
 limitations:
   normative_equivalence_verified: false
   semantic_deduplication_review_required: true
+  source_inventory_complete: true
+  semantic_projection_is_not_a_lossless_transformation: true
   all_source_sections_embedded: false
   replaces_canonical_sources: false
   safe_for_automatic_bootstrap: false
