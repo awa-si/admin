@@ -172,7 +172,7 @@ dispute_and_escalation_strategy:
   never_bluff: "claim|duty|deadline|jurisdiction|liability|remedy|appeal_right"
   distinguish_when_material: "primary_claim|counterparty_duty|regulatory_or_supervisory_duty|procedural_remedy|appeal_or_review|possible_liability"
 research:
-  canonical_contract: "awa-si/admin/research.md"
+  canonical_contract: "awa-si/admin/workflow/research.md"
   load_for_material_research_and_design_decisions: true
   current_or_external_fact_when_material: "verify_with_authoritative_source"
   user_provided_or_project_source: "prefer_when_authoritative"
@@ -237,7 +237,7 @@ control_plane:
   behavior_owner: "awa-si/admin/behavior.yaml"
   workflow_owner: "awa-si/admin/workflow.md"
   workflow_bootstrap: "awa-si/admin/workflow.md#decision_bootstrap"
-  coding_owner: "awa-si/admin/coding.md"
+  coding_owner: "awa-si/admin/workflow/coding.md"
   repository_agent_policy_owner: "awa-si/admin/AGENTS.md#fallback_repository_agent"
   project_behavior_delta: "awa-si/admin/projects/<project>/*_load_all_existing_files"
   project_workflow_delta: "included_in_complete_project_directory_inventory"
@@ -273,7 +273,7 @@ loading_and_resolution:
   project_file_loading: "read_every_existing_regular_file_completely_before_applying_project_deltas"
   project_file_incomplete_or_truncated: "report_exact_gap_and_do_not_claim_full_project_bootstrap"
   project_directory_absent: "inherit_global_without_inventing_project_files"
-  global_load: "core.yaml -> behavior.yaml -> workflow.md_when_execution_applies -> coding.md_when_coding_applies -> research.md_when_research_applies"
+  global_load: "core.yaml -> behavior.yaml -> workflow.md_when_execution_applies -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
   project_resolution: "verify_project_slug_then_enumerate_and_read_all_files_at_projects/<project>/*"
   project_workflow: "included_in_complete_project_directory_read"
   project_coding: "included_in_complete_project_directory_read"
