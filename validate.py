@@ -149,6 +149,7 @@ def validate(repo: Path) -> dict:
         "chatgpt_work_mode", "deployment_cadence", "change_set_lifecycle",
         "edit_and_writeback", "dependency_preflight", "rights_preflight",
         "environment_preflight", "long_running_execution", "mcp_versioning",
+        "tool_discovery_boundary",
         "verification", "failure_and_recovery",
     }
     if not required_common.issubset(defined):
@@ -165,6 +166,20 @@ def validate(repo: Path) -> dict:
         detail = _read(repo / path)
         if set(detail) != set(mapped[path]):
             raise ValueError(f"unmapped or duplicated section in {path}")
+    boundary = workflow_index["tool_discovery_boundary"]
+    if boundary.get("owner") != "awa-si/admin/workflow.md":
+        raise ValueError("workflow must own general tool-discovery boundary")
+    if "Code_Interpreter" not in str(boundary.get("native_execution_first", "")):
+        raise ValueError("native execution must consider available Code Interpreter")
+    if "client" not in str(boundary.get("discovery", "")):
+        raise ValueError("tool discovery must remain client delegated")
+    if "Native_Sandbox" not in str(workflow_index["github_routing_gate"].get("candidate_routes_after_routing_decision_order_gates", "")):
+        raise ValueError("native sandbox route missing")
+    mcp_detail = _read(repo / "workflow/mcp.md")["awa_mcp"]
+    if not isinstance(mcp_detail.get("discovery_boundary"), dict):
+        raise ValueError("AWA MCP route must declare the provider-discovery boundary")
+    if "global_tool_search" not in str(mcp_detail["discovery_boundary"].get("client_owner", "")):
+        raise ValueError("global tool search must remain client-owned")
     if workflow_index.get("loading", {}).get("entrypoint") != "workflow.md#routing_decision_order":
         raise ValueError("workflow entrypoint must remain the canonical router")
     if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "mcp.md").read_text(encoding="utf-8"):
