@@ -1,14 +1,3 @@
----
-title: Odoo Project Workflow
-description: Machine-readable Odoo addon development, activation, testing and release gates.
-type: standard
-status: active
-language: en
-owner: AWA
-created: 2026-10-31
-updated: 2026-11-04
----
-
 scope: project_workflow_delta
 project: odoo
 mode: normative_machine_directives
