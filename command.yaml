@@ -33,7 +33,7 @@ mcp_auto_update:
   aliases: "update mcp|auto update"
   read_when: explicit_mcp_auto_update_command
   target: "awa-si/awa@main"
-  scope: "host_checkout_/opt/awa|supervisor_service_awa:mcp"
+  scope: "host_checkout_/opt/awa|session_checkpoint_before_restart|supervisor_service_awa:mcp"
   canonical_owner: "awa-si/awa@main:mcp/host/README.md#gpt-operated-awa-self-update-sequence"
   implementation: "awa-si/awa@main:mcp/host/self_update.py"
   operator_approval:
@@ -46,7 +46,7 @@ mcp_auto_update:
     presentation: "render_native_chat_confirmation_button_when_supported"
     title: "AWA Auto Update"
     action_label: "Confirm & Execute"
-    summary: "git.pull_awa-si/awa@main|restart_awa:mcp_if_stale|wait_5_seconds_then_mcp_version_check"
+    summary: "git.pull_awa-si/awa@main|make_bounded_session_checkpoint_before_restart_if_stale|restart_awa:mcp_if_stale|wait_5_seconds_then_mcp_version_check"
     confirmation_text: "I explicitly authorize both the host Git pull for awa-si/awa@main and the awa:mcp service restart if required."
     interaction: "button_submits_confirmation_as_new_user_turn|never_directly_invokes_host_tools"
     state: "disabled_until_user_explicitly_selects_both_effects"
@@ -67,19 +67,23 @@ mcp_auto_update:
     - "read_mcp_version_before_mutation_and_record_process_identity_and_loaded_commit"
     - "use_live_read_only_host_exec_git.inspect_awa_to_verify_clean_trusted_/opt/awa_main_origin/main_checkout"
     - "obtain_explicit_current_UI_or_text_confirmation_covering_both_effects"
+    - "confirm_openai/session_correlation_available_for_checkpoint_before_mutation"
     - "recheck_live_provider_admission_before_invoking_primary_executor"
   execution:
     - "invoke_primary_mcp_diagnostic_update_once_only"
-    - "inspect_returned_host_commit|host_updated|loaded_process_commit|status|restart_requested|activation_pending"
+    - "inspect_returned_host_commit|host_updated|loaded_process_commit|session_checkpoint|status|restart_requested|activation_pending"
+    - "when_restart_needed_require_saved_session_checkpoint_and_preserve_its_handoff_token_as_private_bearer_credential"
+    - "checkpoint_failure_after_pull_blocks_restart_and_requires_host_state_reconciliation"
     - "require_update_receipt_consistent_with_live_verified_remote_revision"
     - "do_not_treat_restart_queued|restart_already_pending|restart_inflight_as_runtime_verified"
   internal_sequence_reference:
     owner: "awa-si/awa@main:mcp/host/self_update.py"
-    sequence: "host_exec_git.inspect_awa -> host_exec_git.pull_awa -> host_exec_git.inspect_awa -> host_exec_supervisor.control_awa:mcp_restart_if_stale"
+    sequence: "host_exec_git.inspect_awa -> host_exec_git.pull_awa -> host_exec_git.inspect_awa -> session.checkpoint_if_stale -> host_exec_supervisor.control_awa:mcp_restart_if_stale"
     semantics: "implementation_only;never_repeat_individual_mutations_after_primary_executor"
   activation:
     restart_decision: "owned_by_primary_executor_based_on_loaded_commit_vs_verified_host_commit"
     handoff: "worker_owned_asynchronous_MCP_restart"
+    session_checkpoint: "bounded_v2_state_plus_opt_in_gateway_trace;token_private;no_automatic_chat_transcript_or_job_replay"
     queued_or_inflight: "not_proof_of_completed_restart"
     uncertain_or_failed: "fail_closed_and_reconcile_independent_status_before_retry"
   verification:
