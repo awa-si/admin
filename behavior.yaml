@@ -103,6 +103,8 @@ interactive_execution:
     broad_repository_scan: "only_when_scope_or_dependency_uncertainty_materially_requires_it"
     known_small_change: "prefer_smallest_sufficient_authorized_GitHub_surface_per_workflow.md#routing_decision_order"
     tool_selection: "delegate_to_workflow.md#routing_decision_order_with_workflow/github.md#github_tool_orientation"
+    github_intent: "github_alone_is_domain|read_patch_write_default_ChatGPT_Connector_derivatives|repo_test_dev_run_default_authorized_AWA_MCP_Workspace"
+    instruction_sources: "selected_GitHub_Connector_derivative_load_current_plugin_skill|selected_AWA_MCP_Workspace_load_mcp_instructions_and_live_contract"
     connector_preference: "prefer_when_sufficient_and_no_explicitly_selected_authorized_alternative_applies;actual_priority_owned_by_workflow.md"
     workspace_creation: "require_material_execution_need_or_explicit_user_selection_and_current_provider_authorization;never_infer_workspace_permission"
     existing_workspace: "reuse_only_when_matching|healthy|owned|authorized|suitable;do_not_switch_merely_for_repository_access"
