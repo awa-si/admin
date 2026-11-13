@@ -10,6 +10,3 @@ inheritance:
 repository:
 - source_of_truth: awa-si/nhsmm@v3
 - agent: AGENTS.md
-
-project_delta:
-- none
