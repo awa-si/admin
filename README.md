@@ -88,13 +88,9 @@ Differentiate an observed GitHub write, a successful test, a deployed revision a
 
 Use [`projects/template.txt`](projects/template.txt) as the starting point for ChatGPT Project instructions. It resolves the same `core.yaml#registry` and project/repository boundaries. Avoid duplicating the global policies in project files.
 
-## Benchmarks
-
-The [AWA Admin benchmark](benchmarks/README.md) retains its 20-case fixture specification, version-pinned source baselines, and [historical static results](benchmarks/results/static-2026-11-12.json). Python-based scoring and regression utilities have been removed from this instruction-only repository. A separate, authorized evaluation runner is required to validate future traces or produce measurements. Existing static reports remain historical evidence, not executable checks or proof of live GPT performance.
-
 ## Validation boundary
 
-This repository contains declarative instructions and data, with **no tracked Python scripts or local execution harness**. The former `validate.py`, cross-repository checker and benchmark scorer/tests are removed. Validate source references, registry changes and command gates with a separately maintained approved validator or reviewed inspection; no current in-repository CLI validation command is available. A GitHub commit or structural review does not establish runtime compliance.
+This repository contains declarative instructions and reference data, with **no tracked Python scripts, benchmark suite or local execution harness**. Validate source references, registry changes and command gates with a separately maintained approved checker or focused reviewed inspection; no current in-repository CLI validator exists. A GitHub commit or structural review does not establish runtime compliance.
 
 This repository is public. Never commit secrets, credentials, tokens, private keys, session material or confidential data.
 
