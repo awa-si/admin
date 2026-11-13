@@ -8,7 +8,7 @@ mode: normative_machine_directives
 fallback_repository_agent:
 - activate_when: target_repository_context_exists_and_target_repository/AGENTS.md_is_missing
 - scope: repository_specific_AI_fallback_only
-- inherit: awa-si/admin/core.yaml_use_case_resolver|awa-si/admin/behavior.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable|applicable_project_delta
+- inherit: awa-si/admin/core.yaml_use_case_resolver|awa-si/admin/behavior.yaml|awa-si/admin/command.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable|applicable_project_delta
 - target_repository_current_state: authoritative
 - target_repository_branch: use_resolved_current_branch
 - target_repository_visibility: do_not_assume_public_or_private
@@ -34,6 +34,7 @@ managed_scope:
 owner_map:
 - source_router_and_use_case_registry: core.yaml
 - global_behavior: behavior.yaml
+- global_commands: command.yaml
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
 - conditional_coding_detail: workflow/coding/*.md_selected_by_core.yaml
@@ -62,7 +63,7 @@ startup:
 reasoning:
 - preserve_single_owner_per_rule: required
 - identify_before_edit: owner|consumers|precedence|inheritance|public_safety_impact
-- distinguish: global_behavior|global_workflow|global_coding|project_delta|repo_agent_policy|human_documentation
+- distinguish: global_behavior|global_commands|global_workflow|global_coding|project_delta|repo_agent_policy|human_documentation
 - move_rule_to_narrowest_correct_owner_when_misplaced: true
 - do_not_preserve_duplication_for_compatibility: true
 - preserve_information_when_moving_or_consolidating_rules: required

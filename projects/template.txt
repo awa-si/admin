@@ -10,7 +10,7 @@ load:
   source: connected_GitHub_connector
   index: awa-si/admin/core.yaml
   resolution: core.yaml#registry_parent_case_source_graph_not_instruction_precedence
-  global: load_behavior.yaml_always;resolve_other_sources_by_applicability
+  global: load_behavior.yaml_and_command.yaml_always;resolve_other_sources_by_applicability
   project: awa-si/admin/projects/<project>/*
   project_mode: enumerate_all_existing_files_then_read_each_completely
   repository_agent: <resolved_repository>/AGENTS.md_if_repository_active

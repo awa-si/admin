@@ -235,6 +235,7 @@ apple_icloud_workflow:
   authentication_secret_handling: "keep_inside_plugin_connection_boundary"
 control_plane:
   behavior_owner: "awa-si/admin/behavior.yaml"
+  command_owner: "awa-si/admin/command.yaml"
   workflow_owner: "awa-si/admin/workflow.md"
   workflow_bootstrap: "awa-si/admin/workflow.md#decision_bootstrap"
   coding_owner: "awa-si/admin/workflow/coding.md"
@@ -256,24 +257,13 @@ awa_mcp_information_delegation:
   discovery_results: "observation_only_not_action_authorization"
   missing_or_changed_interface: "resolve_current_owner_or_report_actual_blocker|never_reconstruct_legacy_contract"
   routing_owner: "awa-si/admin/workflow.md#routing_decision_order"
-admin_plane_reload:
-  command: "reload admin plane"
-  aliases: "reload admin control plane"
-  preferred_bootstrap: "read_awa-si/admin/core.yaml_via_connected_GitHub_connector"
-  returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_AWA_capability_discovery"
-  optional_project_delta: "resolve_active_ChatGPT_project_then_load_if_accessible"
-  repository_agent: "load_only_when_resolved_repository_context_is_active"
-  fallback: "use_connected_repository_or_project_files_if_AWA_bootstrap_is_unavailable_or_incomplete"
-  cache_invalidation: "replace_previous_admin_snapshot_after_verified_read"
-  runtime_reload_boundary: "mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload"
-  do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
 loading_and_resolution:
   project_directory_contract: "awa-si/admin/projects/<project>/*"
   project_file_discovery: "enumerate_entire_matching_directory_without_fixed_filename_allowlist"
   project_file_loading: "read_every_existing_regular_file_completely_before_applying_project_deltas"
   project_file_incomplete_or_truncated: "report_exact_gap_and_do_not_claim_full_project_bootstrap"
   project_directory_absent: "inherit_global_without_inventing_project_files"
-  global_load: "core.yaml -> behavior.yaml -> workflow.md_when_execution_applies -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
+  global_load: "core.yaml -> behavior.yaml -> command.yaml -> workflow.md_when_execution_applies -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
   project_resolution: "verify_project_slug_then_enumerate_and_read_all_files_at_projects/<project>/*"
   project_workflow: "included_in_complete_project_directory_read"
   project_coding: "included_in_complete_project_directory_read"
@@ -300,16 +290,6 @@ instruction_resolution_cache:
   do_not_reresolve_on_each_user_prompt: true
   invalidate_when: "source_changed|explicitly_requested|active_scope_changed"
   workspace_or_plugin_contracts_follow_their_own_narrower_invalidation_rules: true
-mcp_instruction_reload:
-  trigger_phrase: "reload mcp"
-  semantics: "explicitly_requested_MCP_runtime_reload_then_reread_canonical_instructions"
-  execution_mode: "controlled_reload"
-  operation_and_scope: "resolve_from_current_live_MCP_reload_schema_and_canonical_contract"
-  side_effects_other_than_explicit_reload: "prohibited"
-  prohibited_during_reload: "workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action"
-  "no_implicit_authorization_for_other_AWA_operations": true
-  reload_is_not_proof_of_process_restart_or_live_code_activation: true
-  "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 public_repo_safety:
   repository: "awa-si/admin"
   visibility: "public"

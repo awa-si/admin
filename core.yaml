@@ -7,6 +7,10 @@ registry:
   - id: behavior
     path: awa-si/admin/behavior.yaml
     load: always
+  - id: command
+    path: awa-si/admin/command.yaml
+    load: always
+    role: canonical_user_command_contracts
   - id: workflow
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution
@@ -69,7 +73,7 @@ resolution:
   registry_semantics: ordered_parent_case_source_graph_not_instruction_priority
   case_loading: evaluate_each_case_condition_independently;parent_not_implicitly_loaded
   route_authority: awa-si/admin/workflow.md#routing_decision_order
-  source_loading: load_only_matching_cases_except_behavior
+  source_loading: load_only_matching_cases_except_behavior_and_command
   coding_module_loading: evaluate_nested_read_when_independently|load_matching_module_files_only|no_partial_file_read_claim
   overlap: combine_matching_use_cases_without_duplicate_reads
   unknown_case: workflow.md#unknown_case_handling;never_bypass_authorization_or_live_provider_admission

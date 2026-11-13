@@ -44,12 +44,12 @@ def validate(repo: Path) -> dict:
     if set(core) != {"version", "scope", "mode", "registry", "resolution"}:
         raise ValueError("core.yaml contains unexpected keys")
     registry = core["registry"]
-    if not isinstance(registry, list) or len(registry) != 4:
-        raise ValueError("core.registry must contain four ordered top-level entries")
+    if not isinstance(registry, list) or len(registry) != 5:
+        raise ValueError("core.registry must contain five ordered top-level entries")
     if any(not isinstance(entry, dict) for entry in registry):
         raise ValueError("core.registry entries must be mappings")
     top_ids = tuple(entry.get("id") for entry in registry)
-    if top_ids != ("behavior", "workflow", "project", "repository_agent"):
+    if top_ids != ("behavior", "command", "workflow", "project", "repository_agent"):
         raise ValueError("core top-level registry order is invalid")
     workflow_cases = registry[1].get("cases")
     if not isinstance(workflow_cases, list) or len(workflow_cases) != 5:
@@ -60,10 +60,11 @@ def validate(repo: Path) -> dict:
     if case_ids != ("coding", "research", "github", "mcp", "unknown"):
         raise ValueError("workflow cases order is invalid")
     sources = {entry["id"]: entry for entry in registry + workflow_cases}
-    if len(sources) != 9:
+    if len(sources) != 10:
         raise ValueError("duplicate use-case identifier in registry")
     expected_paths = {
         "behavior": "behavior.yaml",
+        "command": "command.yaml",
         "workflow": "workflow.md",
         "coding": "workflow/coding.md",
         "research": "workflow/research.md",
@@ -116,8 +117,8 @@ def validate(repo: Path) -> dict:
     if "workflow/coding/testing.md#test_writing_conventions" not in (repo / "projects/odoo/workflow.md").read_text(encoding="utf-8"):
         raise ValueError("Odoo test-writing contract pointer is stale")
 
-    if sources["behavior"].get("load") != "always":
-        raise ValueError("behavior must always load")
+    if sources["behavior"].get("load") != "always" or sources["command"].get("load") != "always":
+        raise ValueError("behavior and command must always load")
     for name in ("workflow", "coding", "research", "github", "mcp", "unknown"):
         if not str(sources[name].get("load", "")).startswith("on_"):
             raise ValueError(f"{name} must load on demand")
@@ -248,10 +249,26 @@ def validate(repo: Path) -> dict:
     if "current_AWA_MCP_instruction_resolver" in (repo / "workflow" / "mcp.md").read_text(encoding="utf-8"):
         raise ValueError("MCP technical source must not be a global instruction resolver")
 
-    # Behavior is the only universal policy owner; the core index has none.
+    # Behavior and commands are always-loaded policy owners; the core index has none.
     behavior = _read(repo / "behavior.yaml")
     if behavior.get("mode") != "normative" or "communication" not in behavior:
         raise ValueError("behavior.yaml must contain the global normative rules")
+    commands = _read(repo / "command.yaml")
+    for section, trigger in (("admin_plane_reload", "reload admin plane"), ("mcp_instruction_reload", "reload mcp")):
+        if section not in commands:
+            raise ValueError(f"command section missing: {section}")
+        if trigger not in str(commands[section]):
+            raise ValueError(f"command trigger missing: {trigger}")
+        if section in behavior:
+            raise ValueError(f"command section duplicated in behavior.yaml: {section}")
+    if commands.get("scope") != "global_commands" or commands.get("inherits") != "awa-si/admin/behavior.yaml":
+        raise ValueError("command owner or inheritance is invalid")
+    if sources["command"].get("role") != "canonical_user_command_contracts":
+        raise ValueError("command registry role is invalid")
+    if core["resolution"].get("source_loading") != "load_only_matching_cases_except_behavior_and_command":
+        raise ValueError("always-loaded command resolution missing")
+    if template.get("load", {}).get("global") != "load_behavior.yaml_and_command.yaml_always;resolve_other_sources_by_applicability":
+        raise ValueError("project template must load behavior and commands")
     for path in ("workflow.md", "workflow/coding.md", "workflow/research.md"):
         if not (repo / path).read_text(encoding="utf-8").strip():
             raise ValueError(f"empty source: {path}")

@@ -9,6 +9,7 @@ The `core.yaml#registry` is an **ordered parent/case source graph**. Its order g
 ```text
 core.yaml  (registry / resolver)
 ├── behavior.yaml                  always
+├── command.yaml                   always (user-command contracts)
 ├── workflow.md                    workflow or execution
 │   ├── workflow/coding.md         coding or code-quality selection
 │   │   ├── coding/dependencies.md  dependencies and toolchains
@@ -29,6 +30,7 @@ core.yaml  (registry / resolver)
 | --- | --- |
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
+| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin plane`, `reload mcp`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
 | [`workflow/coding.md`](workflow/coding.md) | Global engineering decisions and quality gates |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
@@ -41,7 +43,7 @@ core.yaml  (registry / resolver)
 
 ## Source resolution
 
-1. Load `core.yaml` from the connected GitHub repository, then load `behavior.yaml` **always**.
+1. Load `core.yaml` from the connected GitHub repository, then load `behavior.yaml` and `command.yaml` **always**.
 2. Evaluate relevant registry entries by task intent, scope and current product context. Load only matching files. For mixed requests, combine matching cases using `workflow.md#mixed_case_handling`, without redundant reads. For unmatched execution needs, use `workflow.md#unknown_case_handling` while retaining authorization and verification gates.
 3. Use `workflow.md#routing_decision_order` as the **sole normative execution-route precedence** when routing is material. The known cases in `workflow.md` aid classification but never grant permissions.
 4. Load `workflow/github.md` or `workflow/mcp.md` only for an applicable, permitted provider route. The registry declares that these routes require workflow routing. Coding and research modules can be loaded directly when their cases match. Within coding, independently evaluate each `core.yaml` nested module `read_when` gate. Load only matching complete module files; `read_when` does not stream partial file sections.
