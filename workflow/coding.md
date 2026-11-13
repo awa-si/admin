@@ -13,7 +13,7 @@ resolution:
 - override: explicit_only;parent_rules_remain_active
 - unrequested_work: no_unrelated_upgrade|migration|refactor|lint_cleanup
 
-engineering_decision:
+chatgpt_coding_execution:
 - read_when: any_coding_or_code_quality_task
 - objective: modern|performant|correct|secure|maintainable|production_quality_implementation
 - start: task_outcome|behavioral_contract|existing_repo_and_branch|source|tests|constraints|acceptance
@@ -35,7 +35,7 @@ language_and_toolchain_versions:
 - upgrade: explicit_user_scope_or_material_required_compatibility_fix|check_platforms|dependencies|tests
 - no_implicit_repository_wide_upgrade: true
 
-dependency_management:
+package_manager_provisioning:
 - read_when: dependency_selection|dependency_addition|install|build_setup|package_manager_change|dependency_lockfile
 - preserve_current_repository_manager_and_lockfile_by_default: true
 - new_unconstrained_Python_project: prefer_uv_when_compatible
@@ -48,7 +48,7 @@ dependency_management:
 - environment_cache_permissions_workspace_and_preflight: delegate_awa-si/admin/workflow.md_and_selected_provider_contract
 - prohibit: silent_lockfile_rewrites|unrequested_manager_migration|undeclared_transitive_API_dependency|committed_secrets
 
-design_constraints:
+priorities:
 - read_when: architecture|implementation|refactor|performance_tradeoff
 - nonnegotiable: correctness|security|domain_semantics|current_repository_contract
 - choose: simplest_complete_solution_with_materially_efficient_cost
@@ -72,7 +72,7 @@ reuse_before_build:
 - custom_code_gate: demonstrable_unmet_requirement_or_material_measured_tradeoff|tests|maintenance_owner
 - record_when_material: selected_tier|rejected_eligible_alternatives|version|verification
 
-implementation_scope:
+development_staging:
 - read_when: feature_design|new_module|substantial_refactor|multi_step_implementation
 - first_slice: smallest_usable_end_to_end_behavior_including_validation|failure_semantics|resource_cleanup|focused_tests
 - expand_only_when: required_scope|observed_bottleneck|verified_operational_gap
@@ -167,7 +167,7 @@ async_contracts:
   - dual_sync_async_API_requires_shared_semantic_owner_not_duplicated_logic
 - concurrency_safe_does_not_imply_thread_safe_or_process_safe: true
 
-test_design:
+test_writing_conventions:
 - read_when: writing_tests|modifying_tests|bugfix|new_behavior|test_review
 - follow: repository_framework|existing_fixtures|naming|isolation|test_layout
 - assert: observable_behavior|acceptance_and_rejection|boundaries|failure_modes|cleanup_when_material
@@ -508,7 +508,7 @@ documentation:
 - generated_docs: regenerate_from_canonical_source_when_tooling_exists
 - links_and_paths: keep_current_after_move_or_rename
 
-verification_principles:
+verification:
 - read_when: tests|lint|format|type_check|static_analysis|build|integration|benchmark|documentation_check|code_change
 - selection: apply_quality_gates_by_change_type|risk|repository_contract
 - execution_order_and_preflight: awa-si/admin/workflow.md#verification|dependency_preflight|rights_preflight|environment_preflight
