@@ -58,6 +58,8 @@ The ChatGPT command is `update mcp` (alias `auto update`, registry key `mcp_auto
 
 ## Tool discovery responsibility
 
+Global `behavior.yaml` now delegates GitHub tool selection to `workflow.md#routing_decision_order` and its `workflow/github.md#github_tool_orientation` surface map. The ChatGPT Connector preference is a tie-breaker, not a ban on an explicitly selected, independently authorized AWA route. Workspace creation requires a material execution need or explicit user selection and current provider admission; AWA and ChatGPT credentials remain separate.
+
 GitHub execution has five distinct surfaces described in [`workflow/github.md`](workflow/github.md#github_tool_orientation): native ChatGPT GitHub connector, GitHub Patch (connector wrapper), GitHub Workspace (connector-backed local execution wrapper), AWA MCP `github_exec` (independent AWA host credentials), and AWA MCP Workspace Git through `workspace_exec` (independent workspace admission/transport). `workspace.github_exec` is a conceptual label, not a separately registered public MCP tool. GPT uses that orientation during [`workflow.md#routing_decision_order`](workflow.md#routing_decision_order), considering eligible surfaces without automatically probing every provider or conflating connector credentials with AWA permissions.
 
 Admin does not maintain a second inventory of client, MCP, or plugin tool schemas. [`workflow.md#tool_discovery_boundary`](workflow.md) separates the responsibilities:
