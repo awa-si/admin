@@ -6,8 +6,8 @@ inherits: awa-si/admin/behavior.yaml
 parent_rules_remain_active: true
 
 admin_plane_reload:
-  command: "reload admin plane"
-  aliases: "reload admin control plane"
+  command: "reload admin"
+  aliases: "reload admin plane|reload admin control plane"
   preferred_bootstrap: "read_awa-si/admin/core.yaml_via_connected_GitHub_connector"
   returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_AWA_capability_discovery"
   optional_project_delta: "resolve_active_ChatGPT_project_then_load_if_accessible"
