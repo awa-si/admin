@@ -1,0 +1,143 @@
+scope: conditional_coding_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/coding.md
+parent_rules_remain_active: true
+module: architecture
+read_when: substantive_implementation|architecture_design|refactor|code_review|public_contract|security_sensitive_change|shared_helper_or_module_design|observability_change|error_or_resource_handling
+owner_sections: priorities|research_dependency|reuse_before_build|development_staging|code_quality|structure_and_modularity|control_flow_and_readability|coupling_and_duplication|boundaries_and_contracts|failure_and_resources|security|logging_and_observability|refactoring
+
+priorities:
+- read_when: architecture|implementation|refactor|performance_tradeoff
+- nonnegotiable: correctness|security|domain_semantics|current_repository_contract
+- choose: simplest_complete_solution_with_materially_efficient_cost
+- performance_details: workflow/coding/performance.md_when_relevant
+- defer_unmeasured_tuning_when_not_structurally_necessary: true
+- performance_claim: comparative_observed_evidence
+
+research_dependency:
+- read_when: material_external_API|framework|library|algorithm|security_or_compatibility_choice
+- canonical_owner: awa-si/admin/workflow/research.md
+- research_depth: proportional_to_novelty|impact|risk
+
+reuse_before_build:
+- read_when: new_algorithm|module|helper|adapter|service|library|concurrency_primitive|IO_abstraction
+- inventory: current_repo_code|standard_library|declared_direct_dependencies|relevant_transitives|supported_established_libraries
+- first_gate: behavior|security|license|runtime|maintenance|operational_compatibility
+- choose_earliest_eligible: existing_code_or_stdlib -> declared_library -> mature_external_library -> minimal_extension -> custom
+- transitive_dependency: declare_directly_when_selected_as_public_API
+- external_library: official_docs|supported_API|license|security_history|maintainer_health|platform|cost
+- prefer: native_or_vectorized_library_primitives|official_extension_points|thin_adapters|composition
+- custom_code_gate: demonstrable_unmet_requirement_or_material_measured_tradeoff|tests|maintenance_owner
+- record_when_material: selected_tier|rejected_eligible_alternatives|version|verification
+
+development_staging:
+- read_when: feature_design|new_module|substantial_refactor|multi_step_implementation
+- first_slice: smallest_usable_end_to_end_behavior_including_validation|failure_semantics|resource_cleanup|focused_tests
+- expand_only_when: required_scope|observed_bottleneck|verified_operational_gap
+- maintain: public_contract|migration_when_needed|security|correctness
+- avoid: speculative_frameworks|placeholder_as_completion|unrequested_complexity|premature_micro_optimization
+
+code_quality:
+- read_when: implementation|code_review|refactor
+- target: professional_production_quality
+- optimize_for: clarity|cohesion|low_coupling|testability|explicit_data_flow|operational_safety
+- local_consistency_with_repository_architecture_and_style: required
+- readability_over_micro_cleverness: preferred
+- clever_but_opaque_code: avoid
+- spaghetti_code: prohibited
+- unrelated_large_cleanup: prohibited
+- improve_touched_code_when_needed_to_avoid_compounding_structural_debt: required
+
+structure_and_modularity:
+- read_when: new_module|architecture_change|large_refactor|code_review
+- function_class_module: one_coherent_responsibility_preferred
+- god_object_or_god_module: prohibited_when_reasonably_refactorable
+- dependency_direction: explicit_and_architecturally_consistent
+- circular_dependency: avoid; remove_when_introduced_by_change
+- hidden_cross_module_side_effects: avoid
+- global_mutable_state: avoid_unless_contract_requires_and_ownership_is_explicit
+- data_flow: explicit_over_ambient_or_hidden_state
+- state_ownership: clear
+- public_surface_area: keep_minimal
+- abstraction_requires: real_reuse|clear_boundary|material_complexity_reduction
+- pass_through_wrapper_without_contract_value: avoid
+- speculative_framework_or_plugin_architecture: avoid
+- composition_over_deep_inheritance: preferred_when_semantics_allow
+
+control_flow_and_readability:
+- read_when: new_or_changed_control_flow|refactor|review
+- function_should_do_one_coherent_job: required
+- deeply_nested_control_flow: refactor_when_practical
+- guard_clause_or_early_return: preferred_when_it_reduces_nesting_without_hiding_flow
+- duplicated_branch_logic: consolidate_when_semantically_same
+- exception_driven_normal_control_flow: avoid
+- boolean_parameter_explosion: avoid
+- large_argument_list: use_clear_domain_or_config_object_when_it_improves_contract
+- magic_values_with_domain_meaning: replace_with_named_constant|enum|typed_config_when_material
+- names: intention_revealing|domain_consistent|specific
+- misleading_name: prohibited
+- comments: explain_why|invariant|constraint|algorithmic_intent
+- comments_that_repeat_code: avoid
+- dead_code_or_commented_out_code: remove_when_safe
+
+coupling_and_duplication:
+- read_when: new_shared_primitive|multi_module_change|refactor
+- duplicate_business_or_domain_logic: prohibited_when_common_owner_can_be_resolved
+- copy_paste_implementation_for_second_consumer: prefer_shared_primitive_when_contract_is_truly_same
+- do_not_abstract_incidental_similarity: true
+- layer_bypass: prohibited_unless_explicitly_justified_by_repository_contract
+- feature_change_should_touch_narrowest_coherent_owner_set: preferred
+
+boundaries_and_contracts:
+- read_when: public_API|input_validation|configuration|persisted_data
+- external_input: validate_at_boundary
+- configuration: validate_at_startup_or_load_boundary
+- public_or_persisted_contract_change: version_or_migrate_explicitly
+- silent_reinterpretation_of_existing_data_or_config: prohibited
+- undefined_or_ambiguous_behavior: resolve_before_optimization
+- backward_compatibility: preserve_unless_change_is_intentional_and_migrated
+
+failure_and_resources:
+- read_when: external_effect|IO|resource_management|error_handling|retry
+- swallowed_exception: prohibited
+- remote_or_blocking_operation: use_timeout_when_material
+- retry: bounded|only_when_safe_or_idempotent|backoff_when_repeated
+- resource_lifecycle: close_or_release_on_success|failure|cancellation
+- partial_failure: preserve_actionable_context_and_state_when_material
+- silent_fallback_that_changes_semantics: prohibited
+- fail_closed_when_contract_or_security_requires: true
+
+security:
+- read_when: untrusted_input|auth|secrets|external_action|security_review
+- least_privilege_and_secure_defaults: required
+- secrets_credentials_tokens_session_material: never_log_or_persist_without_explicit_contract
+- injection_or_command_construction: use_safe_parameterized_or_structured_API_when_available
+- security_sensitive_primitive: prefer_current_standard_or_well_reviewed_modern_mature_library_over_custom_implementation
+- sensitive_data: minimize|redact|hash_or_reference_when_appropriate
+
+logging_and_observability:
+- read_when: logging|metrics|tracing|alerting|service_operations
+- prefer_existing_repo_logging_and_observability_stack: required
+- structured_logging_when_machine_consumed: preferred
+- logs: diagnostic_context
+- metrics: repeated_numeric_state
+- traces: cross_component_or_latency_path_when_material
+- log_levels: semantically_consistent
+- avoid_log_on_every_hot_path_iteration_unless_diagnostic_mode: true
+- high_frequency_logging: sample|aggregate|rate_limit_when_material
+- preserve_context_when_available: component|operation|request_or_job_id|correlation_or_trace_id|duration|attempt|result
+- duplicate_exception_logging_across_layers: avoid
+- log_once_at_owner_boundary: preferred
+- unbounded_payload_dumping: prohibited
+- observability_failure_must_not_break_primary_path_unless_contract_requires_fail_closed: true
+- alerts: actionable_and_material_only
+- alert_storms: prevent_with_dedup|grouping|rate_limit_when_material
+- arbitrary_threshold_without_rationale: avoid
+
+refactoring:
+- read_when: refactor|migration|internal_cleanup
+- preserve_behavior_unless_change_is_explicit: true
+- prefer_removal_of_duplicate_paths_after_migration: true
+- preserve_public_or_persisted_contracts_unless_intentionally_migrated: true
+- refactor_when_needed_for: correctness|testability|material_complexity_reduction|measured_performance|clearer_ownership
+- speculative_refactor_without_material_value: avoid

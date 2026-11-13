@@ -1,0 +1,35 @@
+scope: conditional_coding_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/coding.md
+parent_rules_remain_active: true
+module: documentation
+read_when: coding_documentation|public_API_docs|contract_documentation|README_change|developer_guidance|documented_examples
+owner_sections: documentation
+
+documentation:
+- read_when: code_or_API_docs|contract_change|documentation_requested
+- audience: developers_and_maintainers
+- language: concise_precise_technical_developer_language
+- terminology: use_established_ecosystem_terms|correct_API_and_symbol_names|avoid_marketing_or_nontechnical_filler
+- writing: short_direct_sentences|explicit_subjects|unambiguous_contracts|minimum_sufficient_detail
+- content_priority: purpose|inputs_outputs|invariants|failure_modes|usage_and_examples_when_material
+- avoid: verbose_narrative|repeated_explanations|obvious_code_paraphrase|unsupported_claims|speculation
+- examples_and_commands: executable_or_version_correct_when_present
+- language_localization: follow_repository_language_conventions|retain_canonical_identifiers_unchanged
+- documentation_is_part_of_contract_when_behavior_or_interface_is_non_obvious: true
+- code_functionality_anchor:
+  - read_when: repository_explicitly_adopts_stable_doc_anchors_and_feature_has_cross_file_contract
+  - policy: use_repository_canonical_anchor_scheme|do_not_introduce_doc_anchors_globally_without_owner
+  - stability: preserve_identifier_on_semantically_equivalent_moves|update_stale_references
+- prefer_narrowest_canonical_owner_for_documented_rule: required
+- duplicate_active_contract_across_docs: prohibited
+- update_docs_when_change_affects: public_API|configuration|architecture|runtime_behavior|data_schema|operational_procedure|developer_workflow|failure_semantics
+- no_doc_update_for_internal_change_when_owned_contract_unchanged: allowed
+- README: orientation_and_entry_points_not_duplicate_specification
+- architecture_docs: boundaries|components|flows|interfaces|tradeoffs|major_invariants
+- developer_docs: enough_context_to_continue_without_reconstructing_from_chat
+- examples: must_match_current_supported_API
+- stale_example_or_command: remove_or_update
+- measured_claim: include_evidence_context_when_material
+- generated_docs: regenerate_from_canonical_source_when_tooling_exists
+- links_and_paths: keep_current_after_move_or_rename

@@ -21,6 +21,18 @@ registry:
         load: on_coding_or_implementation_or_code_quality
         read_when: implementation|code_design|refactor|test|test_design|lint|format|type_check|static_analysis|build_validation|benchmark|performance_review|dependency_selection|coding_documentation|security_review
         modules:
+          - id: architecture
+            path: awa-si/admin/workflow/coding/architecture.md
+            load: on_material_implementation_or_architecture_relevance
+            read_when: substantive_implementation|architecture_design|refactor|code_review|public_contract|security_sensitive_change|shared_helper_or_module_design|observability_change|error_or_resource_handling
+          - id: documentation
+            path: awa-si/admin/workflow/coding/documentation.md
+            load: on_coding_documentation_relevance
+            read_when: coding_documentation|public_API_docs|contract_documentation|README_change|developer_guidance|documented_examples
+          - id: quality
+            path: awa-si/admin/workflow/coding/quality.md
+            load: on_quality_gate_or_verification_relevance
+            read_when: code_change|bugfix|lint|format|type_check|static_analysis|build_validation|test_execution|verification|benchmark|quality_review|documentation_validation
           - id: dependencies
             path: awa-si/admin/workflow/coding/dependencies.md
             load: on_dependencies_relevance

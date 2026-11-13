@@ -12,6 +12,9 @@ core.yaml  (registry / resolver)
 ├── command.yaml                   always (user-command contracts)
 ├── workflow.md                    workflow or execution
 │   ├── workflow/coding.md         coding or code-quality selection
+│   │   ├── coding/architecture.md  design, security, code structure
+│   │   ├── coding/documentation.md coding documentation contracts
+│   │   ├── coding/quality.md       quality gates and verification
 │   │   ├── coding/dependencies.md  dependencies and toolchains
 │   │   ├── coding/concurrency.md   async and parallelism
 │   │   ├── coding/performance.md   performance and resource costs
@@ -32,7 +35,7 @@ core.yaml  (registry / resolver)
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
 | [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`, `mcp_auto_update`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
-| [`workflow/coding.md`](workflow/coding.md) | Global engineering decisions and quality gates |
+| [`workflow/coding.md`](workflow/coding.md) | Coding bootstrap, general principles and three latency-aware execution tiers |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
 | [`workflow/research.md`](workflow/research.md) | Research guidance for knowledge, code, documentation and legal investigations |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
