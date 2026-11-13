@@ -2,15 +2,9 @@ scope: project_workflow_delta
 project: odoo
 mode: normative_machine_directives
 
-resolution:
-- parent: awa-si/admin/workflow.md
-- project_instructions: awa-si/admin/projects/odoo/instructions.txt
-- project_coding: awa-si/admin/projects/odoo/coding.md
-- repository: awa-si/odoo@main
-- repository_agent: awa-si/odoo@main:AGENTS.md
-- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
+odoo_runtime_boundary:
 - repository_state: source_of_truth_not_running_Odoo_installation
-- Odoo_target: 19.0_by_default|verify_installed_Odoo_and_OCA_versions
+- target: 19.0_by_default|verify_installed_Odoo_and_OCA_versions
 - first_party_modules: modules/<technical_name>/
 
 development:
