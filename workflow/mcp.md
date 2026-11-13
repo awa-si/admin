@@ -112,7 +112,7 @@ awa_mcp_route_taxonomy:
 
 awa_mcp_workspace_flow:
 - apply_when: selected_authorized_AWA_MCP_Workspace_for_repository_execution_or_local_Git
-- before_material_action: load_mcp_instructions(topic=workspace,full)|current_workspace_contract|matching_workflow/reuse_and_session_and_repository_and_execution_docs|live_workspace_exec_schema
+- before_material_action: load_mcp_instructions(topic="workspace",compact=false)|current_workspace_contract|matching_workflow/reuse_and_session_and_repository_and_execution_docs|live_workspace_exec_schema
 - discovery: workspace_exec_capabilities_read_only_before_nontrivial_use|mcp_model_targeted_tool_detail
 - identify: exact_repository|ref|slot|current_chat_binding|workspace_ownership|job_and_dirty_state
 - cross_chat_reuse: enumerate_complete_relevant_registry_when_creation_or_import_considered|require_explicit_reuse_or_separate_or_none_choice_and_provider_authorization
@@ -126,7 +126,7 @@ awa_mcp_workspace_flow:
 - recovery: follow_current_workspace_recovery_owner|never_unilaterally_recycle_or_replace_shared_workspace
 
 awa_mcp_native_task_flow:
-- load: mcp_instructions(topic=tasks,full)|current_Task_contract_and_matching_workflow
+- load: mcp_instructions(topic="tasks",compact=false)|current_Task_contract_and_matching_workflow
 - discover: task_exec_capabilities|mcp_model_targeted_task_schema
 - use_when: already_reviewed_bounded_handler|enabled_independently_sandboxed_TaskEngine
 - enforce: reviewed_handler_permissions|explicit_runtime_profile|isolation|bounded_input_output|session_identity
@@ -134,7 +134,7 @@ awa_mcp_native_task_flow:
 - completion: native_Task_receipt_or_direct_result|no_inferred_durable_Work_or_Workspace_job
 
 awa_mcp_durable_work_flow:
-- load: mcp_instructions(topic=work,full)|current_Work_contract_and_matching_workflow
+- load: mcp_instructions(topic="work",compact=false)|current_Work_contract_and_matching_workflow
 - discover: work_exec_capabilities|current_operation_schema
 - execution: plan_is_advisory|start_requires_current_admission_and_user_approval_where_relevant|preserve_work_id_and_step_ids
 - dependency: provider_effects_execute_only_through_underlying_governed_capabilities
@@ -142,10 +142,10 @@ awa_mcp_durable_work_flow:
 - recovery: reconcile_ambiguous_effects_first|no_automatic_start_retry_or_new_work_id
 
 awa_mcp_host_flow:
-- load: mcp_instructions(topic=host,full)|current_host_contract_and_matching_workflow
+- load: mcp_instructions(topic="host",compact=false)|current_host_contract_and_matching_workflow
 - discover: host_exec_capabilities_or_registered_specific_host_tool
 - enforce: fixed_operations|provider_effect_gate|operator_approval|no_shell|protected_service_and_test_DB_boundaries
-- update: use_command.yaml#governed_mcp_update_command_for_authorized_self_update|do_not_duplicate_git_pull_or_restart
+- update: use_command.yaml#mcp_auto_update_for_authorized_self_update|do_not_duplicate_git_pull_or_restart
 - verify: host_checkout_state_and_loaded_process_identity_separately|native_action_receipts
 
 awa_mcp_provider_flow:
