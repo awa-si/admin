@@ -27,3 +27,38 @@ mcp_instruction_reload:
   "no_implicit_authorization_for_other_AWA_operations": true
   reload_is_not_proof_of_process_restart_or_live_code_activation: true
   "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
+
+auto_update:
+  command: "auto update"
+  read_when: explicit_auto_update_command
+  target: "awa-si/awa@main"
+  scope: "host_checkout_/opt/awa|supervisor_service_awa:mcp"
+  canonical_owner: "awa-si/awa@main:mcp/host/README.md#gpt-operated-awa-self-update-sequence"
+  implementation: "awa-si/awa@main:mcp/host/self_update.py"
+  operator_approval:
+    required_for: "host_repository_update|MCP_service_restart"
+    both_effects_must_be_explicitly_approved_before_mutation: true
+    command_definition_is_not_future_authorization: true
+    unattended_execution: prohibited
+  preflight:
+    - "verify_connected_GitHub_awa-si/awa@main_revision_and_current_live_provider_contract"
+    - "read_mcp_version_before_mutation"
+    - "host_exec(operation='git.inspect', arguments={'repository':'awa'})"
+    - "require_clean_trusted_/opt/awa_main_origin/main_checkout"
+  source_update:
+    - "host_exec(operation='git.pull', arguments={'repository':'awa'})"
+    - "require_successful_fast_forward_only_pull"
+    - "host_exec(operation='git.inspect', arguments={'repository':'awa'})"
+    - "verify_clean_checkout_and_expected_remote_HEAD"
+  activation:
+    only_if: "operator_approved_restart|loaded_MCP_revision_differs_from_verified_host_HEAD"
+    action: "host_exec(operation='supervisor.control', arguments={'service':'awa:mcp','action':'restart'})"
+    mechanism: "worker_owned_asynchronous_MCP_restart_handoff"
+    queued_or_inflight: "not_proof_of_completed_restart"
+    uncertain_or_failed: "fail_closed_and_reconcile_independent_status_before_retry"
+  verification:
+    - "mcp_version_after_reconnect_must_confirm_new_process_identity_and_loaded_commit"
+    - "inspect_service_health_and_report_evidence_separately"
+    - "distinguish_host_pulled|restart_requested|restart_completed|runtime_verified"
+  unchanged: "no_unnecessary_restart_when_loaded_commit_matches_host_HEAD"
+  prohibited: "arbitrary_shell|force_pull|host_permission_bypass|dependency_install|deployment|other_service_restart|other_repo_update"
