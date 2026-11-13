@@ -10,9 +10,3 @@ inheritance:
 repository:
 - source_of_truth: awa-si/awa@main
 - agent: AGENTS.md
-
-project_delta:
-- redeployment_verification:
-    after_user_reports_redeploy: reload_applicable_Admin_sources_via_connected_GitHub_connector_then_verify_against_current_AWA_runtime
-    verify_deployed_revision_and_process_start_when_available: true
-    deployment_commit_unavailable: report_unverified_code_revision_without_claiming_confirmed_deployment
