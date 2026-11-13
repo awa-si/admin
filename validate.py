@@ -259,7 +259,7 @@ def validate(repo: Path) -> dict:
     if commands["mcp_instruction_reload"].get("trigger_phrase") != "reload mcp":
         raise ValueError("canonical MCP reload command must be reload mcp")
     auto = commands.get("mcp_auto_update")
-    if not isinstance(auto, dict) or auto.get("command") != "mcp_auto_update":
+    if not isinstance(auto, dict) or auto.get("command") != "update mcp":
         raise ValueError("mcp auto update command missing or incorrectly named")
     if auto.get("target") != "awa-si/awa@main":
         raise ValueError("mcp auto update target must remain awa-si/awa@main")
@@ -279,10 +279,20 @@ def validate(repo: Path) -> dict:
         raise ValueError("mcp auto update requires fallback confirmation")
     if "recheck_preflight" not in str(ui.get("execution_gate", "")):
         raise ValueError("post-confirmation provider checks required")
-    if "git.inspect" not in str(auto.get("preflight")) or "git.pull" not in str(auto.get("source_update")):
-        raise ValueError("mcp auto update must inspect, pull, and verify the host checkout")
-    if "supervisor.control" not in str(auto.get("activation", {}).get("action", "")):
-        raise ValueError("mcp auto update must use the restricted supervisor restart")
+    executor = auto.get("executor", {})
+    if executor.get("primary") != "mcp_diagnostic(operation='update')":
+        raise ValueError("MCP update must use mcp_diagnostic as primary executor")
+    if executor.get("call_once_per_confirmed_workflow") is not True:
+        raise ValueError("MCP update executor must be invoked once per confirmed workflow")
+    if "do_not_add_separate_host_exec" not in str(executor.get("no_duplicate_execution", "")):
+        raise ValueError("MCP update must not duplicate host update and restart mutations")
+    if "git.inspect" not in str(auto.get("preflight")):
+        raise ValueError("MCP update must inspect the host before mutation")
+    internal = auto.get("internal_sequence_reference", {})
+    if "git.pull" not in str(internal.get("sequence", "")) or "supervisor.control" not in str(internal.get("sequence", "")):
+        raise ValueError("MCP update technical sequence reference is incomplete")
+    if auto.get("activation", {}).get("restart_decision") != "owned_by_primary_executor_based_on_loaded_commit_vs_verified_host_commit":
+        raise ValueError("MCP restart decision must remain owned by primary executor")
     verification = auto.get("verification", {})
     if not isinstance(verification, dict) or verification.get("initial_post_restart_delay_seconds") != 5:
         raise ValueError("mcp auto update requires a five-second delay before post-restart MCP validation")
@@ -292,7 +302,7 @@ def validate(repo: Path) -> dict:
         raise ValueError("mcp auto update requires independent live process verification")
     if "mcp/host/README.md" not in str(auto.get("canonical_owner", "")):
         raise ValueError("mcp auto update must defer to the canonical AWA host contract")
-    for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp"), ("mcp_auto_update", "mcp_auto_update")):
+    for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp"), ("mcp_auto_update", "update mcp")):
         if section not in commands:
             raise ValueError(f"command section missing: {section}")
         if trigger not in str(commands[section]):
