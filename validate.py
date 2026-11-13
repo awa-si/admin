@@ -254,6 +254,10 @@ def validate(repo: Path) -> dict:
     if behavior.get("mode") != "normative" or "communication" not in behavior:
         raise ValueError("behavior.yaml must contain the global normative rules")
     commands = _read(repo / "command.yaml")
+    if commands["admin_plane_reload"].get("command") != "reload admin":
+        raise ValueError("canonical admin reload command must be reload admin")
+    if commands["mcp_instruction_reload"].get("trigger_phrase") != "reload mcp":
+        raise ValueError("canonical MCP reload command must be reload mcp")
     for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp")):
         if section not in commands:
             raise ValueError(f"command section missing: {section}")
