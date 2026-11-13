@@ -90,29 +90,14 @@ Use [`projects/template.txt`](projects/template.txt) as the starting point for C
 
 ## Benchmarks
 
-The [AWA Admin benchmark](benchmarks/README.md) contains 20 version-pinned A/B use cases, an offline trace evaluator, regression tests, and an [observed static validation report](benchmarks/results/static-2026-11-12.json). The source-size comparison and automated static checks are complete; **live GPT A/B latency, token, and task-success measurements remain unmeasured until an isolated model runner supplies authentic traces**.
+The [AWA Admin benchmark](benchmarks/README.md) retains its 20-case fixture specification, version-pinned source baselines, and [historical static results](benchmarks/results/static-2026-11-12.json). Python-based scoring and regression utilities have been removed from this instruction-only repository. A separate, authorized evaluation runner is required to validate future traces or produce measurements. Existing static reports remain historical evidence, not executable checks or proof of live GPT performance.
 
-## Validation
+## Validation boundary
 
-```sh
-python -m pip install PyYAML
-python validate.py
-```
-
-The validator checks the registry structure and canonical owner references; execution of the validator and remote-state verification are separate steps.
+This repository contains declarative instructions and data, with **no tracked Python scripts or local execution harness**. The former `validate.py`, cross-repository checker and benchmark scorer/tests are removed. Validate source references, registry changes and command gates with a separately maintained approved validator or reviewed inspection; no current in-repository CLI validation command is available. A GitHub commit or structural review does not establish runtime compliance.
 
 This repository is public. Never commit secrets, credentials, tokens, private keys, session material or confidential data.
 
 ## Cross-repository MCP contract validation
 
-Run `python -m unittest test_cross_repo_contract` for offline negative/positive
-regressions. To validate real paired checkouts, use
-`python cross_repo_contract.py --admin-root /path/to/admin --awa-root /path/to/awa
---expected-admin-sha <exact-admin-HEAD> --expected-awa-sha <exact-awa-HEAD>`.
-The two SHA arguments are required; the validator fails on revision mismatch.
-It checks the Admin route owner, MCP local-only technical topics, the public
-instruction tool argument list, documentation parity, the single canonical
-Knowledge and Browser documentation owners (including their generator markers),
-and the discovery/authority boundary. It never fetches a repository or activates MCP. CI must explicitly
-check out both repositories at known revisions and pass their verified SHAs;
-repository checkout permissions remain independently required.
+The previous Python cross-repository contract validator and tests have been removed from `awa-si/admin`. Cross-repository contract checks must use an independently maintained, authorized checker and verified revision pairs. Do not claim those checks were executed merely because Admin's declarative sources were updated.

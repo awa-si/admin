@@ -1,6 +1,6 @@
 # AWA Admin A/B Benchmark (v1)
 
-This directory contains a **reproducible evaluation specification and offline scorer**, not a claim of completed model benchmarking. A live runner with isolated GPT sessions and tool traces is needed before runtime comparisons can be reported.
+This directory contains a **version-pinned evaluation specification and historical static results**. The former local Python offline scorer and regression tests have been removed. This is not a claim of completed model benchmarking. A live runner with isolated GPT sessions and tool traces is needed before runtime comparisons can be reported.
 
 ## Scope
 
@@ -17,20 +17,13 @@ The `baselines.yaml` values are **observed source-string character counts**, not
 
 | File | Responsibility |
 | --- | --- |
-| `cases.yaml` | Prompt, desired route, applicable owner files, required evidence, tool-call ceiling, fixture-only mutation flag |
-| `baselines.yaml` | Revision pins and source-text inventory |
-| `evaluate.py` | Validate case inventory; score **observed** JSONL traces |
-| `test_evaluate.py` | Regression tests for scoring, missing evidence, duplicates, and safety failures |
+| `cases.yaml` | Prompt, desired route, applicable owner files, required evidence, tool-call ceiling and fixture-only mutation flag |
+| `baselines.yaml` | Frozen revision pins and source-text inventory |
+| `results/static-2026-11-12.json` | Historical static comparison report; not a live model evaluation |
 
-## Local checks
+## Validation and runner boundary
 
-```sh
-python benchmarks/evaluate.py --check
-python -m unittest discover -s benchmarks -p 'test_*.py' -v
-python validate.py  # requires PyYAML; validates entire Admin control plane
-```
-
-The benchmark's own parser uses the JSON subset of YAML 1.2 and needs no third-party dependencies. `--check` reports `runtime_metrics: NOT_MEASURED` when no real trace data is supplied.
+No Python scripts or tests are provided in this repository. Use an independently maintained, approved runner to validate cases and score real observed traces. Historical source-string counts are **not** token measurements, and the existing static report does not substitute for a live A/B evaluation.
 
 ## Trace format
 
@@ -57,10 +50,8 @@ Supply newline-delimited JSON objects, one **observed** model run per line:
 
 All values **must come from the actual runner and its reviewed trace**. The example is a schema illustration, not an observed result. Do not insert fabricated records into `results/`. Traces flagged `synthetic: true` are rejected for scoring. Avoid storing conversation contents, secrets, credentials, or private fixture records in this public repository.
 
-```sh
-python benchmarks/evaluate.py --traces /private/path/observed.jsonl \
-  --output /private/path/report.json
-```
+Observed JSONL traces may be scored only by an independently maintained, authorized evaluation runner; this repository no longer provides the former `benchmarks/evaluate.py` invocation.
+
 
 Required evidence labels are defined per case, e.g. `remote_sha`, `focused_test`, `source_citation`, `runtime_result`, `denial_receipt`. Evidence labels should be derived from actual tool receipts, not inferred from assistant claims. `success` is the reviewed outcome of the complete user task; it cannot replace evidence.
 
