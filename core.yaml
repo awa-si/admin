@@ -55,7 +55,7 @@ registry:
         requires: workflow
         discovery: mcp_model
         technical_sources: mcp_instructions
-        owner: live_AWA_MCP_schema_and_canonical_AWA_contracts
+        owner: current_live_MCP_schema_and_provider_technical_contracts
       - id: unknown
         path: awa-si/admin/workflow.md
         load: on_unmatched_case_needing_execution_decision

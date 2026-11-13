@@ -19,7 +19,7 @@ core.yaml  (registry / resolver)
 │   │   └── coding/async-testing.md Python asyncio pytest
 │   ├── workflow/research.md       research or fact verification
 │   ├── workflow/github.md         GitHub capability orientation before final route selection
-│   ├── workflow/mcp.md            selected AWA MCP route
+│   ├── workflow/mcp.md            minimal MCP discovery bootstrap
 │   └── unknown → workflow.md      unmatched execution case
 ├── projects/<project>/*           verified ChatGPT project
 └── <repository>/AGENTS.md         active repository context
@@ -36,7 +36,7 @@ core.yaml  (registry / resolver)
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
 | [`workflow/research.md`](workflow/research.md) | Research guidance for knowledge, code, documentation and legal investigations |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
-| [`workflow/mcp.md`](workflow/mcp.md) | AWA-MCP-specific route and delegated technical contracts |
+| [`workflow/mcp.md`](workflow/mcp.md) | Minimal MCP bootstrap; live discovery resolves provider-specific technical contracts |
 | [`projects/template.txt`](projects/template.txt) | ChatGPT Project bootstrap pointing to the registry |
 | `projects/<project>/*` | Verified project deltas; **enumerate every existing file and read each completely** |
 | `<repository>/AGENTS.md` | Active repository agent; fall back to [`AGENTS.md`](AGENTS.md) when absent |
@@ -71,7 +71,7 @@ Admin does not maintain a second inventory of client, MCP, or plugin tool schema
 | OpenAI client / current host | Exposes available tools, dynamically searches deferred tools when supported, and supplies current invocation schemas |
 | `core.yaml` | Matches use cases to applicable instruction sources, without cataloging tool parameters |
 | `workflow.md` | Chooses a permitted execution route and defines required evidence |
-| `workflow/mcp.md` | Defines the **AWA-specific** discovery boundary; live AWA provider contracts and tool schemas remain authoritative for technical invocation |
+| `workflow/mcp.md` | Introduces MCP discovery only; selected provider schemas, technical instructions and native receipts govern execution |
 | Capability provider | Authenticates, authorizes, admits operations, executes, and returns observable results |
 
 Evaluate a currently available native sandbox (including Code Interpreter) before provisioning an external workspace for isolated calculations, analysis, temporary Python processing or artifact creation. A sandbox does **not** imply repository access, persistent host state, or deployment rights. Repository mutations continue through an authorized repository route. Tool discovery alone never grants permission or proves execution.
