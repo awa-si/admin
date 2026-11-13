@@ -250,7 +250,7 @@ known_use_cases:
     expected: block_or_request_authorization|never_auto_fallback_to_prohibited_route
   - id: heavy_tests
     category: heavy_execution
-    given: not_Work_mode|heavy_tests_or_special_runtime_required|GitHub_Workspace_insufficient|authorized_AWA_route
+    given: not_Work_mode|heavy_tests_or_special_runtime_required|authorized_and_suitable_AWA_MCP_Workspace|current_provider_admission
     expected: AWA_MCP_Workspace|reuse_matching_existing_before_new
   - id: durable_work
     category: durable_orchestration
