@@ -508,26 +508,6 @@ documentation:
 - generated_docs: regenerate_from_canonical_source_when_tooling_exists
 - links_and_paths: keep_current_after_move_or_rename
 
-verification:
-- read_when: tests|lint|format|type_check|static_analysis|build|integration|benchmark|documentation_check|code_change
-- selection: apply_quality_gates_by_change_type|risk|repository_contract
-- execution_order_and_preflight: awa-si/admin/workflow.md#verification|dependency_preflight|rights_preflight|environment_preflight
-- evidence: actual_command|scope|exit_status|relevant_results|skips_and_blockers
-- rerun: failed_gate_after_cause_fixed|affected_suite_after_material_change
-- do_not: assert_success_from_unrun_checks|change_assertions_to_hide_defects|treat_static_pass_as_runtime_proof
-
-quality_review_gate:
-- read_when: material_code_change|review|refactor|performance_change|security_change
-- inspect_relevant: behavior|security|failure_modes|ownership|dependencies|interfaces|complexity|IO|allocations|concurrency|maintainability|tests
-- reject_when_material: N_plus_1|avoidable_quadratic_hot_path|unbounded_queue_or_parallelism|unsafe_side_effect_retry|lost_resource_cleanup|duplicated_domain_logic
-- tradeoff: explicitly_document_material_legacy_or_compatibility_constraint
-
-completion:
-- read_when: completed_or_blocked_coding_or_quality_task
-- required: requested_behavior_or_quality_outcome|applicable_gates_and_source_contract|observed_evidence
-- report: changed_files|tests_lint_type_format_build_benchmarks_as_applicable|pass_fail_blocked_skipped|remote_revision|deployment_separately
-- prohibit: unverified_success_claim|scope_expansion|running_unrelated_full_suite_without_material_need
-
 quality_gates:
 - read_when: code_change|test_request|lint_request|format_request|type_check_request|build_request|benchmark_request|documentation_validation
 - first_select: explicit_user_request|repository_mandatory_checks|changed_behavior_and_risk
@@ -571,3 +551,23 @@ quality_gates:
   - missing_tool_or_dependency: follow_global_workflow_recovery_not_fake_pass
 - gate_status: passed|failed|blocked|not_run|not_applicable
 - no_pass_from: tool_available|source_written|CI_triggered|old_unrelated_build|skipped_tests
+
+verification:
+- read_when: tests|lint|format|type_check|static_analysis|build|integration|benchmark|documentation_check|code_change
+- selection: apply_quality_gates_by_change_type|risk|repository_contract
+- execution_order_and_preflight: awa-si/admin/workflow.md#verification|dependency_preflight|rights_preflight|environment_preflight
+- evidence: actual_command|scope|exit_status|relevant_results|skips_and_blockers
+- rerun: failed_gate_after_cause_fixed|affected_suite_after_material_change
+- do_not: assert_success_from_unrun_checks|change_assertions_to_hide_defects|treat_static_pass_as_runtime_proof
+
+quality_review_gate:
+- read_when: material_code_change|review|refactor|performance_change|security_change
+- inspect_relevant: behavior|security|failure_modes|ownership|dependencies|interfaces|complexity|IO|allocations|concurrency|maintainability|tests
+- reject_when_material: N_plus_1|avoidable_quadratic_hot_path|unbounded_queue_or_parallelism|unsafe_side_effect_retry|lost_resource_cleanup|duplicated_domain_logic
+- tradeoff: explicitly_document_material_legacy_or_compatibility_constraint
+
+completion:
+- read_when: completed_or_blocked_coding_or_quality_task
+- required: requested_behavior_or_quality_outcome|applicable_gates_and_source_contract|observed_evidence
+- report: changed_files|tests_lint_type_format_build_benchmarks_as_applicable|pass_fail_blocked_skipped|remote_revision|deployment_separately
+- prohibit: unverified_success_claim|scope_expansion|running_unrelated_full_suite_without_material_need
