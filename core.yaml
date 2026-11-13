@@ -56,7 +56,7 @@ registry:
       - id: research
         path: awa-si/admin/workflow/research.md
         load: on_search_or_research_or_material_fact_check
-        read_when: search|lookup|research|technical_investigation|material_fact_check|source_verification|documentation_search|legal_research
+        read_when: search|lookup|research|investigation|technical_investigation|material_fact_check|source_verification|documentation_search|legal_research
         modules:
           - id: knowledge
             path: awa-si/admin/workflow/research/knowledge.md

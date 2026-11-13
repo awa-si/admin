@@ -13,7 +13,7 @@ decision_bootstrap:
 - known_cases: known_use_cases;classification_only_not_authorization
 - mixed_cases: mixed_case_handling_when_multiple_cases_match
 - unmatched_cases: unknown_case_handling_for_uncovered_scope
-- research_source: awa-si/admin/workflow/research.md_when_research_or_material_investigation_applies
+- research_source: awa-si/admin/workflow/research.md_when_search|lookup|research|investigation|material_fact_check_applies
 - authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
 - expand_on_demand: workflow/github.md_when_GitHub_capability_material_including_AWA_MCP_GitHub|workflow/mcp.md_when_MCP_route_selected
@@ -214,7 +214,7 @@ known_use_cases:
 - cases:
   - id: research
     category: evidence_and_investigation
-    given: research|technical_investigation|material_fact_verification|architecture_or_algorithm_research|code_research|docs_research|legal_research
+    given: search|lookup|research|investigation|technical_investigation|material_fact_check|material_fact_verification|architecture_or_algorithm_research|code_research|docs_research|legal_research
     expected: load_awa-si/admin/workflow/research.md|direct_ChatGPT_research_default_and_matching_topic_modules|MCP_Agent_Intelligence_only_when_selected_permitted_and_materially_needed|do_not_treat_research_as_implementation_or_runtime_verification
   - id: small_docs
     category: repository_patch
