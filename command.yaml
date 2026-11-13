@@ -29,7 +29,8 @@ mcp_instruction_reload:
   "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 
 mcp_auto_update:
-  command: "mcp_auto_update"
+  command: "update mcp"
+  aliases: "update mcp|auto update"
   read_when: explicit_mcp_auto_update_command
   target: "awa-si/awa@main"
   scope: "host_checkout_/opt/awa|supervisor_service_awa:mcp"
