@@ -30,7 +30,7 @@ core.yaml  (registry / resolver)
 | --- | --- |
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
-| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`) |
+| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`, `auto update`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
 | [`workflow/coding.md`](workflow/coding.md) | Global engineering decisions and quality gates |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
@@ -51,6 +51,10 @@ core.yaml  (registry / resolver)
 6. For unknown cases, preserve the existing workflow and authorization gates; do not invent permission, capability or completion evidence. Report unavailable required sources and incomplete reads precisely.
 
 Project and repository rules extend applicable parent rules; overrides must be explicit. Higher-priority ChatGPT instructions remain authoritative. Repository state and live provider schemas determine the actual available operations.
+
+## Governed host update command
+
+`auto update` selects the AWA checkout update and MCP activation contract in [`command.yaml`](command.yaml), with the technical steps owned by [AWA Host](https://github.com/awa-si/awa/blob/main/mcp/host/README.md#gpt-operated-awa-self-update-sequence). After explicit operator approval for **both** operations: inspect the host checkout, fast-forward `awa-si/awa@main` using `host_exec(operation="git.pull")`, inspect the resulting checkout, then request `host_exec(operation="supervisor.control", arguments={"service":"awa:mcp","action":"restart"})` only if the running MCP revision is stale. Confirm activation independently with `mcp_version` after reconnecting; a queued restart is not completion evidence. The command definition is not standing approval or an unattended updater. `mcp_reload` does not restart Python code.
 
 ## Tool discovery responsibility
 
