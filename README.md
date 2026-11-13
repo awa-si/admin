@@ -10,7 +10,12 @@ The `core.yaml#registry` is an **ordered parent/case source graph**. Its order g
 core.yaml  (registry / resolver)
 ├── behavior.yaml                  always
 ├── workflow.md                    workflow or execution
-│   ├── workflow/coding.md         coding or implementation
+│   ├── workflow/coding.md         coding or code-quality selection
+│   │   ├── coding/dependencies.md  dependencies and toolchains
+│   │   ├── coding/concurrency.md   async and parallelism
+│   │   ├── coding/performance.md   performance and resource costs
+│   │   ├── coding/testing.md       test design
+│   │   └── coding/async-testing.md Python asyncio pytest
 │   ├── workflow/research.md       research or fact verification
 │   ├── workflow/github.md         selected GitHub route
 │   ├── workflow/mcp.md            selected AWA MCP route
@@ -25,7 +30,8 @@ core.yaml  (registry / resolver)
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
-| [`workflow/coding.md`](workflow/coding.md) | Coding and implementation guidance |
+| [`workflow/coding.md`](workflow/coding.md) | Global engineering decisions and quality gates |
+| `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
 | [`workflow/research.md`](workflow/research.md) | Research guidance for knowledge, code, documentation and legal investigations |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
 | [`workflow/mcp.md`](workflow/mcp.md) | AWA-MCP-specific route and delegated technical contracts |
@@ -38,7 +44,7 @@ core.yaml  (registry / resolver)
 1. Load `core.yaml` from the connected GitHub repository, then load `behavior.yaml` **always**.
 2. Evaluate relevant registry entries by task intent, scope and current product context. Load only matching files. For mixed requests, combine matching cases using `workflow.md#mixed_case_handling`, without redundant reads. For unmatched execution needs, use `workflow.md#unknown_case_handling` while retaining authorization and verification gates.
 3. Use `workflow.md#routing_decision_order` as the **sole normative execution-route precedence** when routing is material. The known cases in `workflow.md` aid classification but never grant permissions.
-4. Load `workflow/github.md` or `workflow/mcp.md` only for an applicable, permitted provider route. The registry declares that these routes require workflow routing. Coding and research modules can be loaded directly when their cases match.
+4. Load `workflow/github.md` or `workflow/mcp.md` only for an applicable, permitted provider route. The registry declares that these routes require workflow routing. Coding and research modules can be loaded directly when their cases match. Within coding, independently evaluate each `core.yaml` nested module `read_when` gate. Load only matching complete module files; `read_when` does not stream partial file sections.
 5. When a ChatGPT Project is explicitly identified or exposed, verify its slug and read **all** existing files under `projects/<project>/*`. Never infer hidden UI project state. For an active target repository, read its `AGENTS.md` if present, otherwise use the Admin fallback.
 6. For unknown cases, preserve the existing workflow and authorization gates; do not invent permission, capability or completion evidence. Report unavailable required sources and incomplete reads precisely.
 

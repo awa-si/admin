@@ -112,7 +112,7 @@ test_conventions:
 - data: controlled|deterministic|isolated
 - external_services: fake_at_service_boundary
 - concurrency: distinct_transactions_or_cursors_when_material|sequential_mock_insufficient
-- additional_conventions: inherit_awa-si/admin/workflow/coding.md#test_writing_conventions
+- additional_conventions: inherit_awa-si/admin/workflow/coding/testing.md#test_writing_conventions
 
 AWA_module_acceptance:
 - deployment: confirmation_creates_once|repeated_confirmation_idempotent|correct_line_order_product_links

@@ -36,6 +36,7 @@ owner_map:
 - global_behavior: behavior.yaml
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
+- conditional_coding_detail: workflow/coding/*.md_selected_by_core.yaml
 - global_research: workflow/research.md
 - human_orientation: README.md
 - project_behavior_delta: projects/<project>/instructions.txt

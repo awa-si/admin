@@ -1,0 +1,19 @@
+scope: conditional_coding_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/coding.md
+parent_rules_remain_active: true
+module: testing
+read_when: writing_tests|changing_tests|bugfix|behavior_change|test_review|test_design
+owner_sections: test_writing_conventions
+
+test_writing_conventions:
+- read_when: writing_tests|modifying_tests|bugfix|new_behavior|test_review
+- follow: repository_framework|existing_fixtures|naming|isolation|test_layout
+- assert: observable_behavior|acceptance_and_rejection|boundaries|failure_modes|cleanup_when_material
+- regression: reproduce_actual_bug_before_fix_when_practical
+- isolate: external_services_with_fakes_at_boundaries|disposable_integration_resources
+- deterministic: control_seed|clock|timezone|ordering_when_material|avoid_arbitrary_sleep
+- fixtures: scoped|minimal|readable|no_leaks|shared_only_when_reused
+- concurrency: exercise_actual_overlap_and_failure_interleavings_when_material
+- tests_not_implementation_coupling: prefer_public_contract_over_brittle_private_call_sequence
+- performance: collect_metrics_in_dedicated_benchmarks_when_material_not_every_unit_test

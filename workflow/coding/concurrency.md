@@ -1,0 +1,95 @@
+scope: conditional_coding_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/coding.md
+parent_rules_remain_active: true
+module: concurrency
+read_when: async_API|network_or_database_IO|parallel_processing|shared_mutable_state|backpressure|cancellation
+owner_sections: async_and_concurrency|parallelism|async_contracts
+
+async_and_concurrency:
+- read_when: async_API|network_or_database_IO|parallel_processing|concurrent_jobs|shared_mutable_state|backpressure
+- prefer_when_material: native_nonblocking_IO|bounded_concurrency|batching|connection_reuse
+- blocking_on_running_event_loop: prohibited
+- blocking_library: bounded_executor_or_offload_when_async_native_not_available
+- do_not_force_async: CPU_bound_without_benefit|simpler_equivalent_sync_contract|unsupported_framework
+- capacity: downstream_limits|CPU|memory|connections|rate_limits|file_descriptors
+- requirements: cancellation|timeouts|failure_propagation|resource_release|ordering_when_required|backpressure
+- detailed_rules: parallelism_and_async_contracts_sections_when_matching_runtime
+- detached_execution: delegated_to_global_workflow
+
+parallelism:
+- read_when: parallel_work|fan_out|CPU_or_IO_parallelism|shared_state|concurrency_review
+- objective: reduce_wall_time_or_increase_throughput_without_weakening_correctness|ordering|resource_bounds|failure_semantics
+- parallelize_when: work_units_are_independent|shared_state_is_absent_or_safely_partitioned|downstream_capacity_allows|coordination_cost_is_lower_than_saved_time
+- serialize_when: dependency_order|shared_mutable_state|transaction_boundary|same_output_target|rate_limit|resource_contention|deterministic_order_is_part_of_contract
+- bounded_parallelism: required
+- concurrency_limit_owner: explicit_config_or_derived_from_cpu|memory|connection_pool|rate_limit|downstream_capacity
+- fixed_magic_parallelism_without_rationale: avoid
+- fan_out_without_join_or_terminal_accounting: prohibited
+- task_failure_propagation: explicit
+- sibling_task_cancellation_on_required_failure: preferred_when_partial_progress_has_no_value
+- partial_success_semantics: explicit_when_supported
+- preserve_input_output_identity_across_parallel_execution: required
+- result_order:
+  - preserve_when_contract_requires_order: true
+  - completion_order_allowed_only_when_contract_allows: true
+- shared_mutable_state:
+  - prefer_partitioning|immutable_inputs|message_passing|owner_task
+  - lock_only_minimum_critical_section: required_when_locking_needed
+  - lock_around_blocking_or_remote_IO: avoid
+- queueing:
+  - producer_consumer_queue: bounded
+  - backpressure: required_when_producer_can_outpace_consumer
+  - shutdown_sentinel_or_close_semantics: explicit
+- CPU_bound_parallelism:
+  - prefer_native_vectorized_or_GIL_releasing_backend_first_when_available
+  - Python_process_parallelism: use_when_material_and_serialization_startup_cost_is_justified
+  - thread_parallelism_for_pure_Python_CPU_work: do_not_assume_speedup
+- IO_bound_parallelism:
+  - prefer_async_native_concurrency_when_framework_supports_it
+  - thread_pool: fallback_for_blocking_library_or_file_call_when_async_native_path_unavailable
+- nested_parallelism: avoid_oversubscription_across_process|thread|async|native_library_layers
+- cancellation: propagate_to_owned_children_when_parent_operation_no_longer_requires_result
+- resource_cleanup_after_parallel_failure_or_cancellation: required
+- parallelism_change_requires_when_material: throughput|latency|resource_usage|ordering|failure_behavior_verification
+
+async_contracts:
+- read_when: async_implementation|async_API|cancellation|streaming|structured_concurrency
+- async_is_contract_not_implementation_decoration: true
+- async_function_should_await_or_compose_meaningful_async_work: preferred
+- fake_async_wrapper_around_blocking_work: prohibited
+- blocking_call_in_async_path:
+  - use_async_native_API_when_available
+  - otherwise_offload_explicitly_with_bounded_executor_when_material
+  - document_or_isolate_unavoidable_blocking_boundary
+- structured_concurrency: preferred
+- Python_structured_concurrency: asyncio.TaskGroup_preferred_for_owned_sibling_tasks_when_failure_should_cancel_group
+- asyncio_gather:
+  - use_when_result_aggregation_semantics_fit
+  - return_exceptions_true_requires_explicit_partial_failure_contract
+- create_task:
+  - owner_must_retain_or_supervise_task_reference: required
+  - fire_and_forget_without_lifecycle_owner: prohibited
+- timeout:
+  - define_at_external_or_unbounded_wait_boundary_when_material
+  - timeout_is_not_proof_remote_side_effect_did_not_occur
+- cancellation:
+  - treat_CancelledError_as_control_flow
+  - do_not_swallow_cancellation
+  - cleanup_must_complete_safely_without_indefinite_block
+  - shield_only_small_critical_cleanup_or_atomicity_boundary_when_required
+- async_generator_or_stream:
+  - close_or_aclose_on_early_exit_when_owned
+  - preserve_backpressure
+- async_context_manager: preferred_for_async_resource_lifecycle
+- task_local_context:
+  - ContextVar_preferred_over_ambient_global_state_when_context_propagation_is_required
+  - verify_context_propagation_across_task_boundaries_when_material
+- event_loop:
+  - one_running_loop_per_async_execution_context_assumption: preserve
+  - nested_asyncio_run_inside_running_loop: prohibited
+  - library_code_should_not_own_process_level_event_loop_lifecycle_without_explicit_contract
+- async_API_boundary:
+  - sync_bridge_should_live_at_outer_boundary_not_inside_async_core
+  - dual_sync_async_API_requires_shared_semantic_owner_not_duplicated_logic
+- concurrency_safe_does_not_imply_thread_safe_or_process_safe: true

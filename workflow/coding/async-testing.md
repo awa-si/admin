@@ -1,0 +1,62 @@
+scope: conditional_coding_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/coding.md
+parent_rules_remain_active: true
+module: async-testing
+read_when: Python_asyncio_with_pytest|pytest_asyncio_fixture|async_test_failure|async_loop_configuration
+owner_sections: async_testing
+
+async_testing:
+- read_when: Python_asyncio_tests_with_pytest|async_test_failure|async_fixture_or_loop_configuration
+- apply_when: Python_asyncio_code_and_pytest_is_repository_test_framework
+- preferred_plugin: pytest-asyncio
+- dependency_policy:
+  - use_existing_declared_pytest_asyncio_when_present
+  - if_async_tests_are_required_and_plugin_missing: add_as_declared_test_or_dev_dependency_when_repository_policy_allows
+  - do_not_install_unpinned_or_undeclared_test_dependency_only_for_one_ephemeral_run_when_repository_contract_requires_manifest_ownership
+- pytest_asyncio_configuration:
+  - set_asyncio_mode_explicitly_in_repository_test_configuration: preferred
+  - asyncio_only_suite: auto_mode_preferred_for_low_boilerplate
+  - mixed_async_framework_suite: strict_mode_preferred
+  - default_test_loop_scope: function_unless_shared_loop_is_part_of_test_contract
+  - default_fixture_loop_scope: set_explicitly_when_async_fixtures_are_material_to_avoid_version_dependent_behavior
+- async_test_shape:
+  - test_coroutines_directly_with_await: preferred
+  - asyncio_run_inside_pytest_asyncio_test: prohibited
+  - manual_run_until_complete_in_async_test: prohibited
+  - use_asyncio_get_running_loop_when_loop_access_is_required
+- async_fixtures:
+  - pytest_asyncio_fixture_preferred_in_strict_mode
+  - fixture_scope_and_loop_scope_are_distinct_contracts: preserve_intentionally
+  - widen_loop_scope_only_when_resource_or_behavior_requires_shared_loop
+  - custom_event_loop_fixture_reimplementation: avoid
+- custom_loop_testing:
+  - pytest_asyncio_loop_factories_hook: preferred_for_custom_or_multiple_event_loop_factories_when_supported_by_declared_version
+  - event_loop_policy_fixture_override: avoid_for_new_code_when_current_pytest_asyncio_deprecates_it
+- determinism:
+  - do_not_use_arbitrary_sleep_as_primary_synchronization
+  - prefer_Event|Condition|Queue|Barrier_or_mocked_clock_when_wait_condition_is_controllable
+  - bounded_timeout_on_wait_that_could_hang: required_when_practical
+  - assert_no_leaked_owned_tasks_when_task_lifecycle_is_material
+  - test_cleanup_after_cancellation_and_exception: required_for_owned_resources
+- concurrency_tests:
+  - exercise_actual_overlap_not_only_sequential_awaits
+  - verify_ordering_only_when_order_is_contract
+  - include_failure_of_one_child_when_sibling_cancellation_or_partial_success_is_material
+  - include_backpressure_or_concurrency_limit_case_when_limit_is_contract
+  - include_race_or_duplicate_admission_case_when_shared_state_or_idempotency_is_material
+- timeout_and_cancellation_tests:
+  - verify_timeout_surface_and_cleanup
+  - verify_cancellation_propagates_to_owned_tasks
+  - verify_remote_or_external_ambiguity_is_not_misreported_as_success
+- async_resource_tests:
+  - verify_client|session|stream|generator|task_cleanup_when_material
+  - warnings_for_unclosed_resources_or_pending_tasks: treat_as_test_failure_or_defect_when_owned_by_changed_code
+- asyncio_debug:
+  - enable_for_targeted_debug_or_CI_lane_when_useful
+  - not_required_for_every_fast_local_test_if_cost_or_noise_is_material
+- async_test_parallel_execution:
+  - pytest_process_parallelism_does_not_replace_in_test_async_concurrency_coverage
+  - shared_external_resources_need_isolation_before_xdist_or_other_process_parallelism
+- version_sensitive_pytest_asyncio_behavior: verify_current_declared_plugin_version_before_using_new_loop_scope_or_factory_features
+- async_test_completion_gate: no_unawaited_coroutine|no_owned_pending_task|no_unclosed_async_resource|expected_failure_and_cancellation_semantics_verified

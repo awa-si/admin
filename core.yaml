@@ -16,6 +16,27 @@ registry:
         path: awa-si/admin/workflow/coding.md
         load: on_coding_or_implementation_or_code_quality
         read_when: implementation|code_design|refactor|test|test_design|lint|format|type_check|static_analysis|build_validation|benchmark|performance_review|dependency_selection|coding_documentation|security_review
+        modules:
+          - id: dependencies
+            path: awa-si/admin/workflow/coding/dependencies.md
+            load: on_dependencies_relevance
+            read_when: dependency_selection|version_sensitive_API|dependency_management|package_manager_change|toolchain_change|build_setup
+          - id: concurrency
+            path: awa-si/admin/workflow/coding/concurrency.md
+            load: on_concurrency_relevance
+            read_when: async_API|network_or_database_IO|parallel_processing|shared_mutable_state|backpressure|cancellation
+          - id: performance
+            path: awa-si/admin/workflow/coding/performance.md
+            load: on_performance_relevance
+            read_when: performance_sensitive_implementation|profiling|hot_path|benchmark|scaling|memory_or_IO_optimization
+          - id: testing
+            path: awa-si/admin/workflow/coding/testing.md
+            load: on_testing_relevance
+            read_when: writing_tests|changing_tests|bugfix|behavior_change|test_review|test_design
+          - id: async_testing
+            path: awa-si/admin/workflow/coding/async-testing.md
+            load: on_async_testing_relevance
+            read_when: Python_asyncio_with_pytest|pytest_asyncio_fixture|async_test_failure|async_loop_configuration
       - id: research
         path: awa-si/admin/workflow/research.md
         load: on_research_or_material_fact_check
@@ -49,6 +70,7 @@ resolution:
   case_loading: evaluate_each_case_condition_independently;parent_not_implicitly_loaded
   route_authority: awa-si/admin/workflow.md#routing_decision_order
   source_loading: load_only_matching_cases_except_behavior
+  coding_module_loading: evaluate_nested_read_when_independently|load_matching_module_files_only|no_partial_file_read_claim
   overlap: combine_matching_use_cases_without_duplicate_reads
   unknown_case: workflow.md#unknown_case_handling;never_bypass_authorization_or_live_provider_admission
   security: higher_priority_ChatGPT_instructions_and_existing_approvals_remain_authoritative

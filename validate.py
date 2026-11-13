@@ -76,6 +76,46 @@ def validate(repo: Path) -> dict:
             raise ValueError(f"invalid source reference: {name}")
         if not (repo / relative).is_file():
             raise ValueError(f"missing canonical source file: {relative}")
+    # Guard the actual conditional file-level coding owner registry.
+    expected_coding = {
+        "dependencies": "workflow/coding/dependencies.md",
+        "concurrency": "workflow/coding/concurrency.md",
+        "performance": "workflow/coding/performance.md",
+        "testing": "workflow/coding/testing.md",
+        "async_testing": "workflow/coding/async-testing.md",
+    }
+    coding_modules = sources["coding"].get("modules")
+    if not isinstance(coding_modules, list) or len(coding_modules) != len(expected_coding):
+        raise ValueError("coding modules must enumerate exactly five conditional owners")
+    ids = [m.get("id") for m in coding_modules if isinstance(m, dict)]
+    if len(ids) != len(coding_modules) or set(ids) != set(expected_coding):
+        raise ValueError("coding module ids must be unique and complete")
+    root_coding = _read(repo / "workflow/coding.md")
+    if "quality_gates" not in root_coding or "completion" not in root_coding:
+        raise ValueError("root coding owner must retain quality gates and completion")
+    claimed = set(root_coding)
+    for module in coding_modules:
+        name = module["id"]
+        path = expected_coding[name]
+        if module.get("path") != f"awa-si/admin/{path}":
+            raise ValueError(f"coding module path mismatch: {name}")
+        if not str(module.get("load", "")).startswith("on_") or not module.get("read_when"):
+            raise ValueError(f"coding module missing selector: {name}")
+        owner = _read(repo / path)
+        if owner.get("scope") != "conditional_coding_detail" or owner.get("inherits") != "awa-si/admin/workflow/coding.md":
+            raise ValueError(f"coding module inheritance mismatch: {name}")
+        if owner.get("module") != name.replace("_", "-") or owner.get("read_when") != module["read_when"]:
+            raise ValueError(f"coding module read_when mismatch: {name}")
+        owned = str(owner.get("owner_sections", "")).split("|")
+        other_keys = set(owner) - {"scope", "mode", "inherits", "parent_rules_remain_active", "module", "read_when", "owner_sections"}
+        if set(owned) != other_keys or claimed.intersection(owned):
+            raise ValueError(f"coding module section duplication or unlisted sections: {name}")
+        claimed.update(owned)
+    if core["resolution"].get("coding_module_loading") != "evaluate_nested_read_when_independently|load_matching_module_files_only|no_partial_file_read_claim":
+        raise ValueError("coding module selector behavior not declared")
+    if "workflow/coding/testing.md#test_writing_conventions" not in (repo / "projects/odoo/workflow.md").read_text(encoding="utf-8"):
+        raise ValueError("Odoo test-writing contract pointer is stale")
+
     if sources["behavior"].get("load") != "always":
         raise ValueError("behavior must always load")
     for name in ("workflow", "coding", "research", "github", "mcp", "unknown"):
@@ -219,7 +259,7 @@ def validate(repo: Path) -> dict:
         "status": "valid",
         "index": "core.yaml",
         "global_policy": "behavior.yaml",
-        "conditional_sources": "workflow.md|workflow/coding.md|workflow/research.md",
+        "conditional_sources": "workflow.md|workflow/coding.md|workflow/coding/*.md|workflow/research.md",
         "mcp_discovery": "mcp_model|mcp_instructions",
     }
 
