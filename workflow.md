@@ -215,7 +215,7 @@ known_use_cases:
   - id: research
     category: evidence_and_investigation
     given: research|technical_investigation|material_fact_verification|architecture_or_algorithm_research|code_research|docs_research|legal_research
-    expected: load_awa-si/admin/workflow/research.md|apply_base_and_relevant_topic_rules|select_execution_route_only_if_material|do_not_treat_research_as_implementation_or_runtime_verification
+    expected: load_awa-si/admin/workflow/research.md|direct_ChatGPT_research_default_and_matching_topic_modules|MCP_Agent_Intelligence_only_when_selected_permitted_and_materially_needed|do_not_treat_research_as_implementation_or_runtime_verification
   - id: small_docs
     category: repository_patch
     given: not_Work_mode|GitHub_connector_available|known_small_docs_edit|no_local_execution|no_selected_AWA_workspace
