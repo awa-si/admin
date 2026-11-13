@@ -258,7 +258,25 @@ def validate(repo: Path) -> dict:
         raise ValueError("canonical admin reload command must be reload admin")
     if commands["mcp_instruction_reload"].get("trigger_phrase") != "reload mcp":
         raise ValueError("canonical MCP reload command must be reload mcp")
-    for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp")):
+    auto = commands.get("auto_update")
+    if not isinstance(auto, dict) or auto.get("command") != "auto update":
+        raise ValueError("auto update command missing or incorrectly named")
+    if auto.get("target") != "awa-si/awa@main":
+        raise ValueError("auto update target must remain awa-si/awa@main")
+    approval = auto.get("operator_approval", {})
+    if approval.get("both_effects_must_be_explicitly_approved_before_mutation") is not True:
+        raise ValueError("auto update requires explicit host pull and MCP restart authorization")
+    if approval.get("unattended_execution") != "prohibited":
+        raise ValueError("auto update must not permit unattended mutation")
+    if "git.inspect" not in str(auto.get("preflight")) or "git.pull" not in str(auto.get("source_update")):
+        raise ValueError("auto update must inspect, pull, and verify the host checkout")
+    if "supervisor.control" not in str(auto.get("activation", {}).get("action", "")):
+        raise ValueError("auto update must use the restricted supervisor restart")
+    if "mcp_version" not in str(auto.get("verification")):
+        raise ValueError("auto update requires independent live process verification")
+    if "mcp/host/README.md" not in str(auto.get("canonical_owner", "")):
+        raise ValueError("auto update must defer to the canonical AWA host contract")
+    for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp"), ("auto_update", "auto update")):
         if section not in commands:
             raise ValueError(f"command section missing: {section}")
         if trigger not in str(commands[section]):
