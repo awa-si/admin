@@ -54,20 +54,32 @@ mcp_auto_update:
     fallback: "ask_explicit_textual_authorization_for_both_effects_if_UI_button_unavailable"
     execution_gate: "accept_only_explicit_current_request_confirmation|recheck_preflight_and_provider_authorization_before_mutation"
     replay: "confirmation_single_workflow_only|no_standing_permission"
+  executor:
+    primary: "mcp_diagnostic(operation='update')"
+    entrypoint_owner: "awa-si/awa@main:mcp/tools/runtime_tools.py"
+    implementation_owner: "awa-si/awa@main:mcp/host/self_update.py"
+    call_once_per_confirmed_workflow: true
+    authorization: "explicit_UI_or_text_confirmation_for_both_host_pull_and_MCP_restart_before_invocation"
+    no_duplicate_execution: "do_not_add_separate_host_exec_git.pull_or_supervisor.control_calls_after_diagnostic_update"
+    live_schema: "resolve_current_mcp_model_schema_for_mcp_diagnostic_before_call"
   preflight:
-    - "verify_connected_GitHub_awa-si/awa@main_revision_and_current_live_provider_contract"
-    - "read_mcp_version_before_mutation"
-    - "host_exec(operation='git.inspect', arguments={'repository':'awa'})"
-    - "require_clean_trusted_/opt/awa_main_origin/main_checkout"
-  source_update:
-    - "host_exec(operation='git.pull', arguments={'repository':'awa'})"
-    - "require_successful_fast_forward_only_pull"
-    - "host_exec(operation='git.inspect', arguments={'repository':'awa'})"
-    - "verify_clean_checkout_and_expected_remote_HEAD"
+    - "verify_connected_GitHub_awa-si/awa@main_remote_HEAD_and_current_AWA_host_contract"
+    - "read_mcp_version_before_mutation_and_record_process_identity_and_loaded_commit"
+    - "use_live_read_only_host_exec_git.inspect_awa_to_verify_clean_trusted_/opt/awa_main_origin/main_checkout"
+    - "obtain_explicit_current_UI_or_text_confirmation_covering_both_effects"
+    - "recheck_live_provider_admission_before_invoking_primary_executor"
+  execution:
+    - "invoke_primary_mcp_diagnostic_update_once_only"
+    - "inspect_returned_host_commit|host_updated|loaded_process_commit|status|restart_requested|activation_pending"
+    - "require_update_receipt_consistent_with_live_verified_remote_revision"
+    - "do_not_treat_restart_queued|restart_already_pending|restart_inflight_as_runtime_verified"
+  internal_sequence_reference:
+    owner: "awa-si/awa@main:mcp/host/self_update.py"
+    sequence: "host_exec_git.inspect_awa -> host_exec_git.pull_awa -> host_exec_git.inspect_awa -> host_exec_supervisor.control_awa:mcp_restart_if_stale"
+    semantics: "implementation_only;never_repeat_individual_mutations_after_primary_executor"
   activation:
-    only_if: "operator_approved_restart|loaded_MCP_revision_differs_from_verified_host_HEAD"
-    action: "host_exec(operation='supervisor.control', arguments={'service':'awa:mcp','action':'restart'})"
-    mechanism: "worker_owned_asynchronous_MCP_restart_handoff"
+    restart_decision: "owned_by_primary_executor_based_on_loaded_commit_vs_verified_host_commit"
+    handoff: "worker_owned_asynchronous_MCP_restart"
     queued_or_inflight: "not_proof_of_completed_restart"
     uncertain_or_failed: "fail_closed_and_reconcile_independent_status_before_retry"
   verification:
