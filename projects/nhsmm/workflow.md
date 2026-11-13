@@ -2,15 +2,9 @@ scope: project_workflow_delta
 project: nhsmm
 mode: normative_machine_directives
 
-resolution:
-- parent: awa-si/admin/workflow.md
-- project_instructions: awa-si/admin/projects/nhsmm/instructions.txt
-- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
-
 local_performance_cycle:
 - performance_work: prefer_bounded_local_profile_edit_measure_cycles_when_representative
 - local_edit_profile_measure_cycle_before_remote_write: required_when_practical_and_bounded
-- dependency_install_workspace_transport_and_async_mechanics: inherit_global_workflow_and_selected_workspace_route
 
 performance_method:
 - profile_current_head_before_optimization: required
@@ -47,7 +41,6 @@ verification:
 - focused_equivalence_test_before_broad_suite: required_for_fast_path
 - full_pytest_after_shared_encoder_filter_distribution_runtime_change: required
 - clean_runner_smoke: use_only_for_final_integration_evidence_when_material
-- temporary_push_trigger_if_needed: follow_global_ci_actions_rules
 - update_docs_state_after_verified_performance_change: true
 
 completion_evidence:
