@@ -55,7 +55,25 @@ registry:
             read_when: Python_asyncio_with_pytest|pytest_asyncio_fixture|async_test_failure|async_loop_configuration
       - id: research
         path: awa-si/admin/workflow/research.md
-        load: on_research_or_material_fact_check
+        load: on_search_or_research_or_material_fact_check
+        read_when: search|lookup|research|technical_investigation|material_fact_check|source_verification|documentation_search|legal_research
+        modules:
+          - id: knowledge
+            path: awa-si/admin/workflow/research/knowledge.md
+            load: on_knowledge_research
+            read_when: fact_check|scientific_claim|scientific_consensus|models|evidence_quality|statistical_uncertainty|general_research
+          - id: code
+            path: awa-si/admin/workflow/research/code.md
+            load: on_code_research
+            read_when: algorithm_research|library_evaluation|API_comparison|implementation_choice|technical_design_research|engineering_evidence
+          - id: docs
+            path: awa-si/admin/workflow/research/docs.md
+            load: on_docs_research
+            read_when: documentation_search|canonical_documentation|specification_verification|repository_docs_audit|version_and_reference_verification
+          - id: legal
+            path: awa-si/admin/workflow/research/legal.md
+            load: on_legal_research
+            read_when: legal_research|regulation|statute|case_law|jurisdiction|filing_procedure|legal_deadline
       - id: github
         path: awa-si/admin/workflow/github.md
         load: on_material_GitHub_capability_or_selected_GitHub_route_including_AWA_MCP_GitHub
@@ -88,6 +106,7 @@ resolution:
   route_authority: awa-si/admin/workflow.md#routing_decision_order
   source_loading: load_only_matching_cases_except_behavior_and_command
   coding_module_loading: evaluate_nested_read_when_independently|load_matching_module_files_only|no_partial_file_read_claim
+  research_module_loading: evaluate_nested_read_when_independently|load_matching_complete_topic_module_files_only
   overlap: combine_matching_use_cases_without_duplicate_reads
   unknown_case: workflow.md#unknown_case_handling;never_bypass_authorization_or_live_provider_admission
   security: higher_priority_ChatGPT_instructions_and_existing_approvals_remain_authoritative

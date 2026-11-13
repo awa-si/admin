@@ -1,0 +1,24 @@
+scope: conditional_research_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/research.md
+parent_rules_remain_active: true
+module: docs
+read_when: documentation_search|canonical_documentation|specification_verification|repository_docs_audit|version_and_reference_verification
+owner_sections: docs_research|topic_docs_assurance
+
+docs_research:
+- objective: locate_authoritative_documents|validate_claims|identify_missing_or_stale_information
+- inspect_first: repository_index_or_registry|canonical_owner_docs|version_history|direct_consumers
+- external_sources: official_specifications|primary_documents|maintainer_documentation_when_material
+- evaluate: provenance|authoritative_owner|version|date|scope|consistency|broken_references
+- distinguish: documentation_claim|verified_implementation_behavior|historical_or_superseded_contract
+- owner_resolution: follow_repository_registry_and_graph_when_defined|do_not_create_parallel_canonical_owner
+- choose: reuse_existing_doc|update_or_extend_canonical_owner|create_new_doc_only_when_gap_justified
+- output: authoritative_sources|discrepancies|affected_references|recommended_document_changes
+- do_not_duplicate_canonical_content: true
+
+topic_docs_assurance:
+- verify: authoritative_owner|current_version|effective_date|references|direct_consumers
+- distinguish: current_contract|superseded_document|asserted_behavior|observed_behavior
+- preserve: repository_registry_and_graph_contract_when_defined
+- quality_gate: canonical_owner_identified|discrepancies_noted|no_parallel_specification_created

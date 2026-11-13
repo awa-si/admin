@@ -1,0 +1,22 @@
+scope: conditional_research_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/research.md
+parent_rules_remain_active: true
+module: knowledge
+read_when: fact_check|scientific_claim|scientific_consensus|models|evidence_quality|statistical_uncertainty|general_research
+owner_sections: knowledge_research|topic_knowledge_assurance
+
+knowledge_research:
+- objective: establish_best_supported_facts|models|scientific_consensus|open_questions
+- source_priority: systematic_reviews|replicated_peer_reviewed_research|primary_studies|recognized_standards|authoritative_institutions
+- evaluate: methodological_quality|population_or_context_fit|replication|recency|conflicts_of_interest|uncertainty
+- distinguish: established_facts|contested_findings|hypotheses|expert_opinion
+- output: supported_conclusions|sources|confidence_and_limitations|unresolved_questions
+- no_implementation_decision_required: true
+
+topic_knowledge_assurance:
+- source_weighting: systematic_reviews|replicated_primary_research|relevant_standards|authoritative_institutions
+- distinguish: hypothesis|preprint|replicated_finding|consensus|expert_opinion
+- evaluate: methods|population_fit|independence|conflicts_of_interest|statistical_uncertainty
+- numeric_reporting: preserve_units|denominators|baselines|intervals_when_available
+- quality_gate: claims_supported|uncertainty_visible|scope_limitations_reported

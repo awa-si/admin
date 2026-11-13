@@ -1,0 +1,29 @@
+scope: conditional_research_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/research.md
+parent_rules_remain_active: true
+module: legal
+read_when: legal_research|regulation|statute|case_law|jurisdiction|filing_procedure|legal_deadline
+owner_sections: legal_research|topic_legal_assurance
+
+legal_research:
+- objective: identify_applicable_law|evaluate_legal_sources|analyze_options_and_risks
+- define: jurisdiction|material_facts|legal_question|relevant_dates|procedural_stage
+- primary_sources: official_statutes|regulations|court_decisions|authoritative_official_guidance
+- hierarchy: distinguish_binding_law|judicial_interpretation|administrative_guidance|secondary_commentary
+- time: verify_effective_dates|amendments|transitional_provisions|relevant_deadlines
+- case_law: verify_court|date|case_number|holding|material_factual_distinctions
+- analysis: separate_legal_rules|established_facts|disputed_facts|application|counterarguments
+- procedure: verify_competent_authority|filing_rules|service_requirements|appeal_options
+- output: supported_legal_position|citations|uncertainty|options|procedural_risks
+- escalation:
+    trigger: material_legal_uncertainty|irreversible_legal_consequences|high_financial_or_procedural_risk
+    action: identify_specific_risk|recommend_qualified_counsel_when_materially_necessary
+    default: continue_independent_legal_research_and_analysis
+    avoid: generic_lawyer_disclaimer|premature_escalation
+
+topic_legal_assurance:
+- authority: verify_jurisdiction|applicable_version|binding_status|source_provenance
+- accuracy: distinguish_current_law|proposed_law|agency_practice|interpretation
+- deadlines: prioritize_time_sensitive_actions|do_not_invent_channels_or_legal_effects
+- quality_gate: law_and_facts_separated|sources_identified|uncertainty_and_counterarguments_stated

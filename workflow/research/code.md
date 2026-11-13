@@ -1,0 +1,27 @@
+scope: conditional_research_detail
+mode: normative_machine_directives
+inherits: awa-si/admin/workflow/research.md
+parent_rules_remain_active: true
+module: code
+read_when: algorithm_research|library_evaluation|API_comparison|implementation_choice|technical_design_research|engineering_evidence
+owner_sections: code_research|topic_code_assurance
+
+code_research:
+- objective: select_best_suitable_existing_solution_or_justify_new_implementation
+- inspect_first: repository_code|requirements_txt_or_project_manifests|declared_dependencies|dependency_graph|lockfiles|current_architecture|relevant_tests
+- external_sources: official_API_docs|standards|maintained_reference_implementations|relevant_scientific_studies|benchmarks
+- compare_in_coding_priority_order: a_declared_suitable_dependency|b_established_external_library|c_extend_established_library|d_full_custom_last_resort
+- eligibility_before_rank: required_functionality|security|license|compatibility|maintainability
+- custom_path: document_why_a_b_c_are_inadequate
+- evaluate: semantic_fit|correctness|performance|security|license|maintenance|runtime_compatibility
+- verification_plan: reproducible_tests|representative_benchmarks|regression_and_integration_checks_as_material
+- output: chosen_solution|alternatives|source_evidence|tradeoffs|implementation_and_test_plan
+- implementation_and_execution_contract: awa-si/admin/workflow/coding.md|awa-si/admin/workflow.md
+
+topic_code_assurance:
+- evidence: official_version_matched_API_docs|reference_implementations|tests|comparable_benchmarks
+- validate: semantic_fit|license|security|maintenance|runtime_compatibility
+- prefer_existing: declared_eligible_dependency_then_established_external_library_then_extension_then_custom_last_resort
+- custom_requires: documented_gap_across_prior_tiers
+- measured_claims: distinguish_reported_benchmarks_from_reproduced_results
+- quality_gate: alternatives_compared_proportionally|validation_plan_defined|research_not_misrepresented_as_runtime_test
