@@ -1,4 +1,67 @@
 # Conditional workflow details: load only for the relevant selected route.
+
+github_tool_orientation:
+- purpose: orient_GPT_among_five_GitHub_access_and_execution_surfaces_before_invocation
+- parent_route_authority: workflow.md#routing_decision_order
+- classification_is_not_authorization: true
+- surfaces:
+  - id: chatgpt_github_connector
+    provider: ChatGPT_installed_GitHub_connector
+    actual_interface: current_connected_GitHub_plugin_tools
+    wrapper: none
+    role: native_remote_repository_API_for_reads_and_writes
+    auth_boundary: ChatGPT_connector_account_and_repository_grants
+    use_when: direct_repository_read|search|metadata|branch_or_commit_operation_without_local_execution
+  - id: chatgpt_github_patch
+    provider: ChatGPT_GitHub_connector
+    actual_interface: GitHub_Patch_wrapper_over_connected_GitHub_connector
+    wrapper: connected_GitHub_connector
+    role: focused_file_patch_without_workspace_or_local_execution
+    auth_boundary: inherits_connected_GitHub_connector_permissions_plus_patch_workflow_gates
+    use_when: small_deterministic_file_change|known_file_and_target|no_local_tests_required
+  - id: chatgpt_github_workspace
+    provider: ChatGPT_GitHub_connector
+    actual_interface: GitHub_Workspace_skill_wrapper_with_connector_mediated_remote_transport
+    wrapper: connected_GitHub_connector
+    role: temporary_local_workspace_for_edit|test|build|diff_then_connector_remote_publish
+    auth_boundary: connected_GitHub_connector_for_remote|selected_Workspace_skill_for_local
+    use_when: local_execution_needed_and_current_GitHub_Workspace_skill_suitable
+  - id: awa_mcp_github_exec
+    provider: AWA_MCP
+    actual_interface: "github_exec(operation, payload)"
+    wrapper: none
+    role: direct_AWA_host_GitHub_API_for_admitted_repository_operations
+    auth_boundary: AWA_MCP_host_credentials_and_provider_admission_not_ChatGPT_connector_grants
+    use_when: selected_authorized_AWA_direct_GitHub_route|bounded_remote_API_without_workspace
+    technical_owner: awa-si/awa@main:mcp/github/contract.md
+  - id: awa_mcp_workspace_github
+    provider: AWA_MCP
+    actual_interface: "workspace_exec(operation, payload)"
+    user_label: "workspace.github_exec"
+    registered_standalone_tool_named_workspace.github_exec: false
+    wrapper: AWA_MCP_Workspace_Git_operations_via_workspace_exec
+    role: repository_import|local_slot_Git|tests_and_builds|guarded_repository_push
+    auth_boundary: AWA_Workspace_slot_admission_and_separate_repository_transport
+    use_when: selected_authorized_AWA_MCP_Workspace_route|local_or_heavy_execution_needed
+    technical_owner: awa-si/awa@main:mcp/workspace/contract.md
+- decision_process:
+  - establish_user_goal|repository|revision|read_vs_mutation|need_for_local_execution|required_evidence
+  - select_parent_execution_route_under_workflow.md#routing_decision_order
+  - identify_candidate_surface_by_needed_capability_and_current_product_mode
+  - inspect_current_registered_tools_or_installed_skill_and_actual_repository_permission
+  - prefer_smallest_admitted_route_that_completes_task_without_unnecessary_workspace_or_duplicate_transport
+  - commit_to_one_mutating_route_per_revision_and_reconcile_remote_HEAD_before_cross_route_transition
+  - verify_result_via_native_receipt_plus_independent_current_revision_when_material
+- never_assume:
+  - wrapper_is_new_independent_credential_or_authorization
+  - AWA_MCP_access_follows_from_ChatGPT_GitHub_connector_installation
+  - provider_discovery_is_execution_admission
+  - workspace.github_exec_is_a_live_public_MCP_tool_name
+  - local_workspace_Git_push_is_the_same_as_direct_GitHub_API_commit
+- explicit_surface_selection: honor_user_requested_surface_when_available_suitable_and_authorized;otherwise_report_actual_blocker
+- route_change: only_for_verified_capability_gap|changed_scope|explicit_user_direction|parent_routing_reselection
+- documentation_boundary: provider_operation_names_and_payloads_resolve_from_current_live_schema_and_canonical_owner
+
 github_capability_detection:
 - apply_when: first_material_GitHub_access_in_active_scope
 - objective: detect_and_reuse_available_GitHub_account_and_repository_capabilities_before_route_or_governance_decisions
@@ -39,6 +102,12 @@ github_patch:
 
 repository_tool_routing:
 - selection_precedence: routing_decision_order
+- first_step: github_tool_orientation_decision_process
+- direct_connector_vs_patch: same_ChatGPT_GitHub_connector_transport|patch_adds_focused_edit_workflow_not_new_credentials
+- github_workspace_vs_connector: Workspace_is_local_execution_wrapper|remote_transport_remains_connector
+- awa_direct_vs_awa_workspace: github_exec_is_direct_API|workspace_exec_owns_slot_local_Git_and_push
+- independent_credential_boundaries: ChatGPT_GitHub_connector|AWA_MCP_github_exec|AWA_MCP_Workspace_Git_transport
+- no_double_mutation: avoid_replaying_same_commit_or_push_through_different_surface
 - when_AWA_workspace_selected: use_AWA_workspace_local_git_for_all_supported_local_repository_operations
 - when_AWA_workspace_selected_remote_transport: follow_current_canonical_workspace_repository_transport_contract
 - fallback_to_connector: only_if_selected_workspace_capability_verified_unavailable_or_unsuitable_and_alternate_route_authorized
