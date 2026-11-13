@@ -1,4 +1,4 @@
-# Conditional workflow details: load only for the relevant selected route.
+# Conditional GitHub workflow details: load when GitHub capability is material, including AWA MCP GitHub, before final surface selection.
 
 github_tool_orientation:
 - purpose: orient_GPT_among_five_GitHub_access_and_execution_surfaces_before_route_selection_and_invocation

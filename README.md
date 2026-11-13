@@ -18,7 +18,7 @@ core.yaml  (registry / resolver)
 │   │   ├── coding/testing.md       test design
 │   │   └── coding/async-testing.md Python asyncio pytest
 │   ├── workflow/research.md       research or fact verification
-│   ├── workflow/github.md         selected GitHub route
+│   ├── workflow/github.md         GitHub capability orientation before final route selection
 │   ├── workflow/mcp.md            selected AWA MCP route
 │   └── unknown → workflow.md      unmatched execution case
 ├── projects/<project>/*           verified ChatGPT project
