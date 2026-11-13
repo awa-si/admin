@@ -101,11 +101,13 @@ interactive_execution:
     completion_must_not_be_delayed_by_optional_nice_to_have_checks: true
   repository_work:
     broad_repository_scan: "only_when_scope_or_dependency_uncertainty_materially_requires_it"
-    known_small_change: "prefer_direct_patch_path"
-    workspace_route: "use_when_execution_or_uncertain_coupling_materially_requires_it_not_as_default_escalation"
-    tool_selection: "use_connected_GitHub_connector_when_it_can_complete_requested_repository_work_with_required_verification"
-    "AWA_workspace_creation": "prohibited_when_connected_GitHub_connector_is_sufficient"
-    "existing_AWA_workspace": "do_not_create_or_switch_workspace_merely_for_repository_access"
+    known_small_change: "prefer_smallest_sufficient_authorized_GitHub_surface_per_workflow.md#routing_decision_order"
+    tool_selection: "delegate_to_workflow.md#routing_decision_order_with_workflow/github.md#github_tool_orientation"
+    connector_preference: "prefer_when_sufficient_and_no_explicitly_selected_authorized_alternative_applies;actual_priority_owned_by_workflow.md"
+    workspace_creation: "require_material_execution_need_or_explicit_user_selection_and_current_provider_authorization;never_infer_workspace_permission"
+    existing_workspace: "reuse_only_when_matching|healthy|owned|authorized|suitable;do_not_switch_merely_for_repository_access"
+    credential_boundaries: "ChatGPT_GitHub_connector_and_AWA_MCP_are_independently_authenticated_and_authorized"
+    mutation_boundary: "select_one_authorized_mutating_route|reconcile_remote_revision_before_cross_route_transition"
     dependency_discovery: "resolve_once_per_scope_version"
     do_not_restart_repository_analysis_during_writeback_or_verification: true
     writeback: "use_known_change_set_and_known_base"
@@ -263,7 +265,7 @@ loading_and_resolution:
   project_file_loading: "read_every_existing_regular_file_completely_before_applying_project_deltas"
   project_file_incomplete_or_truncated: "report_exact_gap_and_do_not_claim_full_project_bootstrap"
   project_directory_absent: "inherit_global_without_inventing_project_files"
-  global_load: "core.yaml -> behavior.yaml -> command.yaml -> workflow.md_when_execution_applies -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
+  global_load: "core.yaml -> behavior.yaml -> command.yaml -> workflow.md_when_execution_applies -> workflow/github.md_when_GitHub_capability_material_before_final_route_decision -> workflow/mcp.md_when_AWA_MCP_route_selected -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
   project_resolution: "verify_project_slug_then_enumerate_and_read_all_files_at_projects/<project>/*"
   project_workflow: "included_in_complete_project_directory_read"
   project_coding: "included_in_complete_project_directory_read"
