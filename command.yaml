@@ -28,9 +28,9 @@ mcp_instruction_reload:
   reload_is_not_proof_of_process_restart_or_live_code_activation: true
   "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 
-auto_update:
-  command: "auto update"
-  read_when: explicit_auto_update_command
+mcp_auto_update:
+  command: "mcp_auto_update"
+  read_when: explicit_mcp_auto_update_command
   target: "awa-si/awa@main"
   scope: "host_checkout_/opt/awa|supervisor_service_awa:mcp"
   canonical_owner: "awa-si/awa@main:mcp/host/README.md#gpt-operated-awa-self-update-sequence"
@@ -41,7 +41,7 @@ auto_update:
     command_definition_is_not_future_authorization: true
     unattended_execution: prohibited
   ui_confirmation:
-    read_when: "auto_update_requested_and_preflight_passed_before_host_mutation"
+    read_when: "mcp_auto_update_requested_and_preflight_passed_before_host_mutation"
     presentation: "render_native_chat_confirmation_button_when_supported"
     title: "AWA Auto Update"
     action_label: "Confirm & Execute"

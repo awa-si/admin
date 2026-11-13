@@ -258,41 +258,41 @@ def validate(repo: Path) -> dict:
         raise ValueError("canonical admin reload command must be reload admin")
     if commands["mcp_instruction_reload"].get("trigger_phrase") != "reload mcp":
         raise ValueError("canonical MCP reload command must be reload mcp")
-    auto = commands.get("auto_update")
-    if not isinstance(auto, dict) or auto.get("command") != "auto update":
-        raise ValueError("auto update command missing or incorrectly named")
+    auto = commands.get("mcp_auto_update")
+    if not isinstance(auto, dict) or auto.get("command") != "mcp_auto_update":
+        raise ValueError("mcp auto update command missing or incorrectly named")
     if auto.get("target") != "awa-si/awa@main":
-        raise ValueError("auto update target must remain awa-si/awa@main")
+        raise ValueError("mcp auto update target must remain awa-si/awa@main")
     approval = auto.get("operator_approval", {})
     if approval.get("both_effects_must_be_explicitly_approved_before_mutation") is not True:
-        raise ValueError("auto update requires explicit host pull and MCP restart authorization")
+        raise ValueError("mcp auto update requires explicit host pull and MCP restart authorization")
     if approval.get("unattended_execution") != "prohibited":
-        raise ValueError("auto update must not permit unattended mutation")
+        raise ValueError("mcp auto update must not permit unattended mutation")
     ui = auto.get("ui_confirmation", {})
     if ui.get("presentation") != "render_native_chat_confirmation_button_when_supported":
-        raise ValueError("auto update must offer native UI confirmation")
+        raise ValueError("mcp auto update must offer native UI confirmation")
     if ui.get("state") != "disabled_until_user_explicitly_selects_both_effects":
-        raise ValueError("auto update confirmation must cover both effects")
+        raise ValueError("mcp auto update confirmation must cover both effects")
     if "never_directly_invokes_host_tools" not in str(ui.get("interaction", "")):
         raise ValueError("UI button must not execute host operations directly")
     if "ask_explicit_textual_authorization" not in str(ui.get("fallback", "")):
-        raise ValueError("auto update requires fallback confirmation")
+        raise ValueError("mcp auto update requires fallback confirmation")
     if "recheck_preflight" not in str(ui.get("execution_gate", "")):
         raise ValueError("post-confirmation provider checks required")
     if "git.inspect" not in str(auto.get("preflight")) or "git.pull" not in str(auto.get("source_update")):
-        raise ValueError("auto update must inspect, pull, and verify the host checkout")
+        raise ValueError("mcp auto update must inspect, pull, and verify the host checkout")
     if "supervisor.control" not in str(auto.get("activation", {}).get("action", "")):
-        raise ValueError("auto update must use the restricted supervisor restart")
+        raise ValueError("mcp auto update must use the restricted supervisor restart")
     verification = auto.get("verification", {})
     if not isinstance(verification, dict) or verification.get("initial_post_restart_delay_seconds") != 5:
-        raise ValueError("auto update requires a five-second delay before post-restart MCP validation")
+        raise ValueError("mcp auto update requires a five-second delay before post-restart MCP validation")
     if verification.get("delay_after") != "restart_request_accepted_before_first_post_restart_mcp_version_retrieval":
-        raise ValueError("auto update delay must precede the first post-restart MCP version retrieval")
+        raise ValueError("mcp auto update delay must precede the first post-restart MCP version retrieval")
     if "mcp_version" not in str(verification.get("checks", [])):
-        raise ValueError("auto update requires independent live process verification")
+        raise ValueError("mcp auto update requires independent live process verification")
     if "mcp/host/README.md" not in str(auto.get("canonical_owner", "")):
-        raise ValueError("auto update must defer to the canonical AWA host contract")
-    for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp"), ("auto_update", "auto update")):
+        raise ValueError("mcp auto update must defer to the canonical AWA host contract")
+    for section, trigger in (("admin_plane_reload", "reload admin"), ("mcp_instruction_reload", "reload mcp"), ("mcp_auto_update", "mcp_auto_update")):
         if section not in commands:
             raise ValueError(f"command section missing: {section}")
         if trigger not in str(commands[section]):

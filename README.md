@@ -30,7 +30,7 @@ core.yaml  (registry / resolver)
 | --- | --- |
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
-| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`, `auto update`) |
+| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`, `mcp_auto_update`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
 | [`workflow/coding.md`](workflow/coding.md) | Global engineering decisions and quality gates |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
@@ -54,7 +54,7 @@ Project and repository rules extend applicable parent rules; overrides must be e
 
 ## Governed host update command
 
-`auto update` selects the AWA checkout update and MCP activation contract in [`command.yaml`](command.yaml), with the technical steps owned by [AWA Host](https://github.com/awa-si/awa/blob/main/mcp/host/README.md#gpt-operated-awa-self-update-sequence). When requested, present a native **Confirm & Execute** button with both effects explicitly selected; clicking it submits authorization as a new user message, never a direct host-tool call. If the UI control is unavailable, request equivalent explicit textual authorization. After confirmation, recheck preflight and provider admission. With approval for **both** operations: inspect the host checkout, fast-forward `awa-si/awa@main` using `host_exec(operation="git.pull")`, inspect the resulting checkout, then request `host_exec(operation="supervisor.control", arguments={"service":"awa:mcp","action":"restart"})` only if the running MCP revision is stale. After an accepted MCP restart request, wait **5 seconds** before the first post-restart `mcp_version` retrieval, then verify activation independently; a queued restart or elapsed delay is not completion evidence. The command definition is not standing approval or an unattended updater. `mcp_reload` does not restart Python code.
+`mcp_auto_update` selects the AWA checkout update and MCP activation contract in [`command.yaml`](command.yaml), with the technical steps owned by [AWA Host](https://github.com/awa-si/awa/blob/main/mcp/host/README.md#gpt-operated-awa-self-update-sequence). When requested, present a native **Confirm & Execute** button with both effects explicitly selected; clicking it submits authorization as a new user message, never a direct host-tool call. If the UI control is unavailable, request equivalent explicit textual authorization. After confirmation, recheck preflight and provider admission. With approval for **both** operations: inspect the host checkout, fast-forward `awa-si/awa@main` using `host_exec(operation="git.pull")`, inspect the resulting checkout, then request `host_exec(operation="supervisor.control", arguments={"service":"awa:mcp","action":"restart"})` only if the running MCP revision is stale. After an accepted MCP restart request, wait **5 seconds** before the first post-restart `mcp_version` retrieval, then verify activation independently; a queued restart or elapsed delay is not completion evidence. The command definition is not standing approval or an unattended updater. `mcp_reload` does not restart Python code.
 
 ## Tool discovery responsibility
 
