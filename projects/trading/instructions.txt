@@ -31,6 +31,3 @@ cross_repository:
 - current_state_of_each_repository: authoritative
 - duplicate_domain_contracts_across_repositories: prohibited
 - cross_repository_change: verify_each_affected_repository_independently
-
-project_delta:
-- none
