@@ -51,7 +51,7 @@ registry:
         requires: workflow
       - id: mcp
         path: awa-si/admin/workflow/mcp.md
-        load: on_selected_AWA_MCP_route
+        load: on_selected_MCP_route
         requires: workflow
         discovery: mcp_model
         technical_sources: mcp_instructions

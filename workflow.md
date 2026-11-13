@@ -16,7 +16,7 @@ decision_bootstrap:
 - research_source: awa-si/admin/workflow/research.md_when_research_or_material_investigation_applies
 - authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
-- expand_on_demand: workflow/github.md_when_GitHub_capability_material_including_AWA_MCP_GitHub|workflow/mcp.md_when_AWA_MCP_route_selected
+- expand_on_demand: workflow/github.md_when_GitHub_capability_material_including_AWA_MCP_GitHub|workflow/mcp.md_when_MCP_route_selected
 - github_orientation: load_workflow/github.md_for_candidate_selection_before_final_GitHub_surface_decision;not_after_route_selection_only
 - user_says_github: domain_selection_only|resolve_actual_intent_before_route|never_treat_bare_github_word_as_workspace_or_mutation_authorization
 - github_intent_split: read|inspect|search|patch|write|delete_without_execution -> ChatGPT_GitHub_Connector_and_derivatives_default;repository_tests|development|run|build|debug_with_local_execution -> authorized_AWA_MCP_Workspace_default
@@ -65,7 +65,7 @@ tool_discovery_boundary:
 - native_execution_boundary: sandbox_results_do_not_prove_repository_write|host_state|persistent_job|deployment;external_repository_or_runtime_actions_need_their_own_authorized_route
 - repository_only: connected_GitHub_connector_remains_preferred_when_sufficient_for_requested_repository_write_and_verification
 - material_capability_missing: inspect_only_other_permitted_routes|report_actual_blocker_when_no_adequate_route
-- AWA_MCP_discovery: only_after_relevant_permitted_AWA_route;delegate_AWA_specific_tool_schema_and_technical_contract_to_workflow/mcp.md
+- mcp_discovery: only_after_selected_permitted_MCP_route;delegate_live_tool_schema_and_matching_technical_contract_to_workflow/mcp.md
 
 repository_discovery:
 - objective: locate_smallest_material_owner_and_dependency_set_with_minimum_repository_scan_cost
@@ -174,7 +174,7 @@ routing_decision_order:
   - exception: selected_native_capability_verified_unavailable_or_unsuitable; use_narrowest_otherwise_authorized_fallback
   - no_equivalent_permitted_route: report_actual_blocker
 - invalidation: repeat_affected_gates_only_when_product_mode|authorization|target|runtime_capability|workspace_ownership|material_scope_changes
-- route_definitions: github_routing_gate|github_patch|github_workspace|awa_mcp|github_actions
+- route_definitions: github_routing_gate|github_patch|github_workspace|mcp|github_actions
 - github_surfaces: ChatGPT_GitHub_Connector|ChatGPT_GitHub_Patch|ChatGPT_GitHub_Workspace|AWA_MCP_github_exec|AWA_MCP_Workspace_Git_via_workspace_exec
 - github_surface_map_owner: workflow/github.md#github_tool_orientation
 - AWA_direct_github_gate: requires_selected_permitted_AWA_MCP_route|live_github_exec_operation_schema|independent_provider_admission
@@ -431,13 +431,13 @@ failure_and_recovery:
 
 source_map:
 - workflow/github.md: github_tool_orientation|github_capability_detection|github_patch|repository_tool_routing|github_workspace|github_actions
-- workflow/mcp.md: awa_mcp
+- workflow/mcp.md: mcp
 
 loading:
 - entrypoint: workflow.md#routing_decision_order
 - common_workflow: loaded_with_workflow.md;not_a_separate_optional_source
 - mixed_and_unknown: mixed_case_handling|unknown_case_handling
-- route_details: load_workflow/github.md_when_any_GitHub_surface_material_including_AWA_MCP;load_workflow/mcp.md_when_AWA_MCP_route_selected
+- route_details: load_workflow/github.md_when_any_GitHub_surface_material_including_AWA_MCP;load_workflow/mcp.md_when_MCP_route_selected
 - cross_task_rules: awa-si/admin/behavior.yaml
 - project_files: resolve_at_chatgpt_project_layer_not_through_AWA_MCP
 - repository_agent: resolve_only_when_repository_context_active

@@ -9,10 +9,10 @@ admin_plane_reload:
   command: "reload admin"
   aliases: "reload admin plane|reload admin control plane"
   preferred_bootstrap: "read_awa-si/admin/core.yaml_via_connected_GitHub_connector"
-  returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_AWA_capability_discovery"
+  returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_selected_MCP_capability_discovery"
   optional_project_delta: "resolve_active_ChatGPT_project_then_load_if_accessible"
   repository_agent: "load_only_when_resolved_repository_context_is_active"
-  fallback: "use_connected_repository_or_project_files_if_AWA_bootstrap_is_unavailable_or_incomplete"
+  fallback: "use_connected_repository_or_project_files_if_Admin_bootstrap_is_unavailable_or_incomplete"
   cache_invalidation: "replace_previous_admin_snapshot_after_verified_read"
   runtime_reload_boundary: "mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload"
   do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
@@ -24,7 +24,7 @@ mcp_instruction_reload:
   operation_and_scope: "resolve_from_current_live_MCP_reload_schema_and_canonical_contract"
   side_effects_other_than_explicit_reload: "prohibited"
   prohibited_during_reload: "workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action"
-  "no_implicit_authorization_for_other_AWA_operations": true
+  "no_implicit_authorization_for_other_MCP_operations": true
   reload_is_not_proof_of_process_restart_or_live_code_activation: true
   "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 

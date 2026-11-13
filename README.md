@@ -46,7 +46,7 @@ core.yaml  (registry / resolver)
 1. Load `core.yaml` from the connected GitHub repository, then load `behavior.yaml` and `command.yaml` **always**.
 2. Evaluate relevant registry entries by task intent, scope and current product context. Load only matching files. For mixed requests, combine matching cases using `workflow.md#mixed_case_handling`, without redundant reads. For unmatched execution needs, use `workflow.md#unknown_case_handling` while retaining authorization and verification gates.
 3. Use `workflow.md#routing_decision_order` as the **sole normative execution-route precedence** when routing is material. The known cases in `workflow.md` aid classification but never grant permissions.
-4. Load `workflow/github.md` when GitHub capability is material, **including AWA MCP GitHub routes**, so GPT can orient among all five surfaces before final routing. Load `workflow/mcp.md` only when an AWA MCP route is selected. Both remain subject to the workflow and authorization gates. Coding and research modules can be loaded directly when their cases match. Within coding, independently evaluate each `core.yaml` nested module `read_when` gate. Load only matching complete module files; `read_when` does not stream partial file sections.
+4. Load `workflow/github.md` when GitHub capability is material, **including AWA MCP GitHub routes**, so GPT can orient among all five surfaces before final routing. Load `workflow/mcp.md` only when a permitted MCP route is selected. Both remain subject to the workflow and authorization gates. Coding and research modules can be loaded directly when their cases match. Within coding, independently evaluate each `core.yaml` nested module `read_when` gate. Load only matching complete module files; `read_when` does not stream partial file sections.
 5. When a ChatGPT Project is explicitly identified or exposed, verify its slug and read **all** existing files under `projects/<project>/*`. Never infer hidden UI project state. For an active target repository, read its `AGENTS.md` if present, otherwise use the Admin fallback.
 6. For unknown cases, preserve the existing workflow and authorization gates; do not invent permission, capability or completion evidence. Report unavailable required sources and incomplete reads precisely.
 
@@ -86,7 +86,7 @@ OpenAI's [Tool Search](https://developers.openai.com/api/docs/guides/tools-tool-
 
 ## Execution and verification
 
-Use the smallest permitted route that can complete the requested outcome, including its necessary tests or verification. `workflow.md` owns the shared lifecycle; provider-specific mechanics stay with their respective route files. For AWA MCP, use `mcp_model` for live capability discovery and `mcp_instructions` for **local technical documentation only**, not Admin policy loading. Discovery is not authorization or execution admission.
+Use the smallest permitted route that can complete the requested outcome, including its necessary tests or verification. `workflow.md` owns the shared lifecycle; provider-specific mechanics stay with their respective route files. For a selected MCP route, use `mcp_model` for live capability discovery and `mcp_instructions` for **matching technical documentation only**, not Admin policy loading. Discovery is not authorization or execution admission.
 
 Differentiate an observed GitHub write, a successful test, a deployed revision and an active runtime. Claim completion only to the level supported by actual evidence. Deployment and other material side effects require their applicable authorization.
 

@@ -29,6 +29,6 @@ execute:
   precedence: higher_priority_ChatGPT_instructions_then_behavior_then_applicable_sources_then_project_deltas_then_repository_agent
   overrides: explicit_only;parent_rules_remain_active
   routing: awa-si/admin/workflow.md#routing_decision_order_when_applicable
-  mcp: mcp_model|mcp_instructions_only_for_AWA_MCP_technical_discovery
+  mcp: mcp_model|mcp_instructions_only_for_selected_MCP_technical_discovery
   interfaces: current_live_provider_schema
   reload: on_source_or_scope_change_or_explicit_request
