@@ -40,6 +40,19 @@ auto_update:
     both_effects_must_be_explicitly_approved_before_mutation: true
     command_definition_is_not_future_authorization: true
     unattended_execution: prohibited
+  ui_confirmation:
+    read_when: "auto_update_requested_and_preflight_passed_before_host_mutation"
+    presentation: "render_native_chat_confirmation_button_when_supported"
+    title: "AWA Auto Update"
+    action_label: "Confirm & Execute"
+    summary: "git.pull_awa-si/awa@main|restart_awa:mcp_if_stale|wait_5_seconds_then_mcp_version_check"
+    confirmation_text: "I explicitly authorize both the host Git pull for awa-si/awa@main and the awa:mcp service restart if required."
+    interaction: "button_submits_confirmation_as_new_user_turn|never_directly_invokes_host_tools"
+    state: "disabled_until_user_explicitly_selects_both_effects"
+    cancellation: "no_mutation_when_not_confirmed_or_declined"
+    fallback: "ask_explicit_textual_authorization_for_both_effects_if_UI_button_unavailable"
+    execution_gate: "accept_only_explicit_current_request_confirmation|recheck_preflight_and_provider_authorization_before_mutation"
+    replay: "confirmation_single_workflow_only|no_standing_permission"
   preflight:
     - "verify_connected_GitHub_awa-si/awa@main_revision_and_current_live_provider_contract"
     - "read_mcp_version_before_mutation"
