@@ -57,8 +57,12 @@ auto_update:
     queued_or_inflight: "not_proof_of_completed_restart"
     uncertain_or_failed: "fail_closed_and_reconcile_independent_status_before_retry"
   verification:
-    - "mcp_version_after_reconnect_must_confirm_new_process_identity_and_loaded_commit"
-    - "inspect_service_health_and_report_evidence_separately"
-    - "distinguish_host_pulled|restart_requested|restart_completed|runtime_verified"
+    initial_post_restart_delay_seconds: 5
+    delay_after: "restart_request_accepted_before_first_post_restart_mcp_version_retrieval"
+    delay_scope: "only_when_MCP_restart_requested;not_required_if_no_restart"
+    checks:
+      - "mcp_version_after_reconnect_must_confirm_new_process_identity_and_loaded_commit"
+      - "inspect_service_health_and_report_evidence_separately"
+      - "distinguish_host_pulled|restart_requested|restart_completed|runtime_verified"
   unchanged: "no_unnecessary_restart_when_loaded_commit_matches_host_HEAD"
   prohibited: "arbitrary_shell|force_pull|host_permission_bypass|dependency_install|deployment|other_service_restart|other_repo_update"

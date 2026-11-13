@@ -272,7 +272,12 @@ def validate(repo: Path) -> dict:
         raise ValueError("auto update must inspect, pull, and verify the host checkout")
     if "supervisor.control" not in str(auto.get("activation", {}).get("action", "")):
         raise ValueError("auto update must use the restricted supervisor restart")
-    if "mcp_version" not in str(auto.get("verification")):
+    verification = auto.get("verification", {})
+    if not isinstance(verification, dict) or verification.get("initial_post_restart_delay_seconds") != 5:
+        raise ValueError("auto update requires a five-second delay before post-restart MCP validation")
+    if verification.get("delay_after") != "restart_request_accepted_before_first_post_restart_mcp_version_retrieval":
+        raise ValueError("auto update delay must precede the first post-restart MCP version retrieval")
+    if "mcp_version" not in str(verification.get("checks", [])):
         raise ValueError("auto update requires independent live process verification")
     if "mcp/host/README.md" not in str(auto.get("canonical_owner", "")):
         raise ValueError("auto update must defer to the canonical AWA host contract")
