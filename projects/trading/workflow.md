@@ -2,33 +2,16 @@ scope: project_workflow_delta
 project: trading
 mode: normative_machine_directives
 
-resolution:
-- parent: awa-si/admin/workflow.md
-- project_instructions: awa-si/admin/projects/trading/instructions.txt
-- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
-
 chat_handoff:
 - apply_when: new_chat_is_initialized_from_trading_handoff
-- default_workspace_behavior: inherit_global_handoff_workspace
-- required_project_context:
-  - repositories:
-    - awa-si/nautilus@main
-    - awa-si/nhsmm@v3
-    - awa-si/gbm@main
-  - active_owner
-  - active_repository
-  - active_branch
-  - resume_point
+- required_project_context: active_owner|active_repository|active_branch|resume_point
 - preserve_when_available: repository_heads|workspace_slot_bindings|active_jobs|artifacts|checkpoints|validation_state|pending_next_step
 - active_owner_values: nautilus|nhsmm|gbm|cross_repository
 - active_repository_must_match_active_owner: true
 - handoff_repository_heads: evidence_only_until_current_remote_heads_verified_when_material
 - inherited_workspace_binding: do_not_reimport_repository_if_existing_verified_slot_binding_matches
 - missing_or_changed_repository_state: resolve_current_owner_and_reconcile_before_write
-- cross_repository_resume:
-  - resolve_owner_before_each_material_change: true
-  - preserve_existing_repo_specific_branch: true
-  - verify_each_affected_repository_independently: true
+- cross_repository_resume: preserve_repo_specific_branch|verify_each_affected_repository_independently
 - do_not_duplicate_subproject_contracts_in_handoff: true
 
 parallel_chat:
