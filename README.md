@@ -30,7 +30,7 @@ core.yaml  (registry / resolver)
 | --- | --- |
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
-| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin plane`, `reload mcp`) |
+| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
 | [`workflow/coding.md`](workflow/coding.md) | Global engineering decisions and quality gates |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
