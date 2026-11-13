@@ -268,6 +268,17 @@ def validate(repo: Path) -> dict:
         raise ValueError("auto update requires explicit host pull and MCP restart authorization")
     if approval.get("unattended_execution") != "prohibited":
         raise ValueError("auto update must not permit unattended mutation")
+    ui = auto.get("ui_confirmation", {})
+    if ui.get("presentation") != "render_native_chat_confirmation_button_when_supported":
+        raise ValueError("auto update must offer native UI confirmation")
+    if ui.get("state") != "disabled_until_user_explicitly_selects_both_effects":
+        raise ValueError("auto update confirmation must cover both effects")
+    if "never_directly_invokes_host_tools" not in str(ui.get("interaction", "")):
+        raise ValueError("UI button must not execute host operations directly")
+    if "ask_explicit_textual_authorization" not in str(ui.get("fallback", "")):
+        raise ValueError("auto update requires fallback confirmation")
+    if "recheck_preflight" not in str(ui.get("execution_gate", "")):
+        raise ValueError("post-confirmation provider checks required")
     if "git.inspect" not in str(auto.get("preflight")) or "git.pull" not in str(auto.get("source_update")):
         raise ValueError("auto update must inspect, pull, and verify the host checkout")
     if "supervisor.control" not in str(auto.get("activation", {}).get("action", "")):
