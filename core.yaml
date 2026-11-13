@@ -46,7 +46,8 @@ registry:
         load: on_research_or_material_fact_check
       - id: github
         path: awa-si/admin/workflow/github.md
-        load: on_selected_GitHub_route
+        load: on_material_GitHub_capability_or_selected_GitHub_route_including_AWA_MCP_GitHub
+        read_when: repository_GitHub_access|ChatGPT_GitHub_connector|GitHub_Patch|GitHub_Workspace|AWA_MCP_github_exec|AWA_MCP_Workspace_Git
         requires: workflow
       - id: mcp
         path: awa-si/admin/workflow/mcp.md

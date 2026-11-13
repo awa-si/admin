@@ -1,7 +1,9 @@
 # Conditional workflow details: load only for the relevant selected route.
 
 github_tool_orientation:
-- purpose: orient_GPT_among_five_GitHub_access_and_execution_surfaces_before_invocation
+- purpose: orient_GPT_among_five_GitHub_access_and_execution_surfaces_before_route_selection_and_invocation
+- load_when: material_GitHub_capability_including_AWA_MCP_github_exec_or_AWA_MCP_Workspace_Git;do_not_wait_for_final_route_selection
+- route_selection_vs_execution: workflow.md_owns_precedence|this_file_classifies_surface_capabilities_and_transport_only
 - parent_route_authority: workflow.md#routing_decision_order
 - classification_is_not_authorization: true
 - surfaces:
@@ -70,10 +72,13 @@ github_capability_detection:
 - cache_key: authenticated_account|repository|default_branch|material_permission_or_capability_version
 - invalidate_when: authenticated_account_changed|repository_changed|permissions_changed|tool_surface_changed|explicit_reload
 - preferred_detection:
-  - authenticated_identity: current_GitHub_connector_identity
-  - repository_metadata: visibility|default_branch|permissions|available_workflow_evidence
-  - account_or_plan_metadata: use_when_current_connector_exposes_it
+  - ChatGPT_connector: use_current_connector_identity_and_repository_access_when_this_surface_is_material
+  - AWA_MCP_direct: use_live_mcp_model_github_exec_schema_and_independent_host_provider_access_when_route_permitted
+  - AWA_MCP_workspace: use_live_workspace_exec_schema_and_authorized_slot_repository_binding_when_route_permitted
+  - repository_metadata: visibility|default_branch|permissions|available_workflow_evidence_from_selected_provider
+  - account_or_plan_metadata: use_when_current_selected_connector_exposes_it
   - missing_plan_field: do_not_fail_or_repeat_discovery_per_prompt
+- no_eager_cross_provider_probe: inspect_only_material_eligible_candidates;do_not_probe_disabled_AWA_provider
 - concrete_capability_probe_over_plan_assumption: required_before_first_material_use
 - automatically_consider_when_material:
   - GitHub_Actions: clean_remote_verification|matrix_tests|hosted_runner_behavior|durable_SHA_tied_evidence|artifact_generation
@@ -102,7 +107,7 @@ github_patch:
 
 repository_tool_routing:
 - selection_precedence: routing_decision_order
-- first_step: github_tool_orientation_decision_process
+- first_step: github_tool_orientation_decision_process_before_final_route_selection
 - direct_connector_vs_patch: same_ChatGPT_GitHub_connector_transport|patch_adds_focused_edit_workflow_not_new_credentials
 - github_workspace_vs_connector: Workspace_is_local_execution_wrapper|remote_transport_remains_connector
 - awa_direct_vs_awa_workspace: github_exec_is_direct_API|workspace_exec_owns_slot_local_Git_and_push
