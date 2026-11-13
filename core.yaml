@@ -14,7 +14,8 @@ registry:
     cases:
       - id: coding
         path: awa-si/admin/workflow/coding.md
-        load: on_coding_or_implementation
+        load: on_coding_or_implementation_or_code_quality
+        read_when: implementation|code_design|refactor|test|test_design|lint|format|type_check|static_analysis|build_validation|benchmark|performance_review|dependency_selection|coding_documentation|security_review
       - id: research
         path: awa-si/admin/workflow/research.md
         load: on_research_or_material_fact_check
