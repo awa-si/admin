@@ -2,11 +2,6 @@ scope: project_workflow_delta
 project: nautilus
 mode: normative_machine_directives
 
-resolution:
-- parent: awa-si/admin/workflow.md
-- project_instructions: awa-si/admin/projects/nautilus/instructions.txt
-- inheritance: delta_only|explicit_override_only|parent_rules_remain_active
-
 historical_ml_validation:
 - short_tests_must_preserve: target_maturation|causal_OOF_coverage|purge|embargo
 - never_weaken_contract_to_make_short_test_pass: true
