@@ -1,108 +1,144 @@
 # Canonical user-command contracts. Always loaded via core.yaml.
+# Every command has the same top-level fields; command-specific directives live in details.
 scope: global_commands
 mode: normative_machine_directives
 owner: awa-si/admin/command.yaml
 inherits: awa-si/admin/behavior.yaml
 parent_rules_remain_active: true
 
+contract_fields: "command|aliases|syntax|read_when|workflow|load|scope|authorization|execution|output|side_effects|details"
+contract_semantics:
+  common_fields: "required_for_every_command|same_order_and_meaning|command_specific_rules_under_details"
+  details: "retained_normative_per_command_parameters|never_override_common_authorization_or_higher_priority_provider_gates"
+  workflow: "canonical_entrypoint_or_current_live_provider_contract|load_is_conditioned_by_read_when"
+  side_effects: "declares_only_possible_effects|does_not_bypass_provider_authorization"
+
 admin_plane_reload:
   command: "reload admin"
   aliases: "reload admin plane|reload admin control plane"
-  preferred_bootstrap: "read_awa-si/admin/core.yaml_via_connected_GitHub_connector"
-  returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_selected_MCP_capability_discovery"
-  optional_project_delta: "resolve_active_ChatGPT_project_then_load_if_accessible"
-  repository_agent: "load_only_when_resolved_repository_context_is_active"
-  fallback: "use_connected_repository_or_project_files_if_Admin_bootstrap_is_unavailable_or_incomplete"
-  cache_invalidation: "replace_previous_admin_snapshot_after_verified_read"
-  runtime_reload_boundary: "mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload"
-  do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
+  syntax: "reload admin"
+  read_when: "explicit_admin_plane_reload_command"
+  workflow: "awa-si/admin/core.yaml#registry"
+  load: "read_full_current_core_registry_and_always_loaded_behavior_and_command|resolve_matching_project_and_repository_sources"
+  scope: "ChatGPT_Admin_instruction_control_plane|current_verified_project_when_applicable"
+  authorization: "read_only_admin_instruction_refresh|no_runtime_restart_or_repository_mutation"
+  execution: "connected_GitHub_fetch_current_canonical_sources|verify_required_sources_and_replace_stale_admin_snapshot"
+  output: "loaded_source_inventory|revision_and_completeness|unread_sources_or_actual_blockers"
+  side_effects: "read_only|no_MCP_runtime_reload|no_workspace_or_repository_mutation"
+  details:
+    preferred_bootstrap: "read_awa-si/admin/core.yaml_via_connected_GitHub_connector"
+    returned_documents: "resolve_current_admin_files_from_core_index|verify_completeness|use_mcp_model_only_for_selected_MCP_capability_discovery"
+    optional_project_delta: "resolve_active_ChatGPT_project_then_load_if_accessible"
+    repository_agent: "load_only_when_resolved_repository_context_is_active"
+    fallback: "use_connected_repository_or_project_files_if_Admin_bootstrap_is_unavailable_or_incomplete"
+    cache_invalidation: "replace_previous_admin_snapshot_after_verified_read"
+    runtime_reload_boundary: "mcp_reload_is_a_separate_explicit_MCP_runtime_action_not_part_of_admin_plane_reload"
+    do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
 
 chat_handoff:
   command: "chat_handoff"
+  aliases: "chat_handoff"
   syntax: "chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]"
-  read_when: explicit_chat_handoff_command
+  read_when: "explicit_chat_handoff_command"
   workflow: "awa-si/admin/workflow/chat-handoff.md"
   load: "read_full_current_workflow_on_invocation"
   scope: "same_project_when_verified|current_chat_partial_fallback_when_project_inferred_or_unknown"
-  source_default: "no_argument_or_list_show_project_chat_overview|current_summarizes_current_chat|CHAT_NAME_or_overview_number_summarizes_selected_chat"
+  authorization: "default_read_only|workspace_suffix_opt_in_is_not_foreign_workspace_adoption_approval|provider_admission_and_specific_reuse_consent_required"
+  execution: "project_chat_overview_or_selected_context_summary|workspace_continuity_only_when_explicit_suffix_and_authorized"
   output: "Project Chat Overview_then_selection|Context Summary_for_selected_chat|Previous Context Captured_note_after_usable_response|Nothing found_only_for_authoritatively_empty_project_listing|adaptive_length|no_persistence_claim"
-  workspace_coupling:
-    mode: "explicit_workspace_suffix_only|default_context_only|successor_chat_first"
-    selected_previous: "context_first_then_existing_checkpoint_fallback_then_workspace_resolution"
-    workspace_resolution: "first_current_chat_authorized_binding|then_all_registry_pages_for_exact_repository|never_infer_from_chat_title"
-    with_source_token: "session.handoff_action_accept_only_after_user_consent_and_provider_admission"
-    without_source_token: "session.select_cross_chat_reuse_only_after_explicit_candidate_specific_choice_and_provider_admission|no_automatic_slot_transfer"
-    current_optional: "chat_handoff_current_workspace_may_prepare_session.handoff_action_prepare_but_not_prerequisite_for_successor_recovery"
-    context_order: "authorized_original_chat_context_first|previously_existing_session_checkpoint_as_fallback_only"
-    permission: "workspace_suffix_requests_continuity_but_does_not_approve_specific_foreign_workspace|checkpoint_never_authorizes_workspace"
-    credentials: "bearer_tokens_private|never_include_in_Context_Summary_or_memory|use_only_via_authorized_provider"
-    post_handoff: "verify_live_repository_slots_dirty_state_jobs_and_ownership|never_claim_running_job_replayed"
   side_effects: "default_read_only|workspace_suffix_explicit_opt_in_only|no_implicit_MCP_binding_or_workspace_mutation|no_repo_write_or_job_replay|no_checkpoint_creation_by_default"
+  details:
+    source_default: "no_argument_or_list_show_project_chat_overview|current_summarizes_current_chat|CHAT_NAME_or_overview_number_summarizes_selected_chat"
+    workspace_coupling:
+      mode: "explicit_workspace_suffix_only|default_context_only|successor_chat_first"
+      selected_previous: "context_first_then_existing_checkpoint_fallback_then_workspace_resolution"
+      workspace_resolution: "first_current_chat_authorized_binding|then_all_registry_pages_for_exact_repository|never_infer_from_chat_title"
+      with_source_token: "session.handoff_action_accept_only_after_user_consent_and_provider_admission"
+      without_source_token: "session.select_cross_chat_reuse_only_after_explicit_candidate_specific_choice_and_provider_admission|no_automatic_slot_transfer"
+      current_optional: "chat_handoff_current_workspace_may_prepare_session.handoff_action_prepare_but_not_prerequisite_for_successor_recovery"
+      context_order: "authorized_original_chat_context_first|previously_existing_session_checkpoint_as_fallback_only"
+      permission: "workspace_suffix_requests_continuity_but_does_not_approve_specific_foreign_workspace|checkpoint_never_authorizes_workspace"
+      credentials: "bearer_tokens_private|never_include_in_Context_Summary_or_memory|use_only_via_authorized_provider"
+      post_handoff: "verify_live_repository_slots_dirty_state_jobs_and_ownership|never_claim_running_job_replayed"
 
 mcp_instruction_reload:
-  trigger_phrase: "reload mcp"
-  semantics: "explicitly_requested_MCP_runtime_reload_then_reread_canonical_instructions"
-  execution_mode: "controlled_reload"
-  operation_and_scope: "resolve_from_current_live_MCP_reload_schema_and_canonical_contract"
-  side_effects_other_than_explicit_reload: "prohibited"
-  prohibited_during_reload: "workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action"
-  "no_implicit_authorization_for_other_MCP_operations": true
-  reload_is_not_proof_of_process_restart_or_live_code_activation: true
-  "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
+  command: "reload mcp"
+  aliases: "reload mcp"
+  syntax: "reload mcp"
+  read_when: "explicit_mcp_instruction_reload_command"
+  workflow: "awa-si/admin/workflow/mcp.md|current_live_MCP_reload_contract"
+  load: "on_explicit_MCP_route_only|discover_deployed_schema_and_matching_technical_contract"
+  scope: "selected_MCP_instruction_runtime_reload_only"
+  authorization: "explicit_current_reload_mcp_request|provider_admission_and_applicable_approvals_required|no_other_MCP_mutation"
+  execution: "controlled_reload_using_current_live_MCP_reload_schema|reread_canonical_instructions"
+  output: "reload_receipt|verified_instruction_source_state|runtime_activation_qualified_by_actual_evidence"
+  side_effects: "explicit_MCP_reload_only|no_workspace_or_repository_write|no_background_jobs_or_unrelated_external_action"
+  details:
+    trigger_phrase: "reload mcp"
+    semantics: "explicitly_requested_MCP_runtime_reload_then_reread_canonical_instructions"
+    execution_mode: "controlled_reload"
+    operation_and_scope: "resolve_from_current_live_MCP_reload_schema_and_canonical_contract"
+    side_effects_other_than_explicit_reload: "prohibited"
+    prohibited_during_reload: "workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action"
+    "no_implicit_authorization_for_other_MCP_operations": true
+    reload_is_not_proof_of_process_restart_or_live_code_activation: true
+    "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 
 mcp_auto_update:
   command: "update mcp"
   aliases: "update mcp|auto update"
-  read_when: explicit_mcp_auto_update_command
-  target: "awa-si/awa@main"
+  syntax: "update mcp|auto update"
+  read_when: "explicit_mcp_auto_update_command"
+  workflow: "awa-si/awa@main:mcp/host/workflow/update.md"
+  load: "on_explicit_update_mcp_command|read_current_host_contract_and_live_mcp_diagnostic_schema"
   scope: "host_checkout_/opt/awa|session_checkpoint_before_restart|supervisor_service_awa:mcp"
-  canonical_owner: "awa-si/awa@main:mcp/host/README.md#gpt-operated-awa-self-update-sequence"
-  implementation: "awa-si/awa@main:mcp/host/self_update.py"
-  command_authorization:
-    exact_current_user_command: "update mcp|auto update"
-    authorizes_once: "fixed_host_fast_forward_pull_awa-si/awa@main|conditional_awa:mcp_restart_when_loaded_commit_stale"
-    additional_confirmation: "not_required|do_not_render_Confirm_Execute_UI_or_ask_again"
-    boundaries: "no_standing_permission|no_unattended_execution|no_other_repository_or_service|provider_admission_still_authoritative"
-    other_host_mutations: "require_separate_explicit_user_authorization"
-  executor:
-    primary: "mcp_diagnostic(operation='update')"
-    entrypoint_owner: "awa-si/awa@main:mcp/tools/runtime_tools.py"
-    implementation_owner: "awa-si/awa@main:mcp/host/self_update.py"
-    call_once_per_explicit_current_command: true
-    authorization: "current_exact_update_mcp_or_auto_update_command_covers_fixed_pull_and_conditional_restart_once|provider_admission_required"
-    no_duplicate_execution: "do_not_add_separate_host_exec_git.pull_or_supervisor.control_calls_after_diagnostic_update"
-    live_schema: "resolve_current_mcp_model_schema_for_mcp_diagnostic_before_call"
-  preflight:
-    - "verify_connected_GitHub_awa-si/awa@main_remote_HEAD_and_current_AWA_host_contract"
-    - "read_mcp_version_before_mutation_and_record_process_identity_and_loaded_commit"
-    - "use_live_read_only_host_exec_git.inspect_awa_to_verify_clean_trusted_/opt/awa_main_origin/main_checkout"
-    - "verify_current_exact_update_mcp_or_auto_update_command_authorizes_both_fixed_effects"
-    - "confirm_openai/session_correlation_available_for_checkpoint_before_mutation"
-    - "recheck_live_provider_admission_before_invoking_primary_executor"
-  execution:
-    - "invoke_primary_mcp_diagnostic_update_once_only"
-    - "inspect_returned_host_commit|host_updated|loaded_process_commit|session_checkpoint|status|restart_requested|activation_pending"
-    - "when_restart_needed_require_saved_session_checkpoint_and_preserve_its_handoff_token_as_private_bearer_credential"
-    - "checkpoint_failure_after_pull_blocks_restart_and_requires_host_state_reconciliation"
-    - "require_update_receipt_consistent_with_live_verified_remote_revision"
-    - "do_not_treat_restart_queued|restart_already_pending|restart_inflight_as_runtime_verified"
-  internal_sequence_reference:
-    owner: "awa-si/awa@main:mcp/host/self_update.py"
-    sequence: "host_exec_git.inspect_awa -> host_exec_git.pull_awa -> host_exec_git.inspect_awa -> session.checkpoint_if_stale -> host_exec_supervisor.control_awa:mcp_restart_if_stale"
-    semantics: "implementation_only;never_repeat_individual_mutations_after_primary_executor"
-  activation:
-    restart_decision: "owned_by_primary_executor_based_on_loaded_commit_vs_verified_host_commit"
-    handoff: "worker_owned_asynchronous_MCP_restart"
-    session_checkpoint: "bounded_v2_state_plus_opt_in_gateway_trace;token_private;no_automatic_chat_transcript_or_job_replay"
-    queued_or_inflight: "not_proof_of_completed_restart"
-    uncertain_or_failed: "fail_closed_and_reconcile_independent_status_before_retry"
-  verification:
-    initial_post_restart_delay_seconds: 5
-    delay_after: "restart_request_accepted_before_first_post_restart_mcp_version_retrieval"
-    delay_scope: "only_when_MCP_restart_requested;not_required_if_no_restart"
-    checks:
-      - "mcp_version_after_reconnect_must_confirm_new_process_identity_and_loaded_commit"
-      - "inspect_service_health_and_report_evidence_separately"
-      - "distinguish_host_pulled|restart_requested|restart_completed|runtime_verified"
-  unchanged: "no_unnecessary_restart_when_loaded_commit_matches_host_HEAD"
-  prohibited: "arbitrary_shell|force_pull|host_permission_bypass|dependency_install|deployment|other_service_restart|other_repo_update"
+  authorization: "exact_current_update_mcp_or_auto_update_command_authorizes_once_fixed_fast_forward_pull_and_conditional_restart|no_second_confirmation|provider_admission_required"
+  execution: "mcp_diagnostic(operation='update')_once_only|no_duplicate_host_mutations"
+  output: "host_revision|loaded_revision|checkpoint_and_restart_status|runtime_identity_and_service_health_verification"
+  side_effects: "one_fixed_host_pull|conditional_awa:mcp_restart_only|no_unrelated_repo_or_service_mutation"
+  details:
+    target: "awa-si/awa@main"
+    canonical_owner: "awa-si/awa@main:mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence"
+    implementation: "awa-si/awa@main:mcp/host/self_update.py"
+    command_authorization:
+      exact_current_user_command: "update mcp|auto update"
+      authorizes_once: "fixed_host_fast_forward_pull_awa-si/awa@main|conditional_awa:mcp_restart_when_loaded_commit_stale"
+      additional_confirmation: "not_required|do_not_render_Confirm_Execute_UI_or_ask_again"
+      boundaries: "no_standing_permission|no_unattended_execution|no_other_repository_or_service|provider_admission_still_authoritative"
+      other_host_mutations: "require_separate_explicit_user_authorization"
+    executor:
+      primary: "mcp_diagnostic(operation='update')"
+      entrypoint_owner: "awa-si/awa@main:mcp/tools/runtime_tools.py"
+      implementation_owner: "awa-si/awa@main:mcp/host/self_update.py"
+      call_once_per_explicit_current_command: true
+      authorization: "current_exact_update_mcp_or_auto_update_command_covers_fixed_pull_and_conditional_restart_once|provider_admission_required"
+      no_duplicate_execution: "do_not_add_separate_host_exec_git.pull_or_supervisor.control_calls_after_diagnostic_update"
+      live_schema: "resolve_current_mcp_model_schema_for_mcp_diagnostic_before_call"
+    preflight:
+      - "verify_connected_GitHub_awa-si/awa@main_remote_HEAD_and_current_AWA_host_contract"
+      - "read_mcp_version_before_mutation_and_record_process_identity_and_loaded_commit"
+      - "use_live_read_only_host_exec_git.inspect_awa_to_verify_clean_trusted_/opt/awa_main_origin/main_checkout"
+      - "verify_current_exact_update_mcp_or_auto_update_command_authorizes_both_fixed_effects"
+      - "confirm_openai/session_correlation_available_for_checkpoint_before_mutation"
+      - "recheck_live_provider_admission_before_invoking_primary_executor"
+    internal_sequence_reference:
+      owner: "awa-si/awa@main:mcp/host/self_update.py"
+      sequence: "host_exec_git.inspect_awa -> host_exec_git.pull_awa -> host_exec_git.inspect_awa -> session.checkpoint_if_stale -> host_exec_supervisor.control_awa:mcp_restart_if_stale"
+      semantics: "implementation_only;never_repeat_individual_mutations_after_primary_executor"
+    activation:
+      restart_decision: "owned_by_primary_executor_based_on_loaded_commit_vs_verified_host_commit"
+      handoff: "worker_owned_asynchronous_MCP_restart"
+      session_checkpoint: "bounded_v2_state_plus_opt_in_gateway_trace;token_private;no_automatic_chat_transcript_or_job_replay"
+      queued_or_inflight: "not_proof_of_completed_restart"
+      uncertain_or_failed: "fail_closed_and_reconcile_independent_status_before_retry"
+    verification:
+      initial_post_restart_delay_seconds: 5
+      delay_after: "restart_request_accepted_before_first_post_restart_mcp_version_retrieval"
+      delay_scope: "only_when_MCP_restart_requested;not_required_if_no_restart"
+      checks:
+        - "mcp_version_after_reconnect_must_confirm_new_process_identity_and_loaded_commit"
+        - "inspect_service_health_and_report_evidence_separately"
+        - "distinguish_host_pulled|restart_requested|restart_completed|runtime_verified"
+    unchanged: "no_unnecessary_restart_when_loaded_commit_matches_host_HEAD"
+    prohibited: "arbitrary_shell|force_pull|host_permission_bypass|dependency_install|deployment|other_service_restart|other_repo_update"
+
