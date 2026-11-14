@@ -156,8 +156,7 @@ authorization to reuse an arbitrary foreign Workspace.
 
 For optional MCP use, load the applicable `awa-si/admin/workflow.md`
 and `workflow/mcp.md` under routing rules, followed by the current
-`awa-si/awa@mcp/session/contract.md` (actual repository path:
-`mcp/session/contract.md`) and the matching technical workflow:
+`awa-si/awa@main:mcp/session/contract.md` and the matching technical workflow:
 `mcp/session/workflow/checkpoint.md` for bounded notes,
 `mcp/session/workflow/continuity.md` for rights separation, and
 `mcp/workspace/workflow/session.md` plus `reuse.md` for slot transfer.
