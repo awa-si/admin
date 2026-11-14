@@ -6,7 +6,7 @@ owner: awa-si/admin/workflow/chat-handoff.md
 command_owner: awa-si/admin/command.yaml#chat_handoff
 read_when: explicit_chat_handoff_command_only
 inherits: awa-si/admin/behavior.yaml|awa-si/admin/command.yaml|applicable_project_deltas
-side_effects: default_read_only|explicit_workspace_mode_may_transfer_provider_authorized_source_slots|no_implicit_MCP|no_job_execution|no_repo_mutation|no_automatic_checkpoint
+side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owner_source_slots|no_implicit_MCP|no_job_execution|no_repo_mutation|checkpoints_suspended
 
 ## Purpose and invocation
 
@@ -27,7 +27,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_provider_au
 
 - With no source selected, **both routes stop at Project Chat Overview**. Do not inspect or mutate Workspaces from an overview alone.
 - An overview-number selection is valid only in the same conversation where the number-to-chat mapping was displayed. Never infer a Workspace request from an earlier listing; the selection must explicitly contain `workspace`.
-- The `workspace` suffix expresses adoption intent, but a trusted identity assertion and independent provider admission remain mandatory.
+- The `workspace` suffix requests Workspace continuity; provider admission and the verified single-owner gateway boundary remain mandatory.
 - The default route never calls `mcp_model`, `session_exec` or `workspace_exec`.
 
 ## Route 1 — Context only
@@ -39,42 +39,36 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_provider_au
 
 ## Route 2 — Context + Workspace (including slots)
 
-1. **Successor-chat first.** Select the source chat, use only the most recent
-   5–10 accessible interactions for Context Summary (same as Route 1). Context and
-   Session checkpoints never authorize Workspace transfer.
-2. **Trusted identity bridge.** Require a separately authenticated ChatGPT
-   provider integration to verify the selected source and current target
-   conversation under the same authorized principal. The bridge must issue a
-   short-lived signed assertion binding both durable AWA correlation digests
-   and the exact existing Workspace ID. Neither the chat title nor MCP
-   request metadata suffices as a source-chat identity proof.
-3. **Automatic adoption when authorized.** With the private provider assertion,
-   explicit `workspace` intent and provider admission, call
-   `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "action":"adopt", "assertion":"PRIVATE_PROVIDER_ASSERTION", "approved":true})`.
-   The MCP verifies signature, source/target and live repository bindings.
-   All slots belonging to that source within the specified Workspace are
-   atomically assigned to the destination. Worktrees, edits, jobs and shared
-   environment remain unchanged. No new workspace or repository import.
-4. **Verification.** Inspect current-chat reservations and live Git/job
-   evidence. Report `workspace_continuity=transferred` only upon verifiable
-   provider receipts. Repeated identical authorized transfers are idempotent.
-5. **Missing bridge or denial.** Preserve the useful Context Summary;
-   report `workspace_continuity=blocked` with the exact provider gap. Do not
-   infer authorization from conversation history or silently replace slot
-   transfer with `session.select`. Legacy explicitly authorized token-based
-   `session.handoff(action="accept")` remains available independently.
-6. **Scope.** This adoption is atomic for all source slots in one Workspace.
-   Multi-Workspace all-or-nothing transfer is not implemented; do not
-   falsely claim a global transaction.
+1. Recover only the same most recent 5–10 accessible source-chat interactions
+   used in Route 1. Historical context is not an MCP access credential.
+2. Resolve the existing Workspace ID from grounded recent context or current
+   provider evidence. Do not invent the mapping from ChatGPT title to the AWA
+   correlation digest. The destination is the invoking MCP conversation.
+3. For an operator-verified **single-owner MCP**, call
+   `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "approved":true})`.
+   The MCP resolves the only other slot-holding conversation automatically.
+   If multiple sources are present, use an exact independently grounded
+   `source_conversation_id` selector; never guess from title or recency.
+4. The backend checks the host-only `AWA_MCP_SINGLE_OWNER_AUTH_VERIFIED=true`
+   gate. The operator may set this only after independently confirming that
+   all MCP ingress is exclusively authenticated for this one owner. It then
+   validates live Git bindings and atomically transfers **all source-chat
+   reservations within the Workspace** to the current chat. Existing
+   destination slots remain; worktrees, dirty state, jobs and environment
+   are untouched.
+5. Verify the destination's actual slot reservations and native Workspace
+   receipt. Report `transferred|already_bound|ambiguous|blocked|not_found`
+   without claiming success from an unavailable or unverified provider.
+   A different source-chat owner or shared MCP ingress must fail closed.
+6. The transfer covers **one Workspace per call**; it is not an atomic
+   cross-Workspace transfer. Do not start jobs, re-import repositories, clean
+   worktrees, restart services or replay unfinished tasks.
 
-**Security:** A signed assertion must originate from the independently
-authenticated provider bridge, not GPT, client-generated metadata, source
-title, repository state or memory. The MCP currently cannot manufacture
-source-chat authorization on its own. The assertion is private and must never
-be included in any summary, logs or repository.
-
-**No side effects beyond verified slot ownership transfer:** No job execution,
-Git mutation, cleanup, replay or deployment.
+**Checkpoint suspended:** `session_exec` checkpoint code and historical
+records remain in MCP but are disabled by default and are not used by either
+route, including MCP self-update. No prepare/accept handshake, bearer token,
+signed assertion or external ChatGPT identity bridge participates in the
+normal Workspace handoff.
 
 ## Project Chat Overview — first step
 
