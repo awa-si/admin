@@ -16,14 +16,18 @@ load:
   repository_agent: <resolved_repository>/AGENTS.md_if_repository_active
   fallback_agent: awa-si/admin/AGENTS.md#fallback_repository_agent
   duplicate_reads: avoid_when_same_verified_revision_already_loaded
+  fresh_chat_minimum: core.yaml_then_full_behavior.yaml_and_command.yaml
+  defer: workflow.md_until_execution_or_routing_applicable|coding_research_github_mcp_chat_handoff_until_matching_case|target_AGENTS.md_until_repository_active
+  evidence: record_current_repository_ref_and_loaded_file_sha_when_available
 
 resolve:
   project: exposed_ChatGPT_Project_name_or_explicit_context;never_guess_hidden_UI_state
   slug: lowercase_hyphenated;verify_against_projects_directory
   repository: project_instructions_or_current_task_context;never_assume
-  project_absent: inherit_global
+  project_absent: inherit_global_only_after_verified_directory_absence|unavailable_listing_is_not_absence
   unreadable_project_file: report_exact_gap;never_claim_complete_load
   unavailable_required_source: report_exact_gap;never_claim_loaded
+  bootstrap_status: loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown
 
 execute:
   precedence: higher_priority_ChatGPT_instructions_then_behavior_then_applicable_sources_then_project_deltas_then_repository_agent

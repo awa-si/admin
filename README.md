@@ -58,6 +58,16 @@ core.yaml  (registry / resolver)
 
 Project and repository rules extend applicable parent rules; overrides must be explicit. Higher-priority ChatGPT instructions remain authoritative. Repository state and live provider schemas determine the actual available operations.
 
+## Fresh-chat bootstrap
+
+On a new chat with configured Admin instructions, resolve the current control plane from the connected GitHub repository. **Minimal mandatory reads:** full current `core.yaml`, `behavior.yaml` and `command.yaml`. A prior-chat summary, a remembered revision, or mere GitHub file metadata is not equivalent to reading those sources in the new chat.
+
+If a ChatGPT Project is explicitly exposed or supplied, verify its slug and inspect the project directory. Read **every** existing `projects/<project>/*` file completely; if the directory is **verified absent**, inherit global rules. An unavailable or incomplete directory listing is a blocker, not evidence of absence. Only when repository context is active, resolve its actual repository and read its `AGENTS.md` or the Admin fallback. Do not assume that the name of the ChatGPT Project identifies its GitHub repository.
+
+Load `workflow.md` and specialized sources only when their independent registry gates match the task. Starting a new chat does not itself authorize MCP discovery, Workspace slot binding or code execution. Reuse a verified loaded source within the same unchanged chat/revision/scope; refresh when the source or scope changes or the user explicitly requests it.
+
+Report bootstrap evidence as `loaded_verified`, `not_applicable`, `absent_verified`, `unavailable`, `partial` or `unknown`. Keep **source loading** separate from **runtime activation** and from any simulated new-chat scenario.
+
 ## Context management and chat handoff
 
 Global `behavior.yaml#context_management` focuses active context on the current task, avoids redundant source/tool output, retains only durable reusable Memory candidates and logically consolidates material task transitions. It does **not** clear already-used context tokens or directly control Memory persistence. The selected-MCP route follows [`workflow/mcp.md`](workflow/mcp.md), which loads only necessary technical instructions and live schemas while preserving required authoritative source reads and admission checks.

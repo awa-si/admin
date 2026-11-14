@@ -106,6 +106,14 @@ registry:
     fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
 
 resolution:
+  fresh_chat_bootstrap:
+    phase_1_minimum: connected_GitHub_read_full_current_core.yaml_then_behavior.yaml_and_command.yaml
+    phase_2_project: when_project_explicitly_exposed_or_verified|verify_slug_against_projects_directory|enumerate_all_existing_project_files_and_read_each_fully|absent_directory_inherit_global
+    phase_3_repository: only_when_repository_context_active|derive_from_project_or_task|read_current_target_AGENTS.md_if_present_else_Admin_fallback
+    phase_4_conditional: evaluate_task_intent_and_independent_registry_gates|load_only_matching_workflows_and_modules|workflow.md_only_when_applicable
+    refresh: once_per_chat_per_verified_revision_and_scope|refresh_on_source_change_scope_change_or_explicit_user_request
+    reporting: distinguish_loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown
+    no_implicit_actions: creating_a_new_chat_does_not_authorize_MCP_discovery|Workspace_binding|repository_mutation|deployment_or_handoff
   registry_semantics: ordered_parent_case_source_graph_not_instruction_priority
   case_loading: evaluate_each_case_condition_independently;parent_not_implicitly_loaded
   route_authority: awa-si/admin/workflow.md#routing_decision_order

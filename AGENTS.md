@@ -63,6 +63,8 @@ startup:
 - read: AGENTS.md
 - then_load_owner_files_required_by_task: true
 - global_bootstrap: core.yaml_registry -> behavior.yaml_always -> command.yaml_always -> matching_conditional_sources
+- new_chat_bootstrap: read_full_current_core_behavior_command_via_connected_GitHub|verify_project_slug_and_complete_project_directory_if_present|read_target_repo_agent_only_when_repo_active|resolve_conditional_workflows_on_task_demand
+- bootstrap_status: loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown|never_claim_complete_when_required_source_unreadable
 - chat_handoff: command.yaml#chat_handoff_trigger -> full_workflow/chat-handoff.md_on_invocation
 - core_semantics: ordered_source_graph_not_authority_priority
 - conditional_coding_modules: evaluate_each_core.yaml_coding.modules_read_when_independently_and_load_matching_full_files_only
