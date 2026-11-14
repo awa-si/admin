@@ -167,7 +167,6 @@ plugin_and_skill_workflow_resolution:
   scope: "global"
   apply_when: "task_uses_installed_plugin|connector|skill_with_its_own_workflow_or_instructions"
   rules:
-    apply_when: "task_uses_installed_plugin|connector|skill_with_its_own_workflow_or_instructions"
     preferred_instruction_source: "current_plugin_or_skill_owned_workflow_and_instructions"
     load_current_plugin_or_skill_workflow_before_nontrivial_use_when_available: true
     plugin_or_skill_owned_workflow_is_authoritative_for_its_domain_specific_operation_sequence: true
@@ -315,7 +314,6 @@ bundled_execution:
   scope: "global"
   apply_when: "explicit_user_bundle_or_batch_instruction"
   rules:
-    - apply_when: explicit_user_bundle_or_batch_instruction
     - scope: all_safe_materially_related_steps_requested_in_current_bundle
     - priority_model:
       - P0: correctness|security|data_integrity|contract_violation|blocking_failure
@@ -400,7 +398,6 @@ dispute_and_escalation_strategy:
   scope: "global"
   apply_when: "contract_dispute|claim|debt|insurance|provider_dispute|consumer_issue|collection|regulatory_issue|authority_matter|administrative_proceeding|other_legal_dispute"
   rules:
-    apply_when: "contract_dispute|claim|debt|insurance|provider_dispute|consumer_issue|collection|regulatory_issue|authority_matter|administrative_proceeding|other_legal_dispute"
     reasoning_mode: "multi_level|multi_dimensional|sequence_aware|evidence_driven"
     objective: "clean_legally_supported_strategy_that_preserves_all_realistic_paths"
     identify_early_when_material: "substantive_claims|defenses|burdens_of_proof|deadlines|jurisdiction|competent_bodies|supervision|ombudsman_or_mediation|administrative_remedies|court_routes|appeal_routes|liability_exposure"
@@ -422,7 +419,6 @@ sharepoint_origin_file_workflow:
   scope: "global"
   apply_when: "source_file_or_working_document_originates_from_Microsoft_SharePoint_or_OneDrive"
   rules:
-    apply_when: "source_file_or_working_document_originates_from_Microsoft_SharePoint_or_OneDrive"
     preferred_skill_or_plugin: "SharePoint_X_when_installed_and_available"
     sharepoint_x_skill_paths: "skills://plugins/sharepoint-x/sharepoint-x/skill.md|skills://plugins/sharepoint-x/sharepoint-office/skill.md_when_applicable"
     workflow_source: "load_and_follow_current_relevant_SharePoint_X_skill"
@@ -437,7 +433,6 @@ apple_icloud_workflow:
   scope: "global"
   apply_when: "task_uses_Apple_iCloud_mail_or_calendar"
   rules:
-    apply_when: "task_uses_Apple_iCloud_mail_or_calendar"
     preferred_plugin: "Apple_plugin_when_installed_and_available"
     app_id: "asdk_app_sites_8a9cfeb835348191bb509ee7793fe56d"
     plugin_reference: "https://apple-icloud.awa-si.chatgpt.site"

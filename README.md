@@ -70,6 +70,8 @@ Global `behavior.yaml#context_management` focuses active context on the current 
 `Nothing found` applies only to a completed authoritative empty project listing, not an unavailable listing. `Previous Context Captured` confirms visible response output, not automatic destination-chat, file, Memory or checkpoint persistence. Workspace transfer and slot ownership require independent native receipts.
 
 
+The Trading project retains the same 5–10-interaction Context Summary limit. Missing active owner, repository, branch or resume point is marked unknown in the summary and, when needed for subsequent work, resolved separately from current authorized sources; older chat history is not silently imported.
+
 ## Global behavior rule contract and priority
 
 [`behavior.yaml`](behavior.yaml) defines `rule_contract` with **four identical fields in every one of its 23 rule blocks**: `priority` (1 = highest), `scope`, `apply_when` and `rules`. The prior normative content—including nested rules, booleans and lists—is retained under `rules`. The `apply_when` field is now explicit for all 23 blocks; universal correctness and communication requirements remain global, while specialized rules activate on the matching task, provider or repository event. Explicit ordinal priority matches the physical top-to-bottom order; an earlier applicable block takes precedence only for unresolved conflicts at the same instruction authority. Every applicable rule remains active unless explicitly overridden by a higher-authority instruction. This local order does not supersede ChatGPT's instruction hierarchy, provider admission or the independent `core.yaml` source registry, nor does it force unrelated workflows to load.
