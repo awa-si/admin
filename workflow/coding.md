@@ -10,7 +10,7 @@ resolution:
 - execution_owner: awa-si/admin/workflow.md
 - research_owner: awa-si/admin/workflow/research.md
 - repository_policy_owner: current_repository_AGENTS_md_and_narrowest_technical_contract
-- conditional_sources: core.yaml#registry.coding.modules
+- conditional_sources: core.yaml#registry.workflow.cases[id=coding].modules
 - loading_boundary: full_root_and_only_matching_full_module_files
 - override: explicit_only;parent_rules_remain_active
 - unrequested_work: no_unrelated_upgrade|migration|refactor|lint_cleanup

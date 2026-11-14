@@ -6,7 +6,7 @@ resolution:
 - load_when: search|lookup|research|investigation|material_fact_check|source_verification
 - behavior_owner: awa-si/admin/behavior.yaml
 - routing_owner: awa-si/admin/workflow.md#routing_decision_order_when_execution_or_provider_selection_is_material
-- conditional_sources: core.yaml#registry.research.modules
+- conditional_sources: core.yaml#registry.workflow.cases[id=research].modules
 - loading_boundary: load_this_short_root_then_only_matching_full_research_module_files
 - overrides: project_and_repository_rules_explicit_only|parent_rules_remain_active
 

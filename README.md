@@ -42,7 +42,7 @@ core.yaml  (registry / resolver)
 | [`workflow/research.md`](workflow/research.md) | Direct ChatGPT search/research by default; permitted MCP Agent/Intelligence for heavy cross-source or specialized research; topic modules on demand |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
 | [`workflow/mcp.md`](workflow/mcp.md) | Minimal MCP bootstrap; live discovery resolves provider-specific technical contracts |
-| [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Generic command-only project chat overview and selected-chat Context Summary; no MCP binding or persistence claim |
+| [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Two explicit routes: read-only recent-chat Context Summary, or authorized Workspace/slot continuation via current MCP provider |
 | [`projects/template.txt`](projects/template.txt) | ChatGPT Project bootstrap pointing to the registry |
 | `projects/<project>/*` | Verified project deltas; **enumerate every existing file and read each completely** |
 | `<repository>/AGENTS.md` | Active repository agent; fall back to [`AGENTS.md`](AGENTS.md) when absent |
@@ -65,14 +65,14 @@ Global `behavior.yaml#context_management` focuses active context on the current 
 `chat handoff` (alias `chat_handoff`) has **two command-only routes** in [`workflow/chat-handoff.md`](workflow/chat-handoff.md):
 
 - **Route 1 — Context only:** project-scoped overview and selection, then a compact **Context Summary restricted to the latest 5–10 accessible user/Assistant interactions**. No MCP/Workspace calls.
-- **Route 2 — Context + Workspace including slots (`workspace` suffix):** the same strictly bounded recent-interaction Context Summary, plus separately authorized Workspace slot continuity. The current workflow calls for a trusted provider identity assertion and live `session.handoff(action="adopt")`; where that bridge is not available or admission fails, it reports a blocker rather than claiming transfer. Legacy token-based prepare/accept is a separate authorized path, not an implicit fallback.
+- **Route 2 — Context + Workspace including slots (`workspace` suffix):** the same strictly bounded recent-interaction Context Summary followed by the current single-owner successor-chat `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "approved":true})`. The MCP selects the sole eligible other slot-owning conversation; when multiple sources exist, an exact `source_conversation_id` selector may be needed. Provider admission and live source-slot checks are mandatory; the selector is not authorization. No `prepare`/`accept` tokens, signed assertions or automatic Session checkpoints are involved.
 
 `Nothing found` applies only to a completed authoritative empty project listing, not an unavailable listing. `Previous Context Captured` confirms visible response output, not automatic destination-chat, file, Memory or checkpoint persistence. Workspace transfer and slot ownership require independent native receipts.
 
 
 ## Global behavior rule contract and priority
 
-[`behavior.yaml`](behavior.yaml) defines `rule_contract` with **four identical fields in every one of its 23 rule blocks**: `priority` (1 = highest), `scope`, `apply_when` and `rules`. The prior normative content—including nested rules, booleans and lists—is retained under `rules`. Explicit ordinal priority matches the physical top-to-bottom order; an earlier applicable block takes precedence only for unresolved conflicts at the same instruction authority. Every applicable rule remains active unless explicitly overridden by a higher-authority instruction. This local order does not supersede ChatGPT's instruction hierarchy, provider admission or the independent `core.yaml` source registry, nor does it force unrelated workflows to load.
+[`behavior.yaml`](behavior.yaml) defines `rule_contract` with **four identical fields in every one of its 23 rule blocks**: `priority` (1 = highest), `scope`, `apply_when` and `rules`. The prior normative content—including nested rules, booleans and lists—is retained under `rules`. The `apply_when` field is now explicit for all 23 blocks; universal correctness and communication requirements remain global, while specialized rules activate on the matching task, provider or repository event. Explicit ordinal priority matches the physical top-to-bottom order; an earlier applicable block takes precedence only for unresolved conflicts at the same instruction authority. Every applicable rule remains active unless explicitly overridden by a higher-authority instruction. This local order does not supersede ChatGPT's instruction hierarchy, provider admission or the independent `core.yaml` source registry, nor does it force unrelated workflows to load.
 
 
 ## Uniform command contract
