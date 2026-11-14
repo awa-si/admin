@@ -19,13 +19,13 @@ admin_plane_reload:
 
 chat_handoff:
   command: "chat_handoff"
-  syntax: "chat_handoff [CHAT_NAME]"
+  syntax: "chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER]"
   read_when: explicit_chat_handoff_command
   workflow: "awa-si/admin/workflow/chat-handoff.md"
   load: "read_full_current_workflow_on_invocation"
   scope: "same_project_when_verified|current_chat_partial_fallback_when_project_inferred_or_unknown"
-  source_default: "current_chat_unless_explicit_prior_chat_specified"
-  output: "structured_chat_response|Context Summary_heading|Previous Context Captured_note_after_usable_response|adaptive_length|no_persistence_claim"
+  source_default: "no_argument_or_list_show_project_chat_overview|current_summarizes_current_chat|CHAT_NAME_or_overview_number_summarizes_selected_chat"
+  output: "Project Chat Overview_then_selection|Context Summary_for_selected_chat|Previous Context Captured_note_after_usable_response|Nothing found_only_for_authoritatively_empty_project_listing|adaptive_length|no_persistence_claim"
   side_effects: "read_only|generic_context_only|no_MCP_binding|no_workspace_or_job_actions|no_checkpoint_creation"
 
 mcp_instruction_reload:

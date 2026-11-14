@@ -42,7 +42,7 @@ core.yaml  (registry / resolver)
 | [`workflow/research.md`](workflow/research.md) | Direct ChatGPT search/research by default; permitted MCP Agent/Intelligence for heavy cross-source or specialized research; topic modules on demand |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
 | [`workflow/mcp.md`](workflow/mcp.md) | Minimal MCP bootstrap; live discovery resolves provider-specific technical contracts |
-| [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Generic same-project context extraction; loaded only by `chat_handoff`; produces Context Summary with Previos Context Saved note |
+| [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Generic command-only project chat overview and selected-chat Context Summary; no MCP binding or persistence claim |
 | [`projects/template.txt`](projects/template.txt) | ChatGPT Project bootstrap pointing to the registry |
 | `projects/<project>/*` | Verified project deltas; **enumerate every existing file and read each completely** |
 | `<repository>/AGENTS.md` | Active repository agent; fall back to [`AGENTS.md`](AGENTS.md) when absent |
@@ -60,11 +60,11 @@ Project and repository rules extend applicable parent rules; overrides must be e
 
 ## Same-project chat handoff
 
-`chat_handoff [CHAT_NAME]` loads the full [`workflow/chat-handoff.md`](workflow/chat-handoff.md) **only when explicitly invoked**. Without a name, it summarizes the current chat. With a name, it tries to locate an accessible previous chat **inside the verified current project**. Project identity is labeled `verified`, `inferred` or `unknown`: missing project metadata does not prevent a limited current-chat handoff, but must never be mistaken for verified project-wide access.
+`chat_handoff` or `chat_handoff list` loads [`workflow/chat-handoff.md`](workflow/chat-handoff.md) **only on explicit invocation** and displays a **Project Chat Overview** of chats actually discoverable within the current verified ChatGPT Project. Entries are selectable by title or an overview number, for example `chat_handoff 2`. The selection produces a separate, adaptive **Context Summary** followed by **Previous Context Captured**, meaning the text was rendered here and is ready to reuse—not persisted elsewhere. To summarize the current conversation directly, use `chat_handoff current`.
 
-The output is an **adaptive, structured ChatGPT response** headed **Context Summary**, followed on success by **Previous Context Captured** with an explanation that this result is visible here and ready for reuse—not persisted to Memory, file, checkpoint or another chat. Context retrieval is best effort; direct messages, Assistant reports, condensed context and verified receipts remain distinct evidence categories.
+A project listing is marked complete only if the listing source actually confirms exhaustive pagination; otherwise show **Partial results**. A verified empty listing displays **Nothing found**. If project-wide listing is unavailable or unauthorized, report **Project chat listing unavailable**, **not** `Nothing found`. Neither Memory nor an unrelated conversation excerpt is a reliable inventory of all project chats. Project identity is classified as verified, inferred or unknown; ambiguous projects do not allow claiming project-wide access.
 
-The command is **generic and read-only**. It does not bind MCP, adopt a Workspace, create checkpoints, start Work or execute jobs. The receiving chat independently decides whether authorized MCP Work/Workspace reuse is appropriate or to continue with the summary using ordinary ChatGPT capabilities.
+The command is generic and read-only. It does not bind MCP, adopt a Workspace, create checkpoints or start jobs. The receiving chat independently decides whether relevant authorized MCP Work/Workspace reuse is appropriate, or simply continues from the context.
 
 ## Governed host update command
 
