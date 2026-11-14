@@ -64,7 +64,7 @@ Project and repository rules extend applicable parent rules; overrides must be e
 
 A project listing is marked complete only if the listing source actually confirms exhaustive pagination; otherwise show **Partial results**. A verified empty listing displays **Nothing found**. If project-wide listing is unavailable or unauthorized, report **Project chat listing unavailable**, **not** `Nothing found`. Neither Memory nor an unrelated conversation excerpt is a reliable inventory of all project chats. Project identity is classified as verified, inferred or unknown; ambiguous projects do not allow claiming project-wide access.
 
-The command is generic and read-only. It does not bind MCP, adopt a Workspace, create checkpoints or start jobs. The receiving chat independently decides whether relevant authorized MCP Work/Workspace reuse is appropriate, or simply continues from the context.
+The base command is generic and read-only; optional `workspace` mode follows a separate authorization path and may prepare or accept a Workspace slot-transfer grant. It does not start jobs or mutate repositories. The receiving chat independently decides whether relevant authorized MCP Work/Workspace reuse is appropriate, or simply continues from the context.
 
 ## Uniform command contract
 

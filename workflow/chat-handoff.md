@@ -89,9 +89,12 @@ authorization to reuse an arbitrary foreign Workspace.
 1. **Recover context first.** Identify the previous chat within the verified
    project and retrieve accessible original messages and associated context.
    When incomplete, use an already saved and separately accessible
-   `session_exec` handoff checkpoint only with its valid credential and
-   independent provider admission. If unavailable, preserve a clearly labeled
-   partial Context Summary. A checkpoint is never a Workspace access grant.
+   `session_exec(operation="handoff", payload={"token": ...})` checkpoint
+   only with its own valid checkpoint credential and independent provider
+   admission. If unavailable, preserve a clearly labeled partial Context
+   Summary. This restores bounded v2 context, not the full transcript,
+   job state or Workspace permissions. Its token is **different from**
+   the Workspace transfer token; never interchange them.
 2. **Resolve the work, not the chat ID.** If Workspace continuity was requested
    and the source context identifies a repository or existing Workspace,
    consult the current live MCP contract. Prefer an already authorized
@@ -101,14 +104,24 @@ authorization to reuse an arbitrary foreign Workspace.
    registry listing is discovery evidence, not proof of permission.
 3. **Valid source handoff token available:** After explicitly approved
    destination adoption and separate server admission, invoke
-   `workspace_exec(session.handoff, action="accept")`, which atomically
-   transfers the source's reserved slots. Verify the resulting current-chat
-   slot binding and relevant live repository/job state. Never reconstruct,
-   invent or persist the one-use token from historical context.
+   `workspace_exec(operation="session.handoff",
+   payload={"workspace_id": "EXISTING", "action": "accept",
+   "token": "PRIVATE_SOURCE_WORKSPACE_TOKEN", "approved": true})`.
+   This requires a stable session correlation for a **different successor
+   chat**, an unexpired source-issued token, matching authorized source
+   slots, current live repository binding checks and provider admission.
+   On success the server transfers the reserved slots, preserving checkout,
+   uncommitted edits, jobs and environment without job replay; the source
+   relinquishes the transferred reservations. Verify the returned receipt,
+   current-chat slot binding and repository/job state independently.
+   Source handoff grants are one-use, expire after **7 days** and are
+   invalidated by source-slot changes. Never reconstruct, invent or
+   persist a one-use token from historical context.
 4. **No source token, including an exhausted source chat:** The original chat
    is **not required** for the recovery path. Use the current canonical
-   `workspace_exec(session.select)` protocol to identify any matching
-   foreign Workspace. Present the specific verified workspace/repository/slot
+   `workspace_exec(operation="session.resolve", payload={"repository":
+   "owner/repo"})` and the current `session.select` repository-first
+   protocol to identify any matching foreign Workspace. Present the specific verified workspace/repository/slot
    candidate and obtain the user's explicit **reuse / separate / none**
    choice if not already specifically authorized. Only after this choice
    and independent server authorization may `session.select` bind or
@@ -117,12 +130,21 @@ authorization to reuse an arbitrary foreign Workspace.
    Never automatically seize occupied slots or silently create a Workspace.
 5. **Optional source preparation:** `chat_handoff current workspace` in the
    source chat may call `workspace_exec(session.handoff, action="prepare")`
-   after current-slot verification, explicit consent and provider admission.
-   It creates a single-use token for a future direct slot transfer, but
+   with `payload={"workspace_id": "EXISTING", "action": "prepare",
+   "approved": true}` after verifying that the invoking chat owns the
+   source slots, has stable correlation and satisfies provider admission.
+   It creates a single-use **Workspace handoff token** for future direct
+   slot transfer (not a `session_exec` checkpoint token), but
    **is not a prerequisite** for the normal successor-chat recovery path.
+   Re-preparation revokes the previous grant for that source. Never claim
+   direct transfer is possible once the source chat is exhausted if it
+   did not previously prepare a valid token.
 6. **Verify and report separately.** Distinguish
    `context_coverage=complete_verified|partial|unknown` from
    `workspace_continuity=transferred|reused|already_bound|blocked|not_attempted`.
+   A source checkpoint (when actually retrieved) should separately report
+   `context_checkpoint=restored|unavailable|not_attempted`, never
+   `workspace_continuity=transferred`.
    Only claim transfer or reuse after relevant live provider receipts.
    Preserve worktrees, pending edits, jobs and shared environment; never
    replay, restart, reset, clean, push or deploy as a side effect.
@@ -132,10 +154,16 @@ authorization to reuse an arbitrary foreign Workspace.
    presumed to exist. If no token or authorized selection is available,
    finish with the best grounded Context Summary and state the precise blocker.
 
-For optional MCP use, load the applicable `awa-si/admin/workflow.md`,
-`workflow/mcp.md` and current Workspace technical contract and session
-workflow from `awa-si/awa`; use the **deployed** registered schema, not
-only the remote GitHub source. No standing MCP authorization is conferred.
+For optional MCP use, load the applicable `awa-si/admin/workflow.md`
+and `workflow/mcp.md` under routing rules, followed by the current
+`awa-si/awa@mcp/session/contract.md` (actual repository path:
+`mcp/session/contract.md`) and the matching technical workflow:
+`mcp/session/workflow/checkpoint.md` for bounded notes,
+`mcp/session/workflow/continuity.md` for rights separation, and
+`mcp/workspace/workflow/session.md` plus `reuse.md` for slot transfer.
+Load only owners applicable to the requested operation. Obtain the
+**deployed registered schema** from `mcp_model` and the provider; GitHub
+source does not prove deployment or grant authorization.
 
 ## Receiving-chat responsibility (not this workflow)
 

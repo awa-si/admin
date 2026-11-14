@@ -53,13 +53,13 @@ chat_handoff:
       mode: "explicit_workspace_suffix_only|default_context_only|successor_chat_first"
       selected_previous: "context_first_then_existing_checkpoint_fallback_then_workspace_resolution"
       workspace_resolution: "first_current_chat_authorized_binding|then_all_registry_pages_for_exact_repository|never_infer_from_chat_title"
-      with_source_token: "session.handoff_action_accept_only_after_user_consent_and_provider_admission"
-      without_source_token: "session.select_cross_chat_reuse_only_after_explicit_candidate_specific_choice_and_provider_admission|no_automatic_slot_transfer"
-      current_optional: "chat_handoff_current_workspace_may_prepare_session.handoff_action_prepare_but_not_prerequisite_for_successor_recovery"
+      with_source_token: "workspace_exec_session.handoff_accept_requires_workspace_id|source_workspace_handoff_token|approved_true|different_stable_conversation_correlation|live_slot_validation|provider_admission"
+      without_source_token: "workspace_exec_session.select_repository_first|existing_current_chat_binding_first|foreign_reuse_requires_explicit_candidate_specific_choice_and_provider_admission|no_automatic_slot_transfer"
+      current_optional: "chat_handoff_current_workspace_may_prepare_workspace_exec_session.handoff_with_workspace_id|approved_true|stable_correlation|source_slot_ownership|one_use_token_7_days|not_prerequisite_for_successor_recovery"
       context_order: "authorized_original_chat_context_first|previously_existing_session_checkpoint_as_fallback_only"
       permission: "workspace_suffix_requests_continuity_but_does_not_approve_specific_foreign_workspace|checkpoint_never_authorizes_workspace"
-      credentials: "bearer_tokens_private|never_include_in_Context_Summary_or_memory|use_only_via_authorized_provider"
-      post_handoff: "verify_live_repository_slots_dirty_state_jobs_and_ownership|never_claim_running_job_replayed"
+      credentials: "session_exec_checkpoint_token_and_workspace_exec_session.handoff_token_are_distinct|never_interchange|bearer_tokens_private|never_include_in_Context_Summary_or_memory|use_only_via_authorized_provider"
+      post_handoff: "transfer_preserves_checkout_dirty_edits_jobs|source_loses_transferred_reservations|verify_live_repository_slots_dirty_state_jobs_and_ownership|never_claim_running_job_replayed"
 
 mcp_instruction_reload:
   command: "reload mcp"
@@ -82,9 +82,7 @@ mcp_instruction_reload:
     prohibited_during_reload: "workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action"
     "no_implicit_authorization_for_other_MCP_operations": true
     "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
-    "no_implicit_authorization_for_other_MCP_operations": true
     reload_is_not_proof_of_process_restart_or_live_code_activation: true
-    "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 
 mcp_auto_update:
   command: "update mcp"
