@@ -19,14 +19,23 @@ admin_plane_reload:
 
 chat_handoff:
   command: "chat_handoff"
-  syntax: "chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER]"
+  syntax: "chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]"
   read_when: explicit_chat_handoff_command
   workflow: "awa-si/admin/workflow/chat-handoff.md"
   load: "read_full_current_workflow_on_invocation"
   scope: "same_project_when_verified|current_chat_partial_fallback_when_project_inferred_or_unknown"
   source_default: "no_argument_or_list_show_project_chat_overview|current_summarizes_current_chat|CHAT_NAME_or_overview_number_summarizes_selected_chat"
   output: "Project Chat Overview_then_selection|Context Summary_for_selected_chat|Previous Context Captured_note_after_usable_response|Nothing found_only_for_authoritatively_empty_project_listing|adaptive_length|no_persistence_claim"
-  side_effects: "read_only|generic_context_only|no_MCP_binding|no_workspace_or_job_actions|no_checkpoint_creation"
+  workspace_coupling:
+    mode: "explicit_workspace_suffix_only|default_context_only"
+    current: "summarize_current_chat_then_if_authorized_prepare_source_workspace_anchor_via_live_workspace_exec_session.anchor"
+    selected_previous: "summarize_selected_chat_then_if_anchor_available_and_authorized_adopt_existing_workspace_via_live_workspace_exec_session.handoff"
+    context_order: "authorized_original_chat_context_first|previously_existing_session_checkpoint_as_fallback_only"
+    missing_anchor: "report_context_only|do_not_forge_token_or_auto_allocate_slot|offer_separately_authorized_session.select_recovery"
+    permission: "explicit_current_user_workspace_request_and_provider_admission_required|source_anchor_proves_prior_slot_claim|checkpoint_never_authorizes_workspace"
+    credentials: "bearer_tokens_private|never_include_in_Context_Summary_or_memory|use_only_via_authorized_provider"
+    post_handoff: "verify_live_repository_slots_dirty_state_jobs_and_ownership|never_claim_running_job_replayed"
+  side_effects: "default_read_only|workspace_suffix_explicit_opt_in_only|no_implicit_MCP_binding_or_workspace_mutation|no_repo_write_or_job_replay|no_checkpoint_creation_by_default"
 
 mcp_instruction_reload:
   trigger_phrase: "reload mcp"
