@@ -34,7 +34,7 @@ core.yaml  (registry / resolver)
 | --- | --- |
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
-| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `reload mcp`, `mcp_auto_update`) |
+| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `chat_handoff [CHAT_NAME]`, `reload mcp`, `mcp_auto_update`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
 | [`workflow/coding.md`](workflow/coding.md) | Coding bootstrap, general principles and three latency-aware execution tiers |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
@@ -55,6 +55,12 @@ core.yaml  (registry / resolver)
 6. For unknown cases, preserve the existing workflow and authorization gates; do not invent permission, capability or completion evidence. Report unavailable required sources and incomplete reads precisely.
 
 Project and repository rules extend applicable parent rules; overrides must be explicit. Higher-priority ChatGPT instructions remain authoritative. Repository state and live provider schemas determine the actual available operations.
+
+## Same-project chat handoff
+
+`chat_handoff [CHAT_NAME]` is a read-only command in [`command.yaml`](command.yaml). Without a name, it exports the accessible context of the current chat; with a name, it identifies a matching source chat **within the currently verified ChatGPT Project**. It outputs a structured, ready-to-paste continuation brief for a new chat: objective, decisions, verified completed work, outstanding work, repository/workspace/job references, revalidation steps and missing context. It does not assert full transcript access when the history is partial. The target chat is not opened, created or automatically populated.
+
+Cross-chat AWA Workspace reuse requires separate live context checks, explicit reuse consent and provider admission under the current AWA contract. A session checkpoint token is an optional guarded fallback, not automatic workspace authorization. The command itself does not create a workspace, execute jobs, mutate a repository or create a checkpoint.
 
 ## Governed host update command
 
