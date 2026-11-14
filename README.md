@@ -70,9 +70,10 @@ Global `behavior.yaml#context_management` focuses active context on the current 
 `Nothing found` applies only to a completed authoritative empty project listing, not an unavailable listing. `Previous Context Captured` confirms visible response output, not automatic destination-chat, file, Memory or checkpoint persistence. Workspace transfer and slot ownership require independent native receipts.
 
 
-## Global behavior rule priority
+## Global behavior rule contract and priority
 
-[`behavior.yaml`](behavior.yaml) is ordered **most important first, least important last**. The `rule_priority` declaration instructs GPT to use top-to-bottom precedence only for applicable, otherwise irreconcilable rules **within that same equal-authority file**. Later rules can specialize but not weaken earlier safety and correctness constraints. This order does not override the ChatGPT instruction hierarchy, mandatory provider admission or the independent `core.yaml` source registry. Unrelated workflows must not be loaded solely because they appear earlier.
+[`behavior.yaml`](behavior.yaml) defines `rule_contract` with **four identical fields in every one of its 23 rule blocks**: `priority` (1 = highest), `scope`, `apply_when` and `rules`. The prior normative content—including nested rules, booleans and lists—is retained under `rules`. Explicit ordinal priority matches the physical top-to-bottom order; an earlier applicable block takes precedence only for unresolved conflicts at the same instruction authority. Every applicable rule remains active unless explicitly overridden by a higher-authority instruction. This local order does not supersede ChatGPT's instruction hierarchy, provider admission or the independent `core.yaml` source registry, nor does it force unrelated workflows to load.
+
 
 ## Uniform command contract
 

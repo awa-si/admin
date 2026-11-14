@@ -36,6 +36,7 @@ managed_scope:
 owner_map:
 - source_router_and_use_case_registry: core.yaml
 - global_behavior: behavior.yaml
+- global_behavior_contract: behavior.yaml#rule_contract|every_rule_block_priority_scope_apply_when_rules|priority_ascending_from_1|rule_content_under_rules
 - global_commands: command.yaml
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
