@@ -6,12 +6,12 @@ owner: awa-si/admin/workflow/chat-handoff.md
 command_owner: awa-si/admin/command.yaml#chat_handoff
 read_when: explicit_chat_handoff_command_only
 inherits: awa-si/admin/behavior.yaml|awa-si/admin/command.yaml|applicable_project_deltas
-side_effects: default_read_only|explicit_workspace_mode_may_mint_or_consume_authorized_workspace_anchor|no_implicit_MCP|no_job_execution|no_repo_mutation|no_automatic_checkpoint
+side_effects: default_read_only|explicit_workspace_mode_may_transfer_provider_authorized_source_slots|no_implicit_MCP|no_job_execution|no_repo_mutation|no_automatic_checkpoint
 
 ## Purpose and invocation
 
 - Input: `chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]`. With no argument (or `chat_handoff list`), list discoverable chats in the current verified project as a **Project Chat Overview** and allow the user to select one by title or grounded list reference. Use `chat_handoff current` to summarize the current conversation directly; with a chat name or a valid overview reference, identify that source chat in the verified current project.
-- Select exactly one route: **Route 1 — Context only** by default; **Route 2 — Context + Workspace including slots** only when `workspace` is explicitly supplied. Both use the same project chat discovery and context reconstruction. Route 2 adds separately approved AWA slot continuity.
+- Select exactly one route: **Route 1 — Context only** by default; **Route 2 — Context + Workspace including slots** only when `workspace` is explicitly supplied. Both use the same project chat discovery and context reconstruction. Route 2 attempts provider-authorized automatic transfer of existing Workspace slots.
 - Load this complete file **only** on the explicit `chat_handoff` command. Do not load it for ordinary discussion, implicit continuation, research, GitHub work, workspace selection, or an unrelated session operation.
 - Produce a structured ChatGPT **Context Summary** in the current chat, ready for reuse. Do not create/open/populate the receiving chat or execute its unfinished tasks. Route 2 may transfer server-side slot reservations under independent authorization, preserving existing checkout and jobs.
 - Classify project identity as `verified` (explicitly surfaced or independently verified), `inferred` (suggested by context only), or `unknown`. Only `verified` allows claiming a named-chat lookup within that project. Do not silently search across project boundaries.
@@ -23,11 +23,11 @@ side_effects: default_read_only|explicit_workspace_mode_may_mint_or_consume_auth
 | Route | Explicit trigger | Behavior |
 | --- | --- | --- |
 | **1. Context only** | `chat handoff`, `chat handoff list`, `chat handoff current`, or selected chat without `workspace` | Overview when no chat selected; otherwise read-only Context Summary, then stop |
-| **2. Context + Workspace including slots** | Selected chat or `current` **with** `workspace` suffix | Same Context Summary **plus** separately approved Workspace and slot handoff/reuse |
+| **2. Context + Workspace including slots** | Selected chat or `current` **with** `workspace` suffix | Same Context Summary **plus** verified automatic Workspace slot adoption |
 
 - With no source selected, **both routes stop at Project Chat Overview**. Do not inspect or mutate Workspaces from an overview alone.
 - An overview-number selection is valid only in the same conversation where the number-to-chat mapping was displayed. Never infer a Workspace request from an earlier listing; the selection must explicitly contain `workspace`.
-- The `workspace` suffix selects the route, not approval to adopt an arbitrary other-chat Workspace or change repository state.
+- The `workspace` suffix expresses adoption intent, but a trusted identity assertion and independent provider admission remain mandatory.
 - The default route never calls `mcp_model`, `session_exec` or `workspace_exec`.
 
 ## Route 1 — Context only
@@ -39,14 +39,42 @@ side_effects: default_read_only|explicit_workspace_mode_may_mint_or_consume_auth
 
 ## Route 2 — Context + Workspace (including slots)
 
-1. **Context first:** perform the same best-effort chat identification and Context Summary as Route 1. Optionally restore a previously saved `session_exec(handoff)` checkpoint only with an independently available checkpoint credential and authorized provider route. A Session checkpoint restores bounded context notes, never Workspace slot rights.
-2. **Identify the existing Workspace and slots:** load applicable Admin MCP route and the current deployed AWA Session/Workspace contracts. Prefer `workspace_exec(operation="session.resolve", payload={"repository":"owner/repo"})` for the current-chat binding; if needed inspect paginated active registry results as discovery evidence. Identify exact Workspace, canonical repository, existing slot(s) and branch/job state. Listing or memory is not authorization.
-3. **Prepare from source chat:** `chat handoff current workspace` may invoke `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "action":"prepare", "approved":true})` only after current slot ownership, stable chat correlation, explicit consent and provider admission. The result is a **single-use Workspace handoff bearer token** valid for seven days, invalidated by source slot changes. Keep it private; it is distinct from a Session checkpoint token.
-4. **Accept in successor chat (valid source token):** with separately approved transfer, a different stable successor conversation correlation, and provider admission, use `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "action":"accept", "token":"PRIVATE_WORKSPACE_TOKEN", "approved":true})`. After the server verifies source slots and repository bindings, the source chat's slot reservations move atomically to the successor. Worktrees, uncommitted edits, caches, jobs and environment remain in place; nothing is replayed or restarted.
-5. **No source token / exhausted source chat:** do **not** claim a direct slot transfer. Use the guarded repository-first `session.select` procedure after `session.resolve`. Present the specific verified workspace/repository/slot candidate and obtain explicit **reuse / separate / none** consent and independent provider authorization before any binding/provisioning. Reusing a Workspace is not inheriting occupied source slot ownership. Never seize occupied slots or create a Workspace silently.
-6. **Verify results separately:** report `context_coverage=complete_verified|partial|unknown` and `workspace_continuity=transferred|reused|already_bound|blocked|not_attempted`. Only report slot transfer or reuse after current native provider receipts, including verified slot reservations, repository HEAD/branch, dirty state, locks and job state. If no Workspace is available or permitted, still deliver Context Summary with the precise blocker.
+1. **Successor-chat first.** Select the source chat, recover accessible original
+   context and produce the same Context Summary as Route 1. Context and
+   Session checkpoints never authorize Workspace transfer.
+2. **Trusted identity bridge.** Require a separately authenticated ChatGPT
+   provider integration to verify the selected source and current target
+   conversation under the same authorized principal. The bridge must issue a
+   short-lived signed assertion binding both durable AWA correlation digests
+   and the exact existing Workspace ID. Neither the chat title nor MCP
+   request metadata suffices as a source-chat identity proof.
+3. **Automatic adoption when authorized.** With the private provider assertion,
+   explicit `workspace` intent and provider admission, call
+   `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "action":"adopt", "assertion":"PRIVATE_PROVIDER_ASSERTION", "approved":true})`.
+   The MCP verifies signature, source/target and live repository bindings.
+   All slots belonging to that source within the specified Workspace are
+   atomically assigned to the destination. Worktrees, edits, jobs and shared
+   environment remain unchanged. No new workspace or repository import.
+4. **Verification.** Inspect current-chat reservations and live Git/job
+   evidence. Report `workspace_continuity=transferred` only upon verifiable
+   provider receipts. Repeated identical authorized transfers are idempotent.
+5. **Missing bridge or denial.** Preserve the useful Context Summary;
+   report `workspace_continuity=blocked` with the exact provider gap. Do not
+   infer authorization from conversation history or silently replace slot
+   transfer with `session.select`. Legacy explicitly authorized token-based
+   `session.handoff(action="accept")` remains available independently.
+6. **Scope.** This adoption is atomic for all source slots in one Workspace.
+   Multi-Workspace all-or-nothing transfer is not implemented; do not
+   falsely claim a global transaction.
 
-**Scope and credentials:** Neither route executes jobs, updates Git, cleans worktrees, deploys or replays prior operations. Workspace handoff tokens and Session checkpoint tokens are not interchangeable and must never appear in Context Summary, Memory or public repositories. Route 2 uses current registered provider schema; GitHub documentation alone does not prove deployment. Technical owners: `awa-si/awa@main:mcp/session/contract.md`, `mcp/session/workflow/checkpoint.md`, `mcp/session/workflow/continuity.md`, `mcp/workspace/workflow/session.md` and `reuse.md` as applicable.
+**Security:** A signed assertion must originate from the independently
+authenticated provider bridge, not GPT, client-generated metadata, source
+title, repository state or memory. The MCP currently cannot manufacture
+source-chat authorization on its own. The assertion is private and must never
+be included in any summary, logs or repository.
+
+**No side effects beyond verified slot ownership transfer:** No job execution,
+Git mutation, cleanup, replay or deployment.
 
 ## Project Chat Overview — first step
 
