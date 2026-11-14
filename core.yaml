@@ -15,7 +15,7 @@ registry:
     path: awa-si/admin/workflow/chat-handoff.md
     load: on_explicit_chat_handoff_command
     read_when: chat_handoff|chat_handoff_with_optional_CHAT_NAME
-    role: canonical_command_only_best_effort_chat_context_summary_workflow
+    role: canonical_command_only_best_effort_context_summary_with_explicit_opt_in_workspace_continuity
   - id: workflow
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution
