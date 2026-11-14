@@ -41,7 +41,7 @@ core.yaml  (registry / resolver)
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
 | [`workflow/research.md`](workflow/research.md) | Direct ChatGPT search/research by default; permitted MCP Agent/Intelligence for heavy cross-source or specialized research; topic modules on demand |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
-| [`workflow/mcp.md`](workflow/mcp.md) | Minimal MCP bootstrap; live discovery resolves provider-specific technical contracts |
+| [`workflow/mcp.md`](workflow/mcp.md) | MCP bootstrap and conditional `mcp_instructions(topic="admin")` snapshot route, including bounded fallback when GitHub reads are unavailable |
 | [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Two explicit routes: read-only recent-chat Context Summary, or authorized Workspace/slot continuation via current MCP provider |
 | [`projects/template.txt`](projects/template.txt) | ChatGPT Project bootstrap pointing to the registry |
 | `projects/<project>/*` | Verified project deltas; **enumerate every existing file and read each completely** |
@@ -110,7 +110,7 @@ Admin does not maintain a second inventory of client, MCP, or plugin tool schema
 | OpenAI client / current host | Exposes available tools, dynamically searches deferred tools when supported, and supplies current invocation schemas |
 | `core.yaml` | Matches use cases to applicable instruction sources, without cataloging tool parameters |
 | `workflow.md` | Chooses a permitted execution route and defines required evidence |
-| `workflow/mcp.md` | Introduces MCP discovery only; selected provider schemas, technical instructions and native receipts govern execution |
+| `workflow/mcp.md` | Introduces MCP discovery and the live Admin snapshot route; connected GitHub canonical-source requirements and provider admission remain independent |
 | Capability provider | Authenticates, authorizes, admits operations, executes, and returns observable results |
 
 Evaluate a currently available native sandbox (including Code Interpreter) before provisioning an external workspace for isolated calculations, analysis, temporary Python processing or artifact creation. A sandbox does **not** imply repository access, persistent host state, or deployment rights. Repository mutations continue through an authorized repository route. Tool discovery alone never grants permission or proves execution.
@@ -125,7 +125,7 @@ OpenAI's [Tool Search](https://developers.openai.com/api/docs/guides/tools-tool-
 
 ## Execution and verification
 
-Use the smallest permitted route that can complete the requested outcome, including its necessary tests or verification. `workflow.md` owns the shared lifecycle; provider-specific mechanics stay with their respective route files. For a selected MCP route, use `mcp_model` for live capability discovery and `mcp_instructions` for **matching technical documentation only**, not Admin policy loading. Discovery is not authorization or execution admission.
+Use the smallest permitted route that can complete the requested outcome, including its necessary tests or verification. `workflow.md` owns the shared lifecycle; provider-specific mechanics stay with their respective route files. For a selected MCP route, use `mcp_model` for live capability discovery and `mcp_instructions` for matching technical documentation **or** `topic="admin"` for the Admin global/project snapshot. Use `compact=false` to load full source bodies and pass `project` only when the ChatGPT Project is explicitly supplied or verified. A permitted MCP snapshot can be a bounded fallback if the GitHub Connector or its derivatives cannot read Admin sources, but it does not silently satisfy a higher-priority requirement to load canonical Admin policy via the connected GitHub Connector. Discovery is not authorization or execution admission.
 
 Differentiate an observed GitHub write, a successful test, a deployed revision and an active runtime. Claim completion only to the level supported by actual evidence. Deployment and other material side effects require their applicable authorization.
 
