@@ -119,7 +119,7 @@ mcp_auto_update:
       live_schema: "resolve_current_mcp_model_schema_for_mcp_diagnostic_before_call"
     execution_steps:
       - "invoke_primary_mcp_diagnostic_update_once_only"
-      - "inspect_returned_host_commit|host_updated|loaded_process_commit|session_checkpoint|status|restart_requested|activation_pending"
+      - "inspect_returned_host_commit|host_updated|loaded_process_commit|status|restart_requested|activation_pending"
       - "require_update_receipt_consistent_with_live_verified_remote_revision"
       - "do_not_treat_restart_queued|restart_already_pending|restart_inflight_as_runtime_verified"
     preflight:
