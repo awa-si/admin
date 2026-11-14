@@ -25,8 +25,8 @@ chat_handoff:
   load: "read_full_current_workflow_on_invocation"
   scope: "current_verified_ChatGPT_Project_only"
   source_default: "current_chat_unless_explicit_prior_chat_specified"
-  output: "structured_paste_ready_new_chat_context_with_evidence_labels_and_live_revalidation"
-  side_effects: "read_only|no_auto_checkpoint|no_workspace_creation_or_adoption|no_job_execution"
+  output: "Context Summary_ui_heading|Previos Context Saved_note_after_usable_response|paste_ready_for_new_chat"
+  side_effects: "read_only|generic_context_only|no_MCP_binding|no_workspace_or_job_actions|no_checkpoint_creation"
 
 mcp_instruction_reload:
   trigger_phrase: "reload mcp"
