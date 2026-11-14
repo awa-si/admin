@@ -58,14 +58,17 @@ core.yaml  (registry / resolver)
 
 Project and repository rules extend applicable parent rules; overrides must be explicit. Higher-priority ChatGPT instructions remain authoritative. Repository state and live provider schemas determine the actual available operations.
 
-## Same-project chat handoff
+## Context management and chat handoff
 
-`chat handoff` (alias `chat_handoff`) has **exactly two routes** under [`workflow/chat-handoff.md`](workflow/chat-handoff.md), loaded on explicit command only:
+Global `behavior.yaml#context_management` focuses active context on the current task, avoids redundant source/tool output, retains only durable reusable Memory candidates and logically consolidates material task transitions. It does **not** clear already-used context tokens or directly control Memory persistence. The selected-MCP route follows [`workflow/mcp.md`](workflow/mcp.md), which loads only necessary technical instructions and live schemas while preserving required authoritative source reads and admission checks.
 
-- **Route 1 — Context only (default):** project-scoped chat overview, selection and evidence-aware Context Summary. No MCP discovery or Workspace/slot mutation.
-- **Route 2 — Context + Workspace including slots (`workspace` suffix):** the same Context Summary followed by a separately authorized existing AWA Workspace slot transfer (`session.handoff` prepare/accept) or guarded reuse (`session.select`) when no source transfer token is available. Reuse is not direct source slot transfer.
+`chat handoff` (alias `chat_handoff`) has **two command-only routes** in [`workflow/chat-handoff.md`](workflow/chat-handoff.md):
 
-An overview stops and awaits selection in either route. `Nothing found` requires an authoritative empty listing; inaccessible listings are not treated as empty. `Previous Context Captured` means only that summary text is visible in the current response. Workspace/slot continuity is reported only against live receipts; no route executes previous jobs or mutates source code.
+- **Route 1 — Context only:** project-scoped overview and selection, then a compact **Context Summary restricted to the latest 5–10 accessible user/Assistant interactions**. No MCP/Workspace calls.
+- **Route 2 — Context + Workspace including slots (`workspace` suffix):** the same strictly bounded recent-interaction Context Summary, plus separately authorized Workspace slot continuity. The current workflow calls for a trusted provider identity assertion and live `session.handoff(action="adopt")`; where that bridge is not available or admission fails, it reports a blocker rather than claiming transfer. Legacy token-based prepare/accept is a separate authorized path, not an implicit fallback.
+
+`Nothing found` applies only to a completed authoritative empty project listing, not an unavailable listing. `Previous Context Captured` confirms visible response output, not automatic destination-chat, file, Memory or checkpoint persistence. Workspace transfer and slot ownership require independent native receipts.
+
 
 ## Uniform command contract
 

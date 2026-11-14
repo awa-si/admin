@@ -13,7 +13,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_provider_au
 - Input: `chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]`. With no argument (or `chat_handoff list`), list discoverable chats in the current verified project as a **Project Chat Overview** and allow the user to select one by title or grounded list reference. Use `chat_handoff current` to summarize the current conversation directly; with a chat name or a valid overview reference, identify that source chat in the verified current project.
 - Select exactly one route: **Route 1 — Context only** by default; **Route 2 — Context + Workspace including slots** only when `workspace` is explicitly supplied. Both use the same project chat discovery and context reconstruction. Route 2 attempts provider-authorized automatic transfer of existing Workspace slots.
 - Load this complete file **only** on the explicit `chat_handoff` command. Do not load it for ordinary discussion, implicit continuation, research, GitHub work, workspace selection, or an unrelated session operation.
-- Produce a structured ChatGPT **Context Summary** in the current chat, ready for reuse. Do not create/open/populate the receiving chat or execute its unfinished tasks. Route 2 may transfer server-side slot reservations under independent authorization, preserving existing checkout and jobs.
+- Produce a **short Context Summary based only on the last 5–10 accessible source-chat interactions**, ready for reuse. Do not create/open/populate the receiving chat or execute its unfinished tasks. Route 2 may transfer server-side slot reservations under independent authorization, preserving existing checkout and jobs.
 - Classify project identity as `verified` (explicitly surfaced or independently verified), `inferred` (suggested by context only), or `unknown`. Only `verified` allows claiming a named-chat lookup within that project. Do not silently search across project boundaries.
 - If project or named-chat membership cannot be verified, report the limitation. A `current` handoff can still produce a grounded partial summary, but do not substitute an unrelated current-chat summary for an empty or unavailable project-wide listing.
 - A reference such as `chat_handoff 2` resolves **only** to a chat in the most recently displayed overview **in this conversation**, if the overview and exact mapping remain available. Otherwise ask for the title or rerun the overview; never guess a list index.
@@ -32,15 +32,15 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_provider_au
 
 ## Route 1 — Context only
 
-1. Perform same-project chat identification and best-effort context extraction (shared sections below); distinguish verified project membership from inferred context and partial transcripts.
+1. Perform same-project chat identification and read only the latest 5–10 accessible interactions using the shared extraction limit below; distinguish verified project membership from inferred context and partial transcripts.
 2. Produce **Context Summary** with evidence labels, decisions, completed and pending work, relevant references, gaps and immediate next step.
 3. Display **Previous Context Captured** only for a usable visible response, without claiming Memory or other persistence.
 4. **Stop.** No MCP discovery, checkpoint creation/reading, Workspace/slot access, jobs, Git mutation or follow-on execution. The receiving chat decides independently how to continue.
 
 ## Route 2 — Context + Workspace (including slots)
 
-1. **Successor-chat first.** Select the source chat, recover accessible original
-   context and produce the same Context Summary as Route 1. Context and
+1. **Successor-chat first.** Select the source chat, use only the most recent
+   5–10 accessible interactions for Context Summary (same as Route 1). Context and
    Session checkpoints never authorize Workspace transfer.
 2. **Trusted identity bridge.** Require a separately authenticated ChatGPT
    provider integration to verify the selected source and current target
@@ -87,19 +87,29 @@ Git mutation, cleanup, replay or deployment.
 
 ## Context extraction
 
-Use `resolve_chat → retrieve_available_context → assess_coverage → summarize` as a **best-effort workflow**, not a guaranteed chat-transcript API.
+Use `resolve_chat → retrieve_last_5_to_10_interactions → assess_coverage → summarize` as a **bounded best-effort workflow**, not a guaranteed chat-transcript API.
+
+### Summary window — hard limit
+
+- The Context Summary is based **only on the latest 5–10 interactions of the selected source chat** (prefer 10 if available; otherwise use all available up to 10). An interaction is one user turn and its associated Assistant response(s), not an arbitrary number of individual messages or tool calls.
+- Apply the limit to **source conversation content**, not the current chat's tool-operation messages. Do not expand the summary with older original messages, historical Memory or earlier chat summaries, even if they are accessible.
+- If the retrieval API supplies fewer than 5 complete interactions, summarize the available recent interactions, label the lower count and do not extrapolate missing turns. If chronology cannot be established, label the selection/window uncertain; do not assert they are the most recent.
+- Include an earlier decision, commit, file, reference or unfinished task **only when it is explicitly visible within the selected recent window**. Older state may independently inform Route 2 live Workspace resolution but must **not** be silently injected into the Context Summary.
+- Record `interaction_window=last_N_accessible` and `window_coverage=verified_recent|partial|unknown` where evidence permits. These describe the 5–10 interaction window, **not** completeness of the source chat.
+- Treat the summary as a compact recent-state delta; never assert that it represents the entire historical chat or permanently removes old context from ChatGPT.
+
 
 1. Identify project status and the selected source chat from the overview, verified title or explicit `current` option; record title and time range only if actually evidenced. For named chat lookup, prefer verified exact title, then an unambiguous verified close match; disambiguate material collisions.
-2. Retrieve accessible original User **and Assistant** messages and authorized conversation-history context. Use direct messages and inspected sources preferentially; supplement with prior summaries only with provenance labels.
-3. Reconstruct objectives, user requirements, settled decisions, constraints, relevant outcomes, unfinished steps, blockers and the best next action. Preserve any concrete references already present, such as a repository, document, workspace, job or commit, as **historical context**, not an action to execute.
+2. Retrieve the most recent accessible original User **and Assistant** turns within the 5–10 interaction window; use direct messages preferentially. A contextual summary may identify missing chronology, but must not contribute substantive claims from outside the window.
+3. Extract only objectives, decisions, constraints, completed work, blockers and next action **that occur or are restated in the selected recent window**; carry repository/document/workspace/job/commit references only when present there. Mark them historical context, not instructions to execute.
 4. Separate requests, historical Assistant reports and verified outcomes. Note gaps rather than inventing message IDs, attachments, tool receipts, timestamps or a complete transcript.
 5. Shared context reconstruction is read-only. Route 1 stops after Context Summary; Route 2 proceeds only to the separately authorized Workspace/slot continuity phase described above. Other context retrieval stays within its own access scope.
 
 ### Retrieval coverage
 
-- Project chat excerpts and contextual memory are not equivalent to a complete transcript. Original Assistant replies may be accessible through targeted search, but availability varies.
+- Project chat excerpts and contextual memory are not equivalent to a complete transcript. The handoff deliberately excludes older interactions; it is a **recent-context snapshot**, not a full-history reconstruction.
 - Show an excerpt count only for entries actually observed: e.g. 22 visible entries means `visible_excerpt_count=22`, not an asserted total of 31.
-- Classify coverage as `complete_verified` only when the complete source transcript is demonstrably accessible; otherwise `partial` or `unknown`. Distinguish partial excerpts from full access.
+- Classify the **selected window** as `verified_recent`, `partial` or `unknown`; never label an excerpt `complete_verified` for the entire source transcript. Distinguish recent-window coverage from total-chat coverage.
 - Preserve specific original wording when material, but summarize rather than reproducing an entire inaccessible conversation.
 
 ### Evidence labels
@@ -122,8 +132,8 @@ Use `resolve_chat → retrieve_available_context → assess_coverage → summari
 Produce a normal structured ChatGPT response with the visible Markdown heading `Context Summary`. Do not claim to render a native persistent UI element. Adapt detail to the source:
 
 - **Short/simple:** Source, Objective, Decisions, Next Action. Omit empty headings.
-- **Long/substantial:** Source/Coverage, Objective, Decisions & Constraints, Completed Work with evidence, Open Work / Next Action, References, Verification & Gaps, Continuation Instruction.
-- **Partial or uncertain:** Include project status `verified|inferred|unknown`, coverage `complete_verified|partial|unknown`, material evidence labels and missing context.
+- **Long/substantial:** Still summarize **only the latest 5–10 interactions**; include Source/Window Coverage, Objective, Decisions & Constraints, Recent Completed Work, Next Action, References and material gaps in compact form.
+- **Partial or uncertain:** Include project status `verified|inferred|unknown`, `interaction_window` and window coverage `verified_recent|partial|unknown`, material evidence labels and missing recent turns.
 - **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. Do not execute or invent evidence.
 
 Conclude with an instruction that the receiving chat treats this as historical context, reloads applicable current rules and verifies any material live state under its own authorization.
@@ -141,4 +151,4 @@ The note describes **visible response capture only**. It does not assert storage
 - Restrict project-wide listing and named-chat discovery to the verified project. When project status is inferred or unknown, report the listing blocker; a separate explicit `chat_handoff current` may still produce a grounded current-chat partial summary.
 - If access is partial, deliver a labeled partial summary and state the missing details.
 - Exclude secrets, bearer tokens, authentication material and unnecessary private content.
-- An overview displays **Project Chat Overview** and stops for a source selection. Route 1 ends with a usable **Context Summary** and **Previous Context Captured** (or a truthful blocker). Route 2 adds separately verified Workspace/slot continuity status. Neither route implies destination-chat persistence, job replay or deployment.
+- An overview displays **Project Chat Overview** and stops for a source selection. Route 1 ends with a **recent 5–10-interaction Context Summary** and **Previous Context Captured** (or a truthful blocker). Route 2 adds separately verified Workspace/slot continuity status. Neither route implies destination-chat persistence, job replay or deployment.
