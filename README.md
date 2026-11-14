@@ -70,6 +70,10 @@ Global `behavior.yaml#context_management` focuses active context on the current 
 `Nothing found` applies only to a completed authoritative empty project listing, not an unavailable listing. `Previous Context Captured` confirms visible response output, not automatic destination-chat, file, Memory or checkpoint persistence. Workspace transfer and slot ownership require independent native receipts.
 
 
+## Global behavior rule priority
+
+[`behavior.yaml`](behavior.yaml) is ordered **most important first, least important last**. The `rule_priority` declaration instructs GPT to use top-to-bottom precedence only for applicable, otherwise irreconcilable rules **within that same equal-authority file**. Later rules can specialize but not weaken earlier safety and correctness constraints. This order does not override the ChatGPT instruction hierarchy, mandatory provider admission or the independent `core.yaml` source registry. Unrelated workflows must not be loaded solely because they appear earlier.
+
 ## Uniform command contract
 
 All four command entries in [`command.yaml`](command.yaml) share exactly these top-level fields, in order: `command`, `aliases`, `syntax`, `read_when`, `workflow`, `load`, `scope`, `authorization`, `execution`, `output`, `side_effects`, `details`. The command-specific parameters are retained under `details`, with source loading and authorization boundaries expressed consistently at the top level. `contract_fields` documents the schema; the command-specific provider contracts still govern implementation and admission. This is a declarative normalization, not a live MCP deployment.
