@@ -81,6 +81,8 @@ mcp_instruction_reload:
     side_effects_other_than_explicit_reload: "prohibited"
     prohibited_during_reload: "workspace_mutation|repository_write|branch_mutation|new_background_job|unrelated_external_action"
     "no_implicit_authorization_for_other_MCP_operations": true
+    "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
+    "no_implicit_authorization_for_other_MCP_operations": true
     reload_is_not_proof_of_process_restart_or_live_code_activation: true
     "apply_newly_verified_contract_to_subsequent_MCP_work_in_this_chat": true
 
@@ -114,6 +116,13 @@ mcp_auto_update:
       authorization: "current_exact_update_mcp_or_auto_update_command_covers_fixed_pull_and_conditional_restart_once|provider_admission_required"
       no_duplicate_execution: "do_not_add_separate_host_exec_git.pull_or_supervisor.control_calls_after_diagnostic_update"
       live_schema: "resolve_current_mcp_model_schema_for_mcp_diagnostic_before_call"
+    execution_steps:
+      - "invoke_primary_mcp_diagnostic_update_once_only"
+      - "inspect_returned_host_commit|host_updated|loaded_process_commit|session_checkpoint|status|restart_requested|activation_pending"
+      - "when_restart_needed_require_saved_session_checkpoint_and_preserve_its_handoff_token_as_private_bearer_credential"
+      - "checkpoint_failure_after_pull_blocks_restart_and_requires_host_state_reconciliation"
+      - "require_update_receipt_consistent_with_live_verified_remote_revision"
+      - "do_not_treat_restart_queued|restart_already_pending|restart_inflight_as_runtime_verified"
     preflight:
       - "verify_connected_GitHub_awa-si/awa@main_remote_HEAD_and_current_AWA_host_contract"
       - "read_mcp_version_before_mutation_and_record_process_identity_and_loaded_commit"
