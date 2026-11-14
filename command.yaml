@@ -28,7 +28,7 @@ chat_handoff:
   output: "Project Chat Overview_then_selection|Context Summary_for_selected_chat|Previous Context Captured_note_after_usable_response|Nothing found_only_for_authoritatively_empty_project_listing|adaptive_length|no_persistence_claim"
   workspace_coupling:
     mode: "explicit_workspace_suffix_only|default_context_only"
-    current: "summarize_current_chat_then_if_authorized_prepare_source_workspace_anchor_via_live_workspace_exec_session.anchor"
+    current: "summarize_current_chat_then_if_authorized_prepare_source_workspace_handoff_via_live_workspace_exec_session.handoff_action_prepare"
     selected_previous: "summarize_selected_chat_then_if_anchor_available_and_authorized_adopt_existing_workspace_via_live_workspace_exec_session.handoff"
     context_order: "authorized_original_chat_context_first|previously_existing_session_checkpoint_as_fallback_only"
     missing_anchor: "report_context_only|do_not_forge_token_or_auto_allocate_slot|offer_separately_authorized_session.select_recovery"
