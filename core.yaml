@@ -11,6 +11,11 @@ registry:
     path: awa-si/admin/command.yaml
     load: always
     role: canonical_user_command_contracts
+  - id: chat_handoff
+    path: awa-si/admin/workflow/chat-handoff.md
+    load: on_explicit_chat_handoff_command
+    read_when: chat_handoff|chat_handoff_with_optional_CHAT_NAME
+    role: canonical_project_scoped_chat_context_reconstruction_and_handoff_workflow
   - id: workflow
     path: awa-si/admin/workflow.md
     load: on_workflow_or_execution

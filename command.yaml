@@ -21,36 +21,12 @@ chat_handoff:
   command: "chat_handoff"
   syntax: "chat_handoff [CHAT_NAME]"
   read_when: explicit_chat_handoff_command
-  purpose: "produce_structured_reusable_context_for_continuation_in_a_new_chat_within_the_same_verified_ChatGPT_Project"
-  project_boundary:
-    required: "current_project_must_be_explicitly_exposed_or_verified|never_guess_hidden_UI_project"
-    search_scope: "current_verified_project_only|never_include_other_project_or_nonproject_chats"
-    unavailable: "report_project_scope_blocker|do_not_claim_project_scoped_search"
-  source_chat:
-    with_name: "identify_matching_chat_by_exact_or_closest_verified_title_within_current_project|disambiguate_only_if_multiple_material_matches"
-    without_name: "use_current_chat_as_source|if_request_explicitly_refers_to_prior_chat_resolve_that_chat_from_project_context"
-    resolution: "use_accessible_current_conversation_and_available_prior_chat_context_or_authorized_history_search|do_not_infer_transcript_completeness_from_Memory"
-    if_unavailable: "report_missing_source_and_limitations|do_not_invent_messages_or_decisions"
-  context_read:
-    scope: "read_all_accessible_relevant_context_from_selected_chat|prefer_original_messages_and_verifiable_source_refs_over_summaries"
-    extract: "objective|scope|requirements|decisions|completed_work|pending_work|blockers|next_step|files|repositories|branches|commits|workspace_ids|slots|job_refs|session_checkpoint_refs"
-    limitations: "ChatGPT_context_window_and_chat_history_access_may_be_partial|never_claim_full_transcript_without_verification"
-    truth: "chat_history_is_historical_evidence_not_current_GitHub_head_or_workspace_runtime_state"
-  mcp_workspace_continuation:
-    policy: "prepare_reuse_hints_only|do_not_create_or_adopt_workspace_or_run_jobs_just_to_create_handoff"
-    live_discovery: "only_when_material_and_selected_permitted_MCP_route|read_workflow/mcp.md_and_current_session_and_workspace_contracts"
-    handoff_token: "use_existing_token_only_if_explicitly_available_and_authorized|do_not_generate_token_without_explicit_request|never_put_bearer_token_in_public_repo_or_shared_artifact"
-    new_chat: "verify_current_repository_and_provider_runtime|resolve_current_chat_binding_then_existing_workspace|follow_explicit_cross_chat_reuse_consent_and_provider_admission|inspect_slot_branch_dirty_paths_and_job_status_before_mutations"
-    checkpoint_fallback: "session_exec_handoff_only_if_token_available_and_provider_permitted|restored_checkpoint_is_context_not_authorization"
-  output:
-    mode: "structured_handoff_text_ready_to_paste_as_first_message_of_new_chat"
-    sections: "PROJECT_AND_SOURCE_CHAT|CONTINUATION_OBJECTIVE|DECISIONS_AND_CONSTRAINTS|COMPLETED_WITH_EVIDENCE|OPEN_WORK_AND_NEXT_ACTION|REPOSITORY_AND_WORKSPACE_REFERENCES|LIVE_REVALIDATION_REQUIRED|CONTEXT_GAPS"
-    evidence: "distinguish_user_claim|prior_chat_summary|inspected_source|verified_current_state"
-    ambiguity: "mark_unknown|unread|historical|unverified_explicitly"
-    compact: "preserve_actionable_detail_without_repeating_entire_transcript"
-    confidentiality: "omit_credentials|private_tokens|sensitive_data_not_needed_for_continuation"
-  side_effects: "read_only|no_repository_mutation|no_workspace_creation|no_job_execution|no_automatic_session_checkpoint"
-  completion: "deliver_structured_handoff_in_current_chat|do_not_claim_new_chat_received_or_resumed_work"
+  workflow: "awa-si/admin/workflow/chat-handoff.md"
+  load: "read_full_current_workflow_on_invocation"
+  scope: "current_verified_ChatGPT_Project_only"
+  source_default: "current_chat_unless_explicit_prior_chat_specified"
+  output: "structured_paste_ready_new_chat_context_with_evidence_labels_and_live_revalidation"
+  side_effects: "read_only|no_auto_checkpoint|no_workspace_creation_or_adoption|no_job_execution"
 
 mcp_instruction_reload:
   trigger_phrase: "reload mcp"

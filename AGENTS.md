@@ -41,6 +41,7 @@ owner_map:
 - global_coding: workflow/coding.md
 - conditional_coding_detail: workflow/coding/*.md_selected_by_core.yaml
 - global_research: workflow/research.md
+- chat_handoff_workflow: workflow/chat-handoff.md
 - human_orientation: README.md
 - project_behavior_delta: projects/<project>/instructions.txt
 - project_workflow_delta: projects/<project>/workflow.md
@@ -60,6 +61,7 @@ startup:
 - read: AGENTS.md
 - then_load_owner_files_required_by_task: true
 - global_bootstrap: core.yaml_registry -> behavior.yaml_always -> command.yaml_always -> matching_conditional_sources
+- chat_handoff: command.yaml#chat_handoff_trigger -> full_workflow/chat-handoff.md_on_invocation
 - core_semantics: ordered_source_graph_not_authority_priority
 - conditional_coding_modules: evaluate_each_core.yaml_coding.modules_read_when_independently_and_load_matching_full_files_only
 - avoid_reread: reuse_only_when_verified_same_source_revision_and_scope

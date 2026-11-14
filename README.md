@@ -24,6 +24,7 @@ core.yaml  (registry / resolver)
 │   │   └── research/{knowledge,code,docs,legal}.md on demand
 │   ├── workflow/github.md         GitHub capability orientation before final route selection
 │   ├── workflow/mcp.md            minimal MCP discovery bootstrap
+│   ├── workflow/chat-handoff.md   conditional chat continuation workflow
 │   └── unknown → workflow.md      unmatched execution case
 ├── projects/<project>/*           verified ChatGPT project
 └── <repository>/AGENTS.md         active repository context
@@ -41,6 +42,7 @@ core.yaml  (registry / resolver)
 | [`workflow/research.md`](workflow/research.md) | Direct ChatGPT search/research by default; permitted MCP Agent/Intelligence for heavy cross-source or specialized research; topic modules on demand |
 | [`workflow/github.md`](workflow/github.md) | GitHub connector, patch, workspace and Actions route contracts |
 | [`workflow/mcp.md`](workflow/mcp.md) | Minimal MCP bootstrap; live discovery resolves provider-specific technical contracts |
+| [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Full same-project cross-chat context, evidence and Workspace continuation guidance; loaded by `chat_handoff` |
 | [`projects/template.txt`](projects/template.txt) | ChatGPT Project bootstrap pointing to the registry |
 | `projects/<project>/*` | Verified project deltas; **enumerate every existing file and read each completely** |
 | `<repository>/AGENTS.md` | Active repository agent; fall back to [`AGENTS.md`](AGENTS.md) when absent |
@@ -58,7 +60,7 @@ Project and repository rules extend applicable parent rules; overrides must be e
 
 ## Same-project chat handoff
 
-`chat_handoff [CHAT_NAME]` is a read-only command in [`command.yaml`](command.yaml). Without a name, it exports the accessible context of the current chat; with a name, it identifies a matching source chat **within the currently verified ChatGPT Project**. It outputs a structured, ready-to-paste continuation brief for a new chat: objective, decisions, verified completed work, outstanding work, repository/workspace/job references, revalidation steps and missing context. It does not assert full transcript access when the history is partial. The target chat is not opened, created or automatically populated.
+`chat_handoff [CHAT_NAME]` is a read-only command in [`command.yaml`](command.yaml) with its full contract in [`workflow/chat-handoff.md`](workflow/chat-handoff.md). Without a name, it exports the accessible context of the current chat; with a name, it identifies a matching source chat **within the currently verified ChatGPT Project**. It outputs a structured, ready-to-paste continuation brief for a new chat: objective, decisions, verified completed work, outstanding work, repository/workspace/job references, revalidation steps and missing context. Original User and Assistant messages may be available through targeted context retrieval, but completeness is not guaranteed; `original_message`, `assistant_report`, `context_summary`, `checkpoint`, `live_verified` and `unknown` remain distinct evidence levels. The target chat is not opened, created or automatically populated.
 
 Cross-chat AWA Workspace reuse requires separate live context checks, explicit reuse consent and provider admission under the current AWA contract. A session checkpoint token is an optional guarded fallback, not automatic workspace authorization. The command itself does not create a workspace, execute jobs, mutate a repository or create a checkpoint.
 
