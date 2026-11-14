@@ -37,6 +37,7 @@ owner_map:
 - source_router_and_use_case_registry: core.yaml
 - global_behavior: behavior.yaml
 - global_behavior_contract: behavior.yaml#rule_contract|every_rule_block_priority_scope_apply_when_rules|priority_ascending_from_1|rule_content_under_rules
+- nested_behavior_conditions: behavior.yaml#rule_contract.nested_applicability|rules.apply_when_is_additional_subrule_gate|list_items_preserved_under_rules.directives
 - global_commands: command.yaml
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
