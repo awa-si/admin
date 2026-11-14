@@ -27,7 +27,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 
 - With no source selected, **both routes stop at Project Chat Overview**. Do not inspect or mutate Workspaces from an overview alone.
 - An overview-number selection is valid only in the same conversation where the number-to-chat mapping was displayed. Never infer a Workspace request from an earlier listing; the selection must explicitly contain `workspace`.
-- The `workspace` suffix requests Workspace continuity; provider admission and the verified single-owner gateway boundary remain mandatory.
+- The `workspace` suffix requests Workspace continuity; provider admission and the existing MCP gateway/provider authorization boundary remain mandatory.
 - The default route never calls `mcp_model`, `session_exec` or `workspace_exec`.
 
 ## Route 1 — Context only
@@ -49,13 +49,12 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
    The MCP resolves the only other slot-holding conversation automatically.
    If multiple sources are present, use an exact independently grounded
    `source_conversation_id` selector; never guess from title or recency.
-4. The backend checks the host-only `AWA_MCP_SINGLE_OWNER_AUTH_VERIFIED=true`
-   gate. The operator may set this only after independently confirming that
-   all MCP ingress is exclusively authenticated for this one owner. It then
-   validates live Git bindings and atomically transfers **all source-chat
-   reservations within the Workspace** to the current chat. Existing
-   destination slots remain; worktrees, dirty state, jobs and environment
-   are untouched.
+4. The backend relies on the existing MCP gateway authentication and
+   provider admission; no additional handoff-specific environment switch is
+   required. It validates live Git bindings and atomically transfers all
+   source-chat reservations within the Workspace to the current chat.
+   Existing destination slots remain; worktrees, dirty state, jobs and
+   environment are untouched.
 5. Verify the destination's actual slot reservations and native Workspace
    receipt. Report `transferred|already_bound|ambiguous|blocked|not_found`
    without claiming success from an unavailable or unverified provider.
