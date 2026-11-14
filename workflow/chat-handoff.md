@@ -49,6 +49,15 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
    The MCP resolves the only other slot-holding conversation automatically.
    If multiple sources are present, use an exact independently grounded
    `source_conversation_id` selector; never guess from title or recency.
+   If the old chat is inaccessible or has reached the ChatGPT context limit,
+   use `workspace_exec(operation="session.handoff_candidates",
+   payload={"workspace_id":"EXISTING"})` to obtain read-only slot-owner groups.
+   Report each candidate's `source_slot`, `source_ref`, slots and repositories
+   without claiming it corresponds to a ChatGPT title. Request selection of
+   one group and transfer only with `session.handoff` using `approved=true`,
+   the selected `source_slot` and matching `source_ref`. The pair prevents
+   switching to a different source owner if a slot is reassigned. Source title
+   verification is not supplied by a slot candidate; preserve that uncertainty.
 4. The backend relies on the existing MCP gateway authentication and
    provider admission; no additional handoff-specific environment switch is
    required. It validates live Git bindings and atomically transfers all
