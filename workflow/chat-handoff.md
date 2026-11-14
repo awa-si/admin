@@ -10,15 +10,18 @@ side_effects: read_only|no_MCP_binding|no_workspace_access_or_mutation|no_job_ex
 
 ## Purpose and invocation
 
-- Input: `chat_handoff [CHAT_NAME]`. Without a name, summarize the current chat; with a name, identify a matching previous chat **inside the current verified ChatGPT Project**.
+- Input: `chat_handoff [CHAT_NAME]`. Without a name, summarize the current chat; with a name, identify an accessible matching prior chat **inside the verified current ChatGPT Project**.
 - This is a generic ChatGPT context-extraction workflow, independent of MCP, repositories, Workspace, Work, task engines or any specific project domain.
 - Load this complete file **only** on the explicit `chat_handoff` command. Do not load it for ordinary discussion, implicit continuation, research, GitHub work, workspace selection, or an unrelated session operation.
-- Produce a structured **Context Summary** in the current chat, ready to reuse in a new chat. Do not create/open/populate the receiving chat or trigger tools to continue the work.
-- Verify source-project membership rather than inferring hidden UI state. If the project or named chat cannot be verified, report the scope/lookup limitation and summarize only actually accessible material.
+- Produce an ordinary **structured ChatGPT response** titled **Context Summary** in the current chat, ready to reuse in a new chat. Do not create/open/populate the receiving chat or trigger tools to continue the work.
+- Classify project identity as `verified` (explicitly surfaced or independently verified), `inferred` (suggested by context only), or `unknown`. Only `verified` allows claiming a named-chat lookup within that project. Do not silently search across project boundaries.
+- If project or named-chat membership cannot be verified, report the limitation, but still produce a grounded, labeled partial handoff from the current chat or material independently known to be in scope. Do not fail needlessly.
 
 ## Context extraction
 
-1. Identify the current verified project and selected source chat; record title and time range only if actually evidenced.
+Use `resolve_chat → retrieve_available_context → assess_coverage → summarize` as a **best-effort workflow**, not a guaranteed chat-transcript API.
+
+1. Identify project status and source chat; record title and time range only if actually evidenced. For named chat lookup, prefer verified exact title, then an unambiguous verified close match; disambiguate material collisions.
 2. Retrieve accessible original User **and Assistant** messages and authorized conversation-history context. Use direct messages and inspected sources preferentially; supplement with prior summaries only with provenance labels.
 3. Reconstruct objectives, user requirements, settled decisions, constraints, relevant outcomes, unfinished steps, blockers and the best next action. Preserve any concrete references already present, such as a repository, document, workspace, job or commit, as **historical context**, not an action to execute.
 4. Separate requests, historical Assistant reports and verified outcomes. Note gaps rather than inventing message IDs, attachments, tool receipts, timestamps or a complete transcript.
@@ -28,7 +31,7 @@ side_effects: read_only|no_MCP_binding|no_workspace_access_or_mutation|no_job_ex
 
 - Project chat excerpts and contextual memory are not equivalent to a complete transcript. Original Assistant replies may be accessible through targeted search, but availability varies.
 - Show an excerpt count only for entries actually observed: e.g. 22 visible entries means `visible_excerpt_count=22`, not an asserted total of 31.
-- Clearly distinguish partial source visibility from genuine complete transcript access.
+- Classify coverage as `complete_verified` only when the complete source transcript is demonstrably accessible; otherwise `partial` or `unknown`. Distinguish partial excerpts from full access.
 - Preserve specific original wording when material, but summarize rather than reproducing an entire inaccessible conversation.
 
 ### Evidence labels
@@ -48,18 +51,22 @@ side_effects: read_only|no_MCP_binding|no_workspace_access_or_mutation|no_job_ex
 
 ## Output — Context Summary
 
-Render an immediately usable text summary with the **visible heading** `Context Summary`. Use these sections in a compact, actionable format:
+Produce a normal structured ChatGPT response with the visible Markdown heading `Context Summary`. Do not claim to render a native persistent UI element. Adapt detail to the source:
 
-1. **Source:** verified project, source chat, accessible date range, retrieval coverage.
-2. **Objective:** what the next chat should accomplish.
-3. **Decisions & constraints:** agreed architecture, choices and requirements.
-4. **Completed work:** outcomes with evidence labels and relevant references.
-5. **Open work / next action:** unfinished work and the most useful first step.
-6. **Context references:** historical files, repositories, commits, workspace/job IDs or other relevant identifiers, only when known and safe to share.
-7. **Verification & gaps:** facts requiring renewed verification, inaccessible content and material uncertainty.
-8. **Continuation instruction:** tell the receiving chat to use this context, verify current facts where material, and proceed with the next task under its own available tools, permission gates and applicable instructions.
+- **Short/simple:** Source, Objective, Decisions, Next Action. Omit empty headings.
+- **Long/substantial:** Source/Coverage, Objective, Decisions & Constraints, Completed Work with evidence, Open Work / Next Action, References, Verification & Gaps, Continuation Instruction.
+- **Partial or uncertain:** Include project status `verified|inferred|unknown`, coverage `complete_verified|partial|unknown`, material evidence labels and missing context.
+- **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. Do not execute or invent evidence.
 
-After **successfully producing** a usable Context Summary, render the exact note **`Previos Context Saved`**. This note means the previous context has been **captured in the visible response for reuse**, not persisted to Memory, a file, another chat or an MCP checkpoint. Do not show the note when no usable summary could be produced.
+Conclude with an instruction that the receiving chat treats this as historical context, reloads applicable current rules and verifies any material live state under its own authorization.
+
+After a **usable** Context Summary is visible, render the exact note:
+
+**Previous Context Captured**
+
+*Context Summary generated in this chat. Ready to reuse in a new conversation.*
+
+The note describes **visible response capture only**. It does not assert storage in Memory, a file, an MCP checkpoint or another chat. If no usable summary was produced, omit the note and report the blocker.
 
 ## Receiving-chat responsibility (not this workflow)
 
@@ -71,7 +78,7 @@ After **successfully producing** a usable Context Summary, render the exact note
 
 ## Safety and completion
 
-- Stay within the current verified project for named source-chat identification; never assume hidden project scope from Memory alone.
+- Restrict named-chat discovery to the verified project. When project status is inferred or unknown, avoid cross-project lookup and retain a useful, labeled current-chat partial summary where possible.
 - If access is partial, deliver a labeled partial summary and state the missing details.
 - Exclude secrets, bearer tokens, authentication material and unnecessary private content.
-- The only success condition is a truthful **Context Summary** shown in this chat, with the note `Previos Context Saved` indicating a reusable visible result. No external persistence or follow-on work is claimed.
+- The only success condition is a truthful **Context Summary** shown in this chat, with `Previous Context Captured` marking a reusable visible result. No external persistence or follow-on work is claimed.

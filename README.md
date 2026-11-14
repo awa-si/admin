@@ -60,9 +60,11 @@ Project and repository rules extend applicable parent rules; overrides must be e
 
 ## Same-project chat handoff
 
-`chat_handoff [CHAT_NAME]` loads [`workflow/chat-handoff.md`](workflow/chat-handoff.md) **only when explicitly invoked**. Without a name it summarizes the current chat; with a name it identifies an accessible previous chat within the current verified ChatGPT Project. The output is a structured **Context Summary**, followed by the note **Previos Context Saved** once a usable summary is displayed. This is visible-response capture for copy/reuse, **not** evidence of Memory, checkpoint, file or cross-chat persistence.
+`chat_handoff [CHAT_NAME]` loads the full [`workflow/chat-handoff.md`](workflow/chat-handoff.md) **only when explicitly invoked**. Without a name, it summarizes the current chat. With a name, it tries to locate an accessible previous chat **inside the verified current project**. Project identity is labeled `verified`, `inferred` or `unknown`: missing project metadata does not prevent a limited current-chat handoff, but must never be mistaken for verified project-wide access.
 
-The command is **generic and read-only**: it never binds MCP, adopts a Workspace, creates checkpoints, starts Work or executes jobs. The receiving chat decides how to continue: if relevant existing MCP Work/Workspace is available and authorized, it can independently resolve and reuse it; otherwise it simply works from the summarized context. Original messages, historical reports, condensed summaries and independently verified receipts remain distinct evidence levels. Source history can be partial.
+The output is an **adaptive, structured ChatGPT response** headed **Context Summary**, followed on success by **Previous Context Captured** with an explanation that this result is visible here and ready for reuse—not persisted to Memory, file, checkpoint or another chat. Context retrieval is best effort; direct messages, Assistant reports, condensed context and verified receipts remain distinct evidence categories.
+
+The command is **generic and read-only**. It does not bind MCP, adopt a Workspace, create checkpoints, start Work or execute jobs. The receiving chat independently decides whether authorized MCP Work/Workspace reuse is appropriate or to continue with the summary using ordinary ChatGPT capabilities.
 
 ## Governed host update command
 

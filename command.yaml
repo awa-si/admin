@@ -23,9 +23,9 @@ chat_handoff:
   read_when: explicit_chat_handoff_command
   workflow: "awa-si/admin/workflow/chat-handoff.md"
   load: "read_full_current_workflow_on_invocation"
-  scope: "current_verified_ChatGPT_Project_only"
+  scope: "same_project_when_verified|current_chat_partial_fallback_when_project_inferred_or_unknown"
   source_default: "current_chat_unless_explicit_prior_chat_specified"
-  output: "Context Summary_ui_heading|Previos Context Saved_note_after_usable_response|paste_ready_for_new_chat"
+  output: "structured_chat_response|Context Summary_heading|Previous Context Captured_note_after_usable_response|adaptive_length|no_persistence_claim"
   side_effects: "read_only|generic_context_only|no_MCP_binding|no_workspace_or_job_actions|no_checkpoint_creation"
 
 mcp_instruction_reload:
