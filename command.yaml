@@ -36,9 +36,9 @@ admin_plane_reload:
     do_not_claim: "MCP_process_restarted|tool_schema_changed_without_actual_evidence"
 
 chat_handoff:
-  command: "chat_handoff"
+  command: "chat handoff"
   aliases: "chat_handoff"
-  syntax: "chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]"
+  syntax: "chat handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]"
   read_when: "explicit_chat_handoff_command"
   workflow: "awa-si/admin/workflow/chat-handoff.md"
   load: "read_full_current_workflow_on_invocation"
