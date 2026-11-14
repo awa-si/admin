@@ -44,11 +44,14 @@ chat_handoff:
   load: "read_full_current_workflow_on_invocation"
   scope: "same_project_when_verified|current_chat_partial_fallback_when_project_inferred_or_unknown"
   authorization: "default_read_only|workspace_suffix_opt_in_is_not_foreign_workspace_adoption_approval|provider_admission_and_specific_reuse_consent_required"
-  execution: "project_chat_overview_or_selected_context_summary|workspace_continuity_only_when_explicit_suffix_and_authorized"
+  execution: "two_routes_exactly|context_only_default|context_plus_workspace_including_slots_explicit_suffix|shared_overview_and_context_first"
   output: "Project Chat Overview_then_selection|Context Summary_for_selected_chat|Previous Context Captured_note_after_usable_response|Nothing found_only_for_authoritatively_empty_project_listing|adaptive_length|no_persistence_claim"
   side_effects: "default_read_only|workspace_suffix_explicit_opt_in_only|no_implicit_MCP_binding_or_workspace_mutation|no_repo_write_or_job_replay|no_checkpoint_creation_by_default"
   details:
     source_default: "no_argument_or_list_show_project_chat_overview|current_summarizes_current_chat|CHAT_NAME_or_overview_number_summarizes_selected_chat"
+    routes:
+      context_only: "default|read_only|project_overview_or_context_summary|no_MCP_or_workspace_calls"
+      context_plus_workspace: "explicit_workspace_suffix|context_first|source_prepare_or_successor_accept_or_guarded_reuse|existing_workspace_and_slots|provider_admission_and_specific_user_consent"
     workspace_coupling:
       mode: "explicit_workspace_suffix_only|default_context_only|successor_chat_first"
       selected_previous: "context_first_then_existing_checkpoint_fallback_then_workspace_resolution"

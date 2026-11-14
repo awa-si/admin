@@ -60,11 +60,12 @@ Project and repository rules extend applicable parent rules; overrides must be e
 
 ## Same-project chat handoff
 
-`chat_handoff` or `chat_handoff list` loads [`workflow/chat-handoff.md`](workflow/chat-handoff.md) **only on explicit invocation** and displays a **Project Chat Overview** of chats actually discoverable within the current verified ChatGPT Project. Entries are selectable by title or an overview number, for example `chat_handoff 2`. The selection produces a separate, adaptive **Context Summary** followed by **Previous Context Captured**, meaning the text was rendered here and is ready to reuse—not persisted elsewhere. To summarize the current conversation directly, use `chat_handoff current`.
+`chat handoff` (alias `chat_handoff`) has **exactly two routes** under [`workflow/chat-handoff.md`](workflow/chat-handoff.md), loaded on explicit command only:
 
-A project listing is marked complete only if the listing source actually confirms exhaustive pagination; otherwise show **Partial results**. A verified empty listing displays **Nothing found**. If project-wide listing is unavailable or unauthorized, report **Project chat listing unavailable**, **not** `Nothing found`. Neither Memory nor an unrelated conversation excerpt is a reliable inventory of all project chats. Project identity is classified as verified, inferred or unknown; ambiguous projects do not allow claiming project-wide access.
+- **Route 1 — Context only (default):** project-scoped chat overview, selection and evidence-aware Context Summary. No MCP discovery or Workspace/slot mutation.
+- **Route 2 — Context + Workspace including slots (`workspace` suffix):** the same Context Summary followed by a separately authorized existing AWA Workspace slot transfer (`session.handoff` prepare/accept) or guarded reuse (`session.select`) when no source transfer token is available. Reuse is not direct source slot transfer.
 
-The base command is generic and read-only; optional `workspace` mode follows a separate authorization path and may prepare or accept a Workspace slot-transfer grant. It does not start jobs or mutate repositories. The receiving chat independently decides whether relevant authorized MCP Work/Workspace reuse is appropriate, or simply continues from the context.
+An overview stops and awaits selection in either route. `Nothing found` requires an authoritative empty listing; inaccessible listings are not treated as empty. `Previous Context Captured` means only that summary text is visible in the current response. Workspace/slot continuity is reported only against live receipts; no route executes previous jobs or mutates source code.
 
 ## Uniform command contract
 
