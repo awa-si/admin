@@ -131,6 +131,15 @@ loading_and_resolution:
     final_resolution_order: "core_use_case_resolver -> behavior.yaml -> applicable_workflow|coding|research -> projects/<project>/*_if_resolved -> repository_agent_if_active -> material_helpers -> task"
     reread_owner_if: "source_changed|explicitly_requested|active_scope_changed"
     stale_cached_copy_after_reread: "non_authoritative"
+    mcp_admin_snapshot:
+      apply_when: "when_Admin_instruction_sources_are_needed_and_AWA_MCP_route_is_already_selected_and_permitted"
+      tool: "mcp_instructions(topic=admin,project=VERIFIED_PROJECT,compact=false)"
+      project: "pass_only_explicit_or_verified_project_name|omit_when_unknown|never_infer_from_openai/session_or_repository"
+      verify: "mode_admin_snapshot|repository_awa-si/admin|pinned_ref|complete_true|all_required_paths_and_bodies|matching_tree_SHAs_when_available"
+      precedence: "fresh_chat_requires_connected_GitHub_core_then_behavior_then_command|MCP_snapshot_is_supplemental_delivery_not_a_new_authority"
+      fallback: "on_MCP_unavailable_or_partial_use_required_connected_GitHub_reads|report_actual_missing_source_not_unverified_success"
+      reuse: "do_not_repeat_identical_verified_snapshot_within_same_revision_and_project_scope"
+      side_effects: "read_only|no_MCP_route_discovery_just_for_Admin|no_Workspace_or_host_mutation"
 
 repository_agent_policy:
   priority: 6
