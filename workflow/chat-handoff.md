@@ -81,7 +81,7 @@ The note describes **visible response capture only**. It does not assert storage
 ## Optional Workspace continuity — explicit `workspace` suffix
 
 This is the only coupling point between ChatGPT `chat_handoff` and AWA MCP
-`workspace_exec(session.anchor|session.handoff)`. It is **opt-in**, must use
+`workspace_exec(session.handoff)`. It is **opt-in**, must use
 the current live MCP schema and canonical Workspace session contract, and never
 changes the behavior of plain `chat_handoff`.
 
@@ -95,7 +95,7 @@ changes the behavior of plain `chat_handoff`.
 2. **Source preparation:** Only for `chat_handoff current workspace`, after
    a usable Context Summary and a verified current-chat Workspace reservation,
    use the current exposed `workspace_exec` contract to call
-   `session.anchor` with explicit user intent and provider admission.
+   `session.handoff` with `action="prepare"`, explicit user intent and provider admission.
    It returns a **single-use Workspace bearer token** for slots owned by
    this chat. If the request does not explicitly select Workspace continuity,
    do not mint it. An optional existing context checkpoint remains separate.
@@ -105,7 +105,7 @@ changes the behavior of plain `chat_handoff`.
    source-issued Workspace anchor supplied by the user or a separately
    authorized secure handoff channel. Require explicit destination consent,
    the current MCP's server-side admission, and live repository-binding checks
-   before `workspace_exec(session.handoff)`. Do not infer a token from a chat
+   before `workspace_exec(session.handoff, action="accept")`. Do not infer a token from a chat
    title, Workspace ID, memory, checkpoint, or Git metadata.
 4. **No source anchor:** Keep the Context Summary useful and report
    `workspace_continuity=not_transferred` with its exact reason. Do not
