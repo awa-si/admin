@@ -78,63 +78,69 @@ After a **usable** Context Summary is visible, render the exact note:
 
 The note describes **visible response capture only**. It does not assert storage in Memory, a file, an MCP checkpoint or another chat. If no usable summary was produced, omit the note and report the blocker.
 
-## Optional Workspace continuity — explicit `workspace` suffix
+## Optional Workspace continuity — successor-chat-first
 
-This is the only coupling point between ChatGPT `chat_handoff` and AWA MCP
-`workspace_exec(session.handoff)`. It is **opt-in**, must use
-the current live MCP schema and canonical Workspace session contract, and never
-changes the behavior of plain `chat_handoff`.
+The normal invocation is **in the receiving chat**:
+`chat_handoff CHAT_NAME workspace` (or a selected overview item plus
+`workspace`). Plain `chat_handoff` stays independent of MCP and read-only.
+The `workspace` suffix opts into the continuity workflow; it is **not**
+authorization to reuse an arbitrary foreign Workspace.
 
-1. **Context first:** Read available authorized original User and Assistant
-   messages and project context. If incomplete, supplement with an **already
-   available**, valid `session_exec(handoff)` checkpoint only when a
-   checkpoint credential is independently available and its separate
-   invocation is authorized. If no credential or live `session_exec`
-   capability exists, use the partial summary. Do not claim ChatGPT has a
-   guaranteed full-transcript API or automatically create a checkpoint.
-2. **Source preparation:** Only for `chat_handoff current workspace`, after
-   a usable Context Summary and a verified current-chat Workspace reservation,
-   use the current exposed `workspace_exec` contract to call
-   `session.handoff` with `action="prepare"`, explicit user intent and provider admission.
-   It returns a **single-use Workspace bearer token** for slots owned by
-   this chat. If the request does not explicitly select Workspace continuity,
-   do not mint it. An optional existing context checkpoint remains separate.
-3. **Destination adoption:** Only for `chat_handoff CHAT_NAME workspace`
-   or a selected overview item with the `workspace` suffix, after a usable
-   Context Summary, independently resolve the target Workspace and a valid
-   source-issued Workspace anchor supplied by the user or a separately
-   authorized secure handoff channel. Require explicit destination consent,
-   the current MCP's server-side admission, and live repository-binding checks
-   before `workspace_exec(session.handoff, action="accept")`. Do not infer a token from a chat
-   title, Workspace ID, memory, checkpoint, or Git metadata.
-4. **No source anchor:** Keep the Context Summary useful and report
-   `workspace_continuity=not_transferred` with its exact reason. Do not
-   fabricate a transfer or silently allocate a new slot. The separately
-   authorized `session.select` cross-chat reuse/recovery flow may be
-   described, but is not implicitly executed.
-5. **Successful transfer:** Inspect authorized live slot ownership, repository
-   branch/HEAD/dirty state and native job status. Keep previous jobs in place;
-   do not restart, replay, reset, clean, push or deploy. Report independently
-   `context_coverage` and `workspace_continuity=verified` only on provider
-   receipts and relevant live verification.
-6. **Credential handling:** Never place raw bearer tokens in a Context Summary,
-   project overview, file, repository, Memory, or a reusable continuation
-   instruction. Keep any source token in an authorized private credential
-   transfer channel under the provider contract. Do not pretend such a channel
-   exists if unavailable. Do not confuse `session_exec` context-checkpoint
-   tokens with `workspace_exec` Workspace-transfer tokens.
+1. **Recover context first.** Identify the previous chat within the verified
+   project and retrieve accessible original messages and associated context.
+   When incomplete, use an already saved and separately accessible
+   `session_exec` handoff checkpoint only with its valid credential and
+   independent provider admission. If unavailable, preserve a clearly labeled
+   partial Context Summary. A checkpoint is never a Workspace access grant.
+2. **Resolve the work, not the chat ID.** If Workspace continuity was requested
+   and the source context identifies a repository or existing Workspace,
+   consult the current live MCP contract. Prefer an already authorized
+   *current-chat* binding. Otherwise enumerate all active registry pages and
+   compare exact canonical repository identities, slot reservations, live
+   branch/HEAD, dirty edits and jobs. A chat title, memory, Workspace ID or
+   registry listing is discovery evidence, not proof of permission.
+3. **Valid source handoff token available:** After explicitly approved
+   destination adoption and separate server admission, invoke
+   `workspace_exec(session.handoff, action="accept")`, which atomically
+   transfers the source's reserved slots. Verify the resulting current-chat
+   slot binding and relevant live repository/job state. Never reconstruct,
+   invent or persist the one-use token from historical context.
+4. **No source token, including an exhausted source chat:** The original chat
+   is **not required** for the recovery path. Use the current canonical
+   `workspace_exec(session.select)` protocol to identify any matching
+   foreign Workspace. Present the specific verified workspace/repository/slot
+   candidate and obtain the user's explicit **reuse / separate / none**
+   choice if not already specifically authorized. Only after this choice
+   and independent server authorization may `session.select` bind or
+   provision an available slot. This is a **separately authorized reuse**,
+   not an `session.handoff` transfer of the previous chat's slot ownership.
+   Never automatically seize occupied slots or silently create a Workspace.
+5. **Optional source preparation:** `chat_handoff current workspace` in the
+   source chat may call `workspace_exec(session.handoff, action="prepare")`
+   after current-slot verification, explicit consent and provider admission.
+   It creates a single-use token for a future direct slot transfer, but
+   **is not a prerequisite** for the normal successor-chat recovery path.
+6. **Verify and report separately.** Distinguish
+   `context_coverage=complete_verified|partial|unknown` from
+   `workspace_continuity=transferred|reused|already_bound|blocked|not_attempted`.
+   Only claim transfer or reuse after relevant live provider receipts.
+   Preserve worktrees, pending edits, jobs and shared environment; never
+   replay, restart, reset, clean, push or deploy as a side effect.
+7. **Credential boundary.** Never place bearer tokens, credential values or
+   authentication secrets in Context Summary, chat overview, repository,
+   Memory or a continuation instruction. No secure cross-chat token relay is
+   presumed to exist. If no token or authorized selection is available,
+   finish with the best grounded Context Summary and state the precise blocker.
 
-For the optional MCP phase, load `awa-si/admin/workflow.md` and
-`workflow/mcp.md` as applicable, and the current
-`awa-si/awa:mcp/workspace/contract.md` and `workflow/session.md`
-technical owner; verify the **deployed** registered operation, not only a
-GitHub commit. If unsupported or unadmitted, finish with context-only output.
-This workflow supplies no standing authorization for other MCP operations.
+For optional MCP use, load the applicable `awa-si/admin/workflow.md`,
+`workflow/mcp.md` and current Workspace technical contract and session
+workflow from `awa-si/awa`; use the **deployed** registered schema, not
+only the remote GitHub source. No standing MCP authorization is conferred.
 
 ## Receiving-chat responsibility (not this workflow)
 
-- The new chat interprets the summary based on its current task and tools; the explicit `workspace` variant may also perform the independently authorized adoption phase above.
-- In default mode, if an authorized MCP Work or Workspace is relevant, the **new chat** may independently discover and bind/reuse it under the provider contract. Only explicit `workspace` mode couples the authorized Workspace anchor and handoff steps to this workflow.
+- The receiving chat owns the normal `chat_handoff` execution; it interprets the summary based on its current task and tools. The explicit `workspace` variant may additionally perform the separately authorized recovery or adoption phase above.
+- In default mode, relevant existing MCP work remains historical context only. In explicit `workspace` mode, the receiving chat may discover and reuse a matching authorized Workspace with a valid handoff token or the independently approved `session.select` flow.
 - If no MCP Work/Workspace exists or no MCP route is selected, simply continue with the context using available ChatGPT capabilities.
 - Do not imply that a context summary itself establishes identity, cross-chat permission, workspace ownership, live job state, deployment or completion.
 - No MCP-specific operation or technical owner contract is required by **plain** `chat_handoff`; explicit `workspace` mode loads the matching live MCP technical contract.
