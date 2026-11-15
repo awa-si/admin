@@ -117,6 +117,8 @@ An unavailable project-chat listing is not an empty listing. A generated Context
 
 For MCP, [`workflow/mcp.md`](workflow/mcp.md) owns selective `mcp_model` discovery and `mcp_instructions` loading. An Admin snapshot via `mcp_instructions(topic="admin", compact=false)` is supplemental or an explicitly permitted recovery source; it cannot override canonical GitHub-read requirements.
 
+**MCP first-contact SessionRegistry:** After the first successful authorized AWA MCP call in a chat, [`workflow/mcp.md`](workflow/mcp.md) defines a best-effort `session.record` read, one conditional `session.update` for explicitly known missing labels, and one concise visible session summary for subsequent chat context. For example, `awa wip` is a valid client-declared `chat_title` only when supplied explicitly; `project_name` requires explicit or client-verified Project identity. Neither label verifies the ChatGPT UI, authorizes Workspace access, or creates a transcript/checkpoint. The technical owner remains [`awa-si/awa/mcp/session/contract.md`](https://github.com/awa-si/awa/blob/main/mcp/session/contract.md).
+
 For overlapping use cases, follow [`mixed_case_handling`](workflow.md#mixed_case_handling). For uncovered execution requirements, follow [`unknown_case_handling`](workflow.md#unknown_case_handling). Both retain authorization and verification gates.
 
 ## Development and verification
