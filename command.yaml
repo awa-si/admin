@@ -7,7 +7,7 @@ inherits: awa-si/admin/behavior.yaml
 # Current provider schema and admission remain authoritative.
 contract_fields: "command|aliases|workflow|authorization"
 
-admin_plane_reload:
+admin_reload:
   command: "reload admin"
   aliases: "reload admin plane|reload admin control plane"
   workflow: "awa-si/admin/core.yaml#registry"
@@ -31,7 +31,7 @@ mcp_auto_update:
   workflow: "awa-si/awa@main:mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence"
   authorization: "exact_current_command_authorizes_once_fixed_awa_host_fast_forward_pull_and_conditional_awa:mcp_restart|no_extra_confirmation_unless_provider_requires|provider_admission_required|no_standing_or_unrelated_authorization"
 
-host_update:
+mcp_host_update:
   command: "update host"
   aliases: "sync host"
   workflow: "awa-si/awa@main:mcp/host/workflow/maintenance.md#awa-organization-host-git-update"
