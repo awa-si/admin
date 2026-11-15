@@ -24,6 +24,18 @@ The coding modules in [`workflow/coding/`](workflow/coding/) and research module
 
 The registry is an **ordered source graph**, not a hierarchy of policy authority. Higher-priority ChatGPT instructions and provider admission continue to apply. Project and repository instructions extend parent rules unless an explicit valid override exists.
 
+## What workflows are for
+
+A **workflow** describes how GPT should complete a particular kind of task. It connects the requested outcome to the appropriate execution route, required checks, and completion evidence. Unlike [`behavior.yaml`](behavior.yaml), which defines rules applying across tasks, a workflow is loaded **only when its use case matches**. Unlike [`command.yaml`](command.yaml), it owns the procedure rather than the command trigger.
+
+- **`workflow.md` — execution coordinator:** decides which authorized provider or tool surface fits the task, orders dependent steps, and defines preflight, failure recovery, and verification boundaries.
+- **`workflow/*.md` — conditional specializations:** add relevant rules for GitHub, MCP, coding, research, or explicit chat handoff. Topic modules refine their parent without automatically loading unrelated modules.
+- **Target-repository technical contracts:** supply the exact tool operations, parameters, and runtime behavior. Admin workflows point to these owners instead of copying their specifications.
+
+**Example:** A request to inspect a repository selects GitHub orientation and an allowed read route; a request to run repository tests additionally needs a permitted execution environment and quality checks. Neither request authorizes deployment simply because a workflow is loaded.
+
+The sequence is **task intent → matching registry cases → applicable workflows → authorized provider operation → verified result**. The [registry](core.yaml) controls loading, [`workflow.md#routing_decision_order`](workflow.md#routing_decision_order) controls execution-route precedence, and the live provider controls admission. Loading a workflow is not an action or an authorization grant.
+
 ## Fresh-chat bootstrap
 
 1. Use the connected GitHub connector to read **complete current** `core.yaml`, then `behavior.yaml` and `command.yaml`. Retain verified repository revision and file SHA where available.
