@@ -58,6 +58,29 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
    the selected `source_slot` and matching `source_ref`. The pair prevents
    switching to a different source owner if a slot is reassigned. Source title
    verification is not supplied by a slot candidate; preserve that uncertainty.
+**Unreserved imported slot (same Route 2, not a legacy transfer):** If the
+requested Workspace has an imported repository but
+`session.handoff_candidates` has no source groups, distinguish a current-chat
+reservation (`current_slots` nonempty) from an unreserved slot (registry has
+no `session_slots` reservations). Do not invent a source conversation or
+call `session.handoff` with fabricated selectors. Only when exactly one
+imported repository is bound to the sole primary slot, explicit `workspace`
+suffix requests continuity, and the provider independently admits the
+operation, use the separately registered
+`workspace_exec(operation="session.adopt_unreserved", payload={
+"workspace_id": "EXISTING", "repository": "owner/repo",
+"expected_head": "FULL_VERIFIED_HEAD", "approved": true})`.
+Read the current live operation schema and Git HEAD first. This opt-in,
+atomic **reservation**, unlike a handoff, transfers no source-chat slots;
+preserve the existing worktree, dirty changes, jobs, and environment. Verify
+`session.resolve` from the current chat and live Workspace repository
+context before reporting `adopted` or `already_bound`. Existing foreign
+reservations, multiple slots, active jobs, mismatched repository/HEAD,
+uncertain authorization or missing provider capability must fail closed.
+Never claim source-chat identity or recovered transcript from an unreserved
+repository. Technical owner:
+`awa-si/awa:mcp/workspace/workflow/session.md`.
+
 4. The backend relies on the existing MCP gateway authentication and
    provider admission; no additional handoff-specific environment switch is
    required. It validates live Git bindings and atomically transfers all
@@ -65,7 +88,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
    Existing destination slots remain; worktrees, dirty state, jobs and
    environment are untouched.
 5. Verify the destination's actual slot reservations and native Workspace
-   receipt. Report `transferred|already_bound|ambiguous|blocked|not_found`
+   receipt. Report `transferred|adopted|already_bound|ambiguous|blocked|not_found`
    without claiming success from an unavailable or unverified provider.
    A different source-chat owner or shared MCP ingress must fail closed.
 6. The transfer covers **one Workspace per call**; it is not an atomic
