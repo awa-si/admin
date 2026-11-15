@@ -1,11 +1,13 @@
 # GPT Admin
 
-Declarative instruction control plane for ChatGPT. Repository: `awa-si/admin`.
+**Audience:** GPT, ChatGPT client integrations, and users. `awa-si/admin` is the shared GPT/client/user-facing instruction control plane. Its Markdown documentation provides architecture and entry points for developers and users; its declarative owner files define machine-consumed policy, routing, and command contracts.
 
 **Scope:** source discovery, policy composition, command dispatch, workflow routing, project/repository overlays, and completion evidence.  
 **Non-goals:** MCP implementation, tool registration, deployment, process lifecycle, and ChatGPT UI state.
 
 **Canonical entry point:** [`core.yaml`](core.yaml). Fetch authoritative Admin sources using the connected GitHub connector. Cached conversation context and MCP snapshots are not substitutes for required fresh-chat reads.
+
+**Admin maintenance read contract:** When working on `awa-si/admin` (including its architecture, policies, workflows, or documentation), GPT must read this complete, current `README.md` from the connected GitHub repository before making changes. This is a conditional maintenance read, not an unconditional fresh-chat bootstrap source. The README is orientation, not a replacement for normative `core.yaml`, `behavior.yaml`, `command.yaml`, or applicable workflow and repository-agent contracts.
 
 ## Architecture
 
