@@ -30,10 +30,6 @@ registry:
             path: awa-si/admin/workflow/coding/architecture.md
             load: on_material_implementation_or_architecture_relevance
             read_when: substantive_implementation|architecture_design|refactor|code_review|public_contract|security_sensitive_change|shared_helper_or_module_design|observability_change|error_or_resource_handling
-          - id: documentation
-            path: awa-si/admin/workflow/coding/documentation.md
-            load: on_coding_documentation_relevance
-            read_when: coding_documentation|public_API_docs|contract_documentation|README_change|developer_guidance|documented_examples
           - id: quality
             path: awa-si/admin/workflow/coding/quality.md
             load: on_quality_gate_or_verification_relevance
@@ -71,10 +67,6 @@ registry:
             path: awa-si/admin/workflow/research/code.md
             load: on_code_research
             read_when: algorithm_research|library_evaluation|API_comparison|implementation_choice|technical_design_research|engineering_evidence
-          - id: docs
-            path: awa-si/admin/workflow/research/docs.md
-            load: on_docs_research
-            read_when: documentation_search|canonical_documentation|specification_verification|repository_docs_audit|version_and_reference_verification
           - id: legal
             path: awa-si/admin/workflow/research/legal.md
             load: on_legal_research
@@ -96,6 +88,11 @@ registry:
         load: on_unmatched_case_needing_execution_decision
         section: unknown_case_handling
         reuse_loaded_source: true
+  - id: documentation
+    path: awa-si/admin/workflow/documentation.md
+    load: on_technical_documentation_or_specification_task
+    read_when: technical_documentation|developer_documentation|coding_documentation|README_change|API_docs|public_API_docs|contract_documentation|architecture_specification|documentation_search|specification_verification|repository_docs_audit|version_and_reference_verification
+    role: canonical_technical_documentation_and_specification_workflow
   - id: project
     path: awa-si/admin/projects/<project>/*
     load: when_verified_project_context_exists
@@ -120,6 +117,7 @@ resolution:
   source_loading: load_only_matching_cases_except_behavior_and_command
   coding_module_loading: evaluate_nested_read_when_independently|load_matching_module_files_only|no_partial_file_read_claim
   research_module_loading: evaluate_nested_read_when_independently|load_matching_complete_topic_module_files_only
+  documentation_loading: independent_technical_docs_case|no_PDF_or_DOCX_handling|workflow.md_only_when_execution_route_material
   overlap: combine_matching_use_cases_without_duplicate_reads
   unknown_case: workflow.md#unknown_case_handling;never_bypass_authorization_or_live_provider_admission
   security: higher_priority_ChatGPT_instructions_and_existing_approvals_remain_authoritative
