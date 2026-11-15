@@ -91,7 +91,7 @@ registry:
   - id: documentation
     path: awa-si/admin/workflow/documentation.md
     load: on_technical_documentation_or_specification_task
-    read_when: technical_documentation|developer_documentation|coding_documentation|README_change|API_docs|public_API_docs|contract_documentation|architecture_specification|documentation_search|specification_verification|repository_docs_audit|version_and_reference_verification
+    read_when: technical_documentation|developer_documentation|coding_documentation|README_change|API_docs|public_API_docs|contract_documentation|architecture_specification|specification_research|documentation_search|specification_verification|repository_docs_audit|version_and_reference_verification|machine_instruction_documentation
     role: canonical_technical_documentation_and_specification_workflow
   - id: project
     path: awa-si/admin/projects/<project>/*
