@@ -87,7 +87,7 @@ The Trading project retains the same 5–10-interaction Context Summary limit. M
 [`behavior.yaml`](behavior.yaml) defines `rule_contract` with **four identical fields in every one of its 23 rule blocks**: `priority` (1 = highest), `scope`, `apply_when` and `rules`. Existing normative rules remain under `rules`. The nested `rules.apply_when` maps specific directives or subsections to additional semantic activation gates; unlisted rules inherit the block gate. Original list-based rules remain ordered under `rules.directives` to keep the contract uniform. The `apply_when` field is now explicit for all 23 blocks; universal correctness and communication requirements remain global, while specialized rules activate on the matching task, provider or repository event. Explicit ordinal priority matches the physical top-to-bottom order; an earlier applicable block takes precedence only for unresolved conflicts at the same instruction authority. Every applicable rule remains active unless explicitly overridden by a higher-authority instruction. This local order does not supersede ChatGPT's instruction hierarchy, provider admission or the independent `core.yaml` source registry, nor does it force unrelated workflows to load.
 
 
-## Uniform command contract
+## Minimal command registry
 
 [`command.yaml`](command.yaml) is an always-loaded **minimal dispatch registry**: each command declares only `command`, `aliases`, `workflow` and `authorization`. The referenced workflow owns operational steps, output and failure semantics; live provider contracts own schemas and admission. The exact `update mcp` / `auto update` command retains one-invocation authorization for its bounded host update and conditional restart.
 
