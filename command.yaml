@@ -30,3 +30,9 @@ mcp_auto_update:
   aliases: "auto update"
   workflow: "awa-si/awa@main:mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence"
   authorization: "exact_current_command_authorizes_once_fixed_awa_host_fast_forward_pull_and_conditional_awa:mcp_restart|no_extra_confirmation_unless_provider_requires|provider_admission_required|no_standing_or_unrelated_authorization"
+
+host_update:
+  command: "update host"
+  aliases: "sync host"
+  workflow: "awa-si/awa@main:mcp/host/workflow/maintenance.md#awa-organization-host-git-update"
+  authorization: "exact_current_command_authorizes_once_fast_forward_git_pull_for_awa_si_awa_at_/opt/awa_only|no_push_restart_or_deployment|provider_admission_required|no_standing_or_unrelated_authorization"
