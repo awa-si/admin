@@ -41,8 +41,9 @@ owner_map:
 - global_commands: command.yaml
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
-- conditional_coding_detail: workflow/coding/*.md_selected_by_core.yaml
+- conditional_coding_detail: workflow/coding/*.md_selected_by_core.yaml|documentation_owned_independently_by_workflow/documentation.md
 - global_research: workflow/research.md
+- technical_documentation_and_specifications: workflow/documentation.md
 - chat_handoff_workflow: workflow/chat-handoff.md
 - human_orientation: README.md
 - project_behavior_delta: projects/<project>/instructions.txt
