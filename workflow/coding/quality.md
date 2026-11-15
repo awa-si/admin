@@ -35,9 +35,10 @@ quality_gates:
 - security_gate:
   - read_when: untrusted_input|auth|permissions|secrets|cryptography|dependency_security_change
   - checks: boundary_validation|least_privilege|secret_leakage|dependency_advisories_when_material
-- documentation_gate:
-  - read_when: public_API|configuration|schema|operational_contract|docs_changed
-  - checks: owner_consistency|links|examples|repository_docs_validator_when_available
+- technical_documentation_gate:
+  - read_when: code_change_affects_technical_or_specification_docs
+  - delegate: awa-si/admin/workflow/documentation.md#validation-and-writeback
+  - checks: follow_canonical_documentation_workflow_without_duplicate_validation_policy
 - performance_gate:
   - read_when: hot_path_change|performance_claim|benchmark_request|material_resource_tradeoff
   - checks: representative_before_after|correctness_equivalence|latency|throughput|memory|allocations|IO_as_material
