@@ -59,6 +59,7 @@ chat_handoff:
       boundary: "existing_gateway_authentication_and_provider_admission|no_additional_environment_flag|not_client_assertion"
       discovery: "for_inaccessible_source_chat|workspace_exec(operation=session.handoff_candidates,payload=workspace_id)|read_only_slot_groups_no_title_inference"
       operation: "workspace_exec(operation=session.handoff,payload=workspace_id+approved_true+optional_source_conversation_id_or_selected_source_slot_plus_source_ref)"
+      unreserved_imported_slot: "when_no_foreign_claims_and_one_imported_primary_slot|workspace_exec(operation=session.adopt_unreserved,payload=workspace_id+repository+expected_head+approved_true)|verify_session.resolve_and_live_repository|no_source_identity_or_slot_transfer"
       approval: "workspace_suffix_requests_exact_resource_continuity|live_provider_admission_required"
       transfer: "atomic_all_source_slots_in_one_workspace|preserve_jobs_worktrees_dirty_state|no_repository_import"
       failure: "ambiguous_or_unauthorized_or_unavailable_fail_closed|still_return_Context_Summary"
