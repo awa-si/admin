@@ -24,7 +24,7 @@ Declarative instruction control plane for ChatGPT. Repository: `awa-si/admin`.
 | Repository policy | `<repository>/AGENTS.md` | Active repository context |
 | Repository fallback | [`AGENTS.md#fallback_repository_agent`](AGENTS.md#fallback_repository_agent) | Active target without `AGENTS.md` |
 
-The `core.yaml` registry is an **ordered source dependency graph**, not an instruction-precedence hierarchy. Evaluate matching cases independently. Coding modules under [`workflow/coding/`](workflow/coding/) and research modules under [`workflow/research/`](workflow/research/) load only when their respective registry conditions match; their parent entries do not imply recursive loading.
+The `core.yaml` registry is an **ordered source dependency graph**, not an instruction-precedence hierarchy. Evaluate matching cases independently. Coding modules under [`workflow/coding.md`](workflow/coding.md) and research modules under [`workflow/research.md`](workflow/research.md) load only when their respective registry conditions match; their parent entries do not imply recursive loading.
 
 **Precedence:** higher-priority ChatGPT instructions → applicable global rules → workflow contracts → explicit project deltas → active repository policy, subject to provider authorization and admission. Children retain parent rules unless explicitly overridden.
 
