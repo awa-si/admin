@@ -21,9 +21,9 @@ chat_handoff:
 
 mcp_instruction_reload:
   command: "reload mcp"
-  aliases: "reload mcp"
-  workflow: "awa-si/admin/workflow/mcp.md|current_live_MCP_reload_contract"
-  authorization: "explicit_current_command_only|provider_admission_required|no_unrelated_mutation"
+  aliases: ""
+  workflow: "mcp_reload()"
+  authorization: "explicit_current_command_only|default_scope_all|provider_admission_required|no_service_restart_or_unrelated_mutation"
 
 mcp_auto_update:
   command: "update mcp"
