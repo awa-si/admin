@@ -19,10 +19,13 @@ Declarative instruction control plane for ChatGPT. Repository: `awa-si/admin`.
 | MCP routing | [`workflow/mcp.md`](workflow/mcp.md) | Selected, permitted MCP route |
 | Coding | [`workflow/coding.md`](workflow/coding.md) | Coding use case |
 | Research | [`workflow/research.md`](workflow/research.md) | Research or material fact check |
+| Technical documentation | [`workflow/documentation.md`](workflow/documentation.md) | Technical docs, API references, READMEs, specifications, and docs audits |
 | Chat handoff | [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Explicit handoff command |
 | Project overrides | `projects/<verified-project-slug>/*` | Verified project scope |
 | Repository policy | `<repository>/AGENTS.md` | Active repository context |
 | Repository fallback | [`AGENTS.md#fallback_repository_agent`](AGENTS.md#fallback_repository_agent) | Active target without `AGENTS.md` |
+
+Technical documentation and specification handling is owned exclusively by [`workflow/documentation.md`](workflow/documentation.md), independently of coding and research. PDF/DOCX editing, conversion, export, and general office-document authoring are outside Admin's documentation contract; those formats are not routed through this workflow.
 
 The `core.yaml` registry is an **ordered source dependency graph**, not an instruction-precedence hierarchy. Evaluate matching cases independently. Coding modules under [`workflow/coding.md`](workflow/coding.md) and research modules under [`workflow/research.md`](workflow/research.md) load only when their respective registry conditions match; their parent entries do not imply recursive loading.
 
@@ -47,7 +50,7 @@ user request
   -> verify: report observed result or exact blocker
 ```
 
-**Ownership boundaries:** `behavior.yaml` declares cross-task invariants; `command.yaml` maps command names to workflows; `workflow.md` selects execution routes; specialized workflows define conditional procedures; target repositories own implementation-specific APIs and host operations. A workflow load never grants mutation permission.
+**Ownership boundaries:** `behavior.yaml` declares cross-task invariants; `command.yaml` maps command names to workflows; `workflow.md` selects execution routes; `workflow/documentation.md` owns technical/spec documentation; target repositories own implementation-specific APIs and host operations. A workflow load never grants mutation permission.
 
 ## Fresh-chat bootstrap
 
