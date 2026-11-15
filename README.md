@@ -35,7 +35,7 @@ core.yaml  (registry / resolver)
 | --- | --- |
 | [`core.yaml`](core.yaml) | Registry, matching conditions, source references and resolution semantics |
 | [`behavior.yaml`](behavior.yaml) | Always-loaded global behavior, safety and authorization principles |
-| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `chat_handoff [CHAT_NAME]`, `reload mcp`, `mcp_auto_update`) |
+| [`command.yaml`](command.yaml) | Always-loaded explicit command contracts (`reload admin`, `chat_handoff [CHAT_NAME]`, `reload mcp`, `update mcp`, `update host` / `sync host`) |
 | [`workflow.md`](workflow.md) | Common execution lifecycle, known routing cases, route precedence, preflight and verification |
 | [`workflow/coding.md`](workflow/coding.md) | Coding bootstrap, general principles and three latency-aware execution tiers |
 | `workflow/coding/*.md` | Conditionally selected technical coding guidance; full module only when registry `read_when` matches |
@@ -94,6 +94,8 @@ The Trading project retains the same 5–10-interaction Context Summary limit. M
 ## Governed host update command
 
 `update mcp` (alias `auto update`) is registered in [`command.yaml`](command.yaml). Its one-invocation authorization permits only the fixed AWA host fast-forward pull and conditional `awa:mcp` restart, subject to live provider admission. The [canonical AWA host-update workflow](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence) owns preflight, the single executor, post-restart validation, failure handling and reporting. Editing this command does not activate the MCP runtime.
+
+`update host` (alias `sync host`) is a separate one-invocation command for a guarded fast-forward pull of `awa-si/awa@main` into `/opt/awa`. It follows the [host Git maintenance workflow](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/maintenance.md#awa-organization-host-git-update). It does not authorize a Git push, service restart or deployment; provider admission remains mandatory.
 
 ## Tool discovery responsibility
 
