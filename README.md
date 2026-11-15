@@ -91,6 +91,8 @@ The Trading project retains the same 5–10-interaction Context Summary limit. M
 
 [`command.yaml`](command.yaml) is an always-loaded **minimal dispatch registry**: each command declares only `command`, `aliases`, `workflow` and `authorization`. The referenced workflow owns operational steps, output and failure semantics; live provider contracts own schemas and admission. The exact `update mcp` / `auto update` command retains one-invocation authorization for its bounded host update and conditional restart.
 
+`reload mcp` invokes the registered `mcp_reload()` tool with its default `scope="all"`, subject to live provider admission. This reloads supported in-process state; it does **not** restart the MCP service or activate new code.
+
 ## Governed host update command
 
 `update mcp` (alias `auto update`) is registered in [`command.yaml`](command.yaml). Its one-invocation authorization permits only the fixed AWA host fast-forward pull and conditional `awa:mcp` restart, subject to live provider admission. The [canonical AWA host-update workflow](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence) owns preflight, the single executor, post-restart validation, failure handling and reporting. Editing this command does not activate the MCP runtime.
