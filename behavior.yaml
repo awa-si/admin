@@ -83,8 +83,7 @@ control_plane:
   apply_when: "Admin_instruction_source_ownership|routing|layering|control_plane_changes"
   rules:
     apply_when:
-      project_specific_behavior_source: "when_verified_project_context"
-      explicit_child_override_only: "when_project_or_repo_delta_applies"
+      explicit_child_override_only: "when_repository_specific_explicit_override_applies"
       authoritative_repository_state: "when_repo_state_material"
     behavior_owner: "awa-si/admin/behavior.yaml"
     command_owner: "awa-si/admin/command.yaml"
@@ -92,9 +91,6 @@ control_plane:
     workflow_bootstrap: "awa-si/admin/workflow.md#decision_bootstrap"
     coding_owner: "awa-si/admin/workflow/coding.md"
     repository_agent_fallback_owner: "awa-si/admin/AGENTS.md#fallback_repository_agent"
-    project_specific_behavior_source: "awa-si/admin/projects/<project>/*_load_all_existing_files"
-    project_specific_workflow_source: "included_in_complete_project_directory_inventory"
-    project_files_are_delta_only: true
     explicit_child_override_only: "explicit_only"
     parent_rules_remain_active_unless_overridden: true
     authoritative_repository_state: "authoritative"
@@ -103,44 +99,32 @@ control_plane:
 loading_and_resolution:
   priority: 5
   scope: "global"
-  apply_when: "when_loading_or_refreshing_Admin_global_project_or_repository_instruction_sources"
+  apply_when: "when_loading_or_refreshing_Admin_global_or_repository_instruction_sources"
   rules:
     apply_when:
-      project_directory_inventory: "when_project_directory_verified"
-      verified_missing_project_directory_handling: "when_project_directory_absent"
       repository_agent_loading: "when_repository_active"
       admin_repository_readme_loading: "when_task_targets_awa-si/admin_repository_or_Admin_control_plane_maintenance"
       source_refresh_triggers: "on_source_scope_change_or_explicit_reload"
       fresh_chat_bootstrap: "at_start_of_new_chat_with_configured_Admin_instructions"
-      project_scope_verification: "when_project_name_is_exposed_or_explicitly_given"
       bootstrap_status_reporting: "after_attempting_required_instruction_reads"
     fresh_chat_bootstrap: "read_full_current_core.yaml_from_connected_GitHub_first|read_full_behavior.yaml_and_command.yaml_always|do_not_eagerly_load_all_workflow_or_repository_docs"
-    project_scope_verification: "verify_project_name_or_explicit_context|normalize_slug|check_projects_directory|never_infer_hidden_UI_state"
-    project_directory_contract: "awa-si/admin/projects/<project>/*"
-    project_directory_inventory: "enumerate_entire_matching_directory_without_fixed_filename_allowlist"
-    project_file_full_read: "read_every_existing_regular_file_completely_before_applying_project_deltas"
-    partial_project_file_handling: "report_exact_gap_and_do_not_claim_full_project_bootstrap"
-    verified_missing_project_directory_handling: "verified_absence_means_inherit_global|not_same_as_unavailable_or_truncated_inventory"
     global_source_loading_sequence: "core.yaml -> behavior.yaml -> command.yaml -> workflow.md_when_execution_applies -> workflow/github.md_when_GitHub_capability_material_before_final_route_decision -> workflow/mcp.md_when_MCP_route_selected -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
     admin_repository_readme_loading: "always_read_full_current_awa-si/admin/README.md_from_connected_GitHub_when_working_on_awa-si/admin|read_before_analysis_or_modification|use_as_GPT_client_user_facing_architecture_orientation|retain_core_behavior_command_as_normative_owners|report_unavailable_or_partial_read|reuse_only_if_verified_same_revision_and_scope"
-    project_scope_resolution: "verify_project_slug_then_enumerate_and_read_all_files_at_projects/<project>/*"
-    project_workflow: "included_in_complete_project_directory_read"
-    project_coding: "included_in_complete_project_directory_read"
-    repository_target_resolution: "derive_from_project_instructions_when_present_else_current_task_context"
+    repository_target_resolution: "explicit_repository_in_current_task_or_verified_active_repository_binding|never_infer_from_project_name_or_chat_title"
     repository_agent_loading: "only_with_active_repository_context|use_target_AGENTS_md_if_present_else_admin_fallback"
     load_only_material_helpers: "load_only_when_required_by_task_or_repository_agent"
     bootstrap_status_reporting: "report_loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown_per_required_source|do_not_claim_new_chat_or_tool_execution_that_was_only_simulated"
-    instruction_source_resolution_order: "core_use_case_resolver -> behavior.yaml -> applicable_workflow|coding|research -> projects/<project>/*_if_resolved -> repository_agent_if_active -> material_helpers -> task"
+    instruction_source_resolution_order: "core_use_case_resolver -> behavior.yaml -> applicable_workflow|coding|research -> repository_agent_if_active -> material_helpers -> task"
     source_refresh_triggers: "source_changed|explicitly_requested|active_scope_changed"
     stale_cached_copy_after_reread: "non_authoritative"
     mcp_admin_snapshot:
       apply_when: "when_Admin_instruction_sources_are_needed_and_AWA_MCP_route_is_already_selected_and_permitted"
-      tool: "mcp_instructions(topic=admin,project=VERIFIED_PROJECT,compact=false)"
-      project: "pass_only_explicit_or_verified_project_name|omit_when_unknown|never_infer_from_openai/session_or_repository"
+      tool: "mcp_instructions(topic=admin,compact=false)"
+      repository_resolution: "do_not_select_repository_from_ChatGPT_project_label"
       verify: "mode_admin_snapshot|repository_awa-si/admin|pinned_ref|complete_true|all_required_paths_and_bodies|matching_tree_SHAs_when_available"
       precedence: "fresh_chat_requires_connected_GitHub_core_then_behavior_then_command|MCP_snapshot_is_supplemental_delivery_not_a_new_authority"
       fallback: "on_MCP_unavailable_or_partial_use_required_connected_GitHub_reads|report_actual_missing_source_not_unverified_success"
-      reuse: "do_not_repeat_identical_verified_snapshot_within_same_revision_and_project_scope"
+      reuse: "do_not_repeat_identical_verified_snapshot_within_same_revision_and_repository_scope"
       side_effects: "read_only|no_MCP_route_discovery_just_for_Admin|no_Workspace_or_host_mutation"
 
 repository_agent_policy:
