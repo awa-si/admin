@@ -2,7 +2,7 @@
 
 **Audience:** GPT, ChatGPT client integrations, and users. `awa-si/admin` is the shared GPT/client/user-facing instruction control plane. Its Markdown documentation provides architecture and entry points for developers and users; its declarative owner files define machine-consumed policy, routing, and command contracts.
 
-**Scope:** source discovery, policy composition, command dispatch, workflow routing, project/repository overlays, and completion evidence.  
+**Scope:** global instruction source discovery, policy composition, command dispatch, workflow routing, task-based repository resolution, and completion evidence.  
 **Non-goals:** MCP implementation, tool registration, deployment, process lifecycle, and ChatGPT UI state.
 
 **Canonical entry point:** [`core.yaml`](core.yaml). Fetch authoritative Admin sources using the connected GitHub connector. Cached conversation context and MCP snapshots are not substitutes for required fresh-chat reads.
@@ -23,7 +23,6 @@
 | Research | [`workflow/research.md`](workflow/research.md) | Research or material fact check |
 | Technical documentation | [`workflow/documentation.md`](workflow/documentation.md) | Technical docs, API references, READMEs, specifications, and docs audits |
 | Chat handoff | [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Explicit handoff command |
-| Project overrides | `projects/<verified-project-slug>/*` | Verified project scope |
 | Repository policy | `<repository>/AGENTS.md` | Active repository context |
 | Repository fallback | [`AGENTS.md#fallback_repository_agent`](AGENTS.md#fallback_repository_agent) | Active target without `AGENTS.md` |
 
@@ -31,7 +30,7 @@ Technical documentation and specification handling is owned exclusively by [`wor
 
 The `core.yaml` registry is an **ordered source dependency graph**, not an instruction-precedence hierarchy. Evaluate matching cases independently. Coding modules under [`workflow/coding.md`](workflow/coding.md) and research modules under [`workflow/research.md`](workflow/research.md) load only when their respective registry conditions match; their parent entries do not imply recursive loading.
 
-**Precedence:** higher-priority ChatGPT instructions → applicable global rules → workflow contracts → explicit project deltas → active repository policy, subject to provider authorization and admission. Children retain parent rules unless explicitly overridden.
+**Precedence:** higher-priority ChatGPT instructions → applicable global rules → workflow contracts → active repository agent, subject to provider authorization and admission. Repository-specific overrides must be explicit. Children retain parent rules unless explicitly overridden.
 
 ## Workflow model
 
@@ -57,13 +56,12 @@ user request
 ## Fresh-chat bootstrap
 
 1. **Read:** complete current `core.yaml`, `behavior.yaml`, and `command.yaml` through the connected GitHub connector. Record revision and file SHA where exposed.
-2. **Resolve project:** only from explicit or client-verified ChatGPT Project identity. Verify the slug in `projects/`; enumerate every existing file under the matching project directory and read each fully. `absent_verified` requires authoritative absence evidence.
-3. **Resolve repository:** from verified project instructions or task context; read its `AGENTS.md` if present, otherwise use the Admin fallback. Do not map project names to repositories by inference.
-4. **Select conditional sources:** independently evaluate `core.yaml` registry gates; load relevant full workflow/module files. Do not eagerly load every workflow.
-5. **Reuse or refresh:** cache verified sources within an unchanged revision and scope; invalidate on source change, scope change, or explicit refresh.
-6. **Report:** `loaded_verified`, `not_applicable`, `absent_verified`, `unavailable`, `partial`, or `unknown`; identify incomplete sources precisely.
+2. **Resolve repository:** use an explicit repository in the request or a verified active task/repository binding. Never infer repository identity from a ChatGPT Project name, session label or chat title. Read the target's `AGENTS.md` when present; otherwise apply the Admin repository-agent fallback.
+3. **Select conditional sources:** evaluate `core.yaml` registry gates independently and load only relevant complete workflows and repository-owned helpers.
+4. **Reuse or refresh:** reuse verified sources at unchanged revision and scope; refresh on source change, active repository scope change or explicit request.
+5. **Report:** `loaded_verified`, `not_applicable`, `absent_verified`, `unavailable`, `partial`, or `unknown`; identify incomplete sources precisely.
 
-Bootstrap is **read-only**. It does not create a ChatGPT chat, discover MCP tools without cause, bind Workspace slots, execute code, or activate a service. See [`projects/template.txt`](projects/template.txt).
+Bootstrap is **read-only**. It does not create a ChatGPT chat, discover MCP tools without cause, bind Workspace slots, execute code, or activate a service. Repository-specific GPT rules and task-specific workflows are owned by the resolved repository, not by an Admin project overlay.
 
 ## Behavior schema
 
@@ -136,4 +134,4 @@ For overlapping use cases, follow [`mixed_case_handling`](workflow.md#mixed_case
 
 **Repository policy:** this public repository must not contain credentials, tokens, private keys, confidential records, or session secrets. Admin has no in-repository Python test runner; use focused inspection or an independently authorized validator. Cross-repository checks require verified revision pairs.
 
-For project bootstrap integration, use [`projects/template.txt`](projects/template.txt). For repository-specific maintenance, follow [`AGENTS.md`](AGENTS.md).
+For repository-specific maintenance, read the target repository's `AGENTS.md` or use the fallback in [`AGENTS.md`](AGENTS.md) when it is absent. Multi-repository coordination requires an explicit or verified owner rather than a client Project-name mapping.
