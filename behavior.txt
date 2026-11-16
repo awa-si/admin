@@ -176,7 +176,7 @@ workspace_repository_write_boundary:
     authorized_source_edit_exception: only_explicit_authorized_source_edits|staging|commits|checkout_operations_using_approved_repository_workflow
     runtime_generated_writes_inside_repository: prohibited
     caches_temp_build_output_tool_state_logs_coverage_bytecode_dependency_downloads: redirect_outside_repository_always
-    "AWA_workspace_runtime_paths": resolve_from_current_awa-si/awa@main:mcp/workspace/contract.md_and_verified_workspace_context|do_not_pin_in_admin
+    AWA_workspace_runtime_paths: resolve_from_current_awa-si/awa@main:mcp/workspace/contract.md_and_verified_workspace_context|do_not_pin_in_admin
     configure_tool_specific_cache_and_artifact_environment_variables_before_execution: required
     external_scratch_execution_fallback: use_external_build_or_test_copy|supported_scratch_directory;do_not_disable_read_only_protection
     no_repository_cache_cleanup_as_substitute_for_isolation: true
@@ -200,7 +200,7 @@ connector_and_file_reading:
     raw_fallback_must_not_restart_discovery_when_target_is_already_resolved: true
     metadata_only_read_policy: do_not_download_content_or_raw_bytes_unnecessarily
     raw_file_retrieval_condition: request_only_when_extracted_content_is_insufficient_or_downstream_processing_requires_them
-    "OCR": last_resort_not_default
+    OCR: last_resort_not_default
     incomplete_connector_results_handling: do_not_claim_completeness_without_complete_evidence
     unsupported_connector_capability: state_actual_limit_and_use_smallest_accurate_fallback_without_inventing_functionality
 
@@ -285,10 +285,10 @@ interactive_execution:
         file_by_file_micro_stop: prohibited
         exclude_only_when: generated|vendored|binary|explicitly_out_of_scope|repository_contract_excludes
       priority_levels:
-        "P0": correctness|security|data_loss|contract_break|blocking_failure
-        "P1": user_requested_core_behavior|material_regression|broken_integration|high_impact_maintainability
-        "P2": performance|reliability|test_coverage|clarity|moderate_technical_debt
-        "P3": cleanup|consistency|non_blocking_refactor|documentation_polish|low_impact_optimization
+        P0: correctness|security|data_loss|contract_break|blocking_failure
+        P1: user_requested_core_behavior|material_regression|broken_integration|high_impact_maintainability
+        P2: performance|reliability|test_coverage|clarity|moderate_technical_debt
+        P3: cleanup|consistency|non_blocking_refactor|documentation_polish|low_impact_optimization
         ordering: P0 -> P1 -> P2 -> P3
         dependency_order_overrides_numeric_priority_when_required_for_correct_execution: true
         user_explicit_priority_overrides_default_classification_when_safe: true
@@ -298,7 +298,7 @@ interactive_execution:
       validation_in_bundle: aggregate_at_natural_boundaries_and_run_once_per_coherent_change_set_when_sufficient
       commit_in_bundle: prefer_one_coherent_commit_per_change_set_after_validation_instead_of_commit_after_each_micro_step
       avoid_micro_cycle: edit -> validate -> commit -> stop_when_more_requested_related_work_is_ready
-      "broad_continue_commands_like_continue|weiter|next": complete_next_coherent_outcome_not_one_micro_edit_or_repeated_deployment_cycle
+      broad_continue_commands_like_continue|weiter|next: complete_next_coherent_outcome_not_one_micro_edit_or_repeated_deployment_cycle
       do_not_expand_scope_without_new_material_evidence: true
     change_set_delivery_cadence:
       default: inspect_full_related_scope -> plan_one_coherent_change_set -> implement_related_changes -> validate_as_bundle -> commit -> deploy_once_if_requested_or_required_and_authorized -> verify_deployed_result
@@ -532,10 +532,10 @@ apple_icloud_workflow:
     apple_plugin_identifier: asdk_app_sites_8a9cfeb835348191bb509ee7793fe56d
     apple_plugin_reference_url: https://apple-icloud.awa-si.chatgpt.site
     apple_instruction_source: live_apple_workflow_from_plugin
-    "resolve_current_plugin_instructions_at_start_of_each_Apple_task": required
+    resolve_current_plugin_instructions_at_start_of_each_Apple_task: required
     instruction_resolver_action: apple_workflow
     plugin_returned_workflow_and_tool_guidance: authoritative_for_Apple_domain_workflow
-    "cached_or_admin_copied_Apple_workflow": non_authoritative_when_live_plugin_workflow_is_available
+    cached_or_admin_copied_Apple_workflow: non_authoritative_when_live_plugin_workflow_is_available
     reuse_live_plugin_workflow_within_same_task_only_while_connection_and_plugin_surface_are_unchanged: true
     reread_live_plugin_workflow_if: new_Apple_task|plugin_or_tool_surface_changed|explicitly_requested|workflow_version_changed_or_unknown
     current_capabilities_are_connector_schema_authoritative: true
