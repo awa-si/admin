@@ -19,6 +19,13 @@ chat_handoff:
   workflow: awa-si/admin/workflow/chat-handoff.md
   authorization: context_only_by_default|workspace_suffix_explicit_opt_in|provider_admission_required
 
+
+use_agent:
+  command: use agent
+  aliases: use_agent
+  workflow: awa-si/awa@main:mcp/agent/workflow/dialog.md
+  authorization: selection_dialog_and_discovery_only|no_agent_invoke_or_side_effects_from_command|explicit_execution_intent_and_provider_admission_required
+
 mcp_instruction_reload:
   command: reload mcp
   aliases: ""
