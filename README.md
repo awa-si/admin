@@ -61,7 +61,7 @@ user request
 4. **Reuse or refresh:** reuse verified sources at unchanged revision and scope; refresh on source change, active repository scope change or explicit request.
 5. **Report:** `loaded_verified`, `not_applicable`, `absent_verified`, `unavailable`, `partial`, or `unknown`; identify incomplete sources precisely.
 
-Bootstrap is **read-only**. It does not create a ChatGPT chat, discover MCP tools without cause, bind Workspace slots, execute code, or activate a service. Repository-specific GPT rules and task-specific workflows are owned by the resolved repository, not by an Admin project overlay. The optional [client bootstrap pointer](bootstrap.txt) contains only global source loading and task-based repository resolution; it replaces the retired `projects/template.txt`.
+Bootstrap is **read-only**. It does not create a ChatGPT chat, discover MCP tools without cause, bind Workspace slots, execute code, or activate a service. Repository-specific GPT rules and task-specific workflows are owned by the resolved repository, not by an Admin project overlay. The [ChatGPT Project Custom Instructions bootstrap](bootstrap.txt) is designed to be pasted into **Project → ••• → Project settings → Project instructions**. It loads global Admin sources and resolves repositories only from explicit or verified task context; it replaces the retired `projects/template.txt`. Project instructions apply within that ChatGPT Project and are not deployed automatically by a GitHub commit.
 
 ## Behavior schema
 
