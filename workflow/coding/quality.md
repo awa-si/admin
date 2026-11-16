@@ -9,7 +9,7 @@ owner_sections: quality_gates|verification|quality_review_gate|completion
 quality_gates:
 - read_when: code_change|test_request|lint_request|format_request|type_check_request|build_request|benchmark_request|documentation_validation
 - first_select: explicit_user_request|repository_mandatory_checks|changed_behavior_and_risk
-- specialized_detail: select_matching_sources_from_core.yaml_coding_modules
+- specialized_detail: select_matching_sources_from_core.txt_coding_modules
 - syntax_gate:
   - read_when: new_or_modified_source|generated_code|configuration
   - checks: parser|compile|configuration_schema_when_applicable
