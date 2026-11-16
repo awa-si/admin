@@ -5,10 +5,10 @@ mode: use_case_resolver
 
 registry:
   - id: behavior
-    path: awa-si/admin/behavior.yaml
+    path: awa-si/admin/behavior.txt
     load: always
   - id: command
-    path: awa-si/admin/command.yaml
+    path: awa-si/admin/command.txt
     load: always
     role: canonical_user_command_contracts
   - id: chat_handoff
@@ -100,7 +100,7 @@ registry:
 
 resolution:
   fresh_chat_bootstrap:
-    phase_1_minimum: connected_GitHub_read_full_current_core.yaml_then_behavior.yaml_and_command.yaml
+    phase_1_minimum: connected_GitHub_read_full_current_core.txt_then_behavior.txt_and_command.txt
     phase_2_repository: only_when_repository_context_active|resolve_from_explicit_task_repository_or_verified_current_repository_binding|never_infer_from_ChatGPT_project_name|read_target_AGENTS.md_if_present_else_Admin_fallback
     phase_3_conditional: evaluate_task_intent_and_independent_registry_gates|load_only_matching_workflows_and_modules|workflow.md_only_when_applicable
     refresh: once_per_chat_per_verified_revision_and_scope|refresh_on_source_change_scope_change_or_explicit_user_request
