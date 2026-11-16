@@ -5,17 +5,17 @@
 **Scope:** global instruction source discovery, policy composition, command dispatch, workflow routing, task-based repository resolution, and completion evidence.  
 **Non-goals:** MCP implementation, tool registration, deployment, process lifecycle, and ChatGPT UI state.
 
-**Canonical entry point:** [`core.yaml`](core.yaml). Fetch authoritative Admin sources using the connected GitHub connector. Cached conversation context and MCP snapshots are not substitutes for required fresh-chat reads.
+**Canonical entry point:** [`core.txt`](core.txt). Fetch authoritative Admin sources using the connected GitHub connector. Cached conversation context and MCP snapshots are not substitutes for required fresh-chat reads.
 
-**Admin maintenance read contract:** When working on `awa-si/admin` (including its architecture, policies, workflows, or documentation), GPT must read this complete, current `README.md` from the connected GitHub repository before making changes. This is a conditional maintenance read, not an unconditional fresh-chat bootstrap source. The README is orientation, not a replacement for normative `core.yaml`, `behavior.yaml`, `command.yaml`, or applicable workflow and repository-agent contracts.
+**Admin maintenance read contract:** When working on `awa-si/admin` (including its architecture, policies, workflows, or documentation), GPT must read this complete, current `README.md` from the connected GitHub repository before making changes. This is a conditional maintenance read, not an unconditional fresh-chat bootstrap source. The README is orientation, not a replacement for normative `core.txt`, `behavior.txt`, `command.txt`, or applicable workflow and repository-agent contracts.
 
 ## Architecture
 
 | Component | Contract owner | Activation |
 | --- | --- | --- |
-| Source graph | [`core.yaml`](core.yaml) | First read |
-| Global policy | [`behavior.yaml`](behavior.yaml) | Always |
-| Command dispatcher | [`command.yaml`](command.yaml) | Always |
+| Source graph | [`core.txt`](core.txt) | First read |
+| Global policy | [`behavior.txt`](behavior.txt) | Always |
+| Command dispatcher | [`command.txt`](command.txt) | Always |
 | Execution router | [`workflow.md`](workflow.md) | Workflow or execution task |
 | GitHub routing | [`workflow/github.md`](workflow/github.md) | Material GitHub capability |
 | MCP routing | [`workflow/mcp.md`](workflow/mcp.md) | Selected, permitted MCP route |
@@ -28,7 +28,7 @@
 
 Technical documentation and specification handling is owned exclusively by [`workflow/documentation.md`](workflow/documentation.md), independently of coding and research. Its audience contracts separate **GPT-facing machine-readable directives** (structured, explicit, schema-compatible and authorization-safe) from **developer-facing documentation** (precise technical prose, stable symbols, verifiable examples and canonical references). General office-document authoring, binary document processing, and format conversion are outside Admin's technical documentation contract.
 
-The `core.yaml` registry is an **ordered source dependency graph**, not an instruction-precedence hierarchy. Evaluate matching cases independently. Coding modules under [`workflow/coding.md`](workflow/coding.md) and research modules under [`workflow/research.md`](workflow/research.md) load only when their respective registry conditions match; their parent entries do not imply recursive loading.
+The `core.txt` registry is an **ordered source dependency graph**, not an instruction-precedence hierarchy. Evaluate matching cases independently. Coding modules under [`workflow/coding.md`](workflow/coding.md) and research modules under [`workflow/research.md`](workflow/research.md) load only when their respective registry conditions match; their parent entries do not imply recursive loading.
 
 **Precedence:** higher-priority ChatGPT instructions → applicable global rules → workflow contracts → active repository agent, subject to provider authorization and admission. Repository-specific overrides must be explicit. Children retain parent rules unless explicitly overridden.
 
@@ -44,20 +44,20 @@ A workflow specifies the **execution algorithm and evidence contract** for a cla
 
 ```text
 user request
-  -> core.yaml: classify independent use cases
-  -> behavior.yaml: apply global policy
+  -> core.txt: classify independent use cases
+  -> behavior.txt: apply global policy
   -> conditional workflow(s): resolve route and checks
   -> live provider: authenticate, authorize, admit, execute
   -> verify: report observed result or exact blocker
 ```
 
-**Ownership boundaries:** `behavior.yaml` owns global rules; `command.yaml` owns command dispatch; `workflow.md` owns route precedence; `workflow/documentation.md` owns technical documentation. Target repositories own implementation contracts. Loading any workflow does not grant permissions.
+**Ownership boundaries:** `behavior.txt` owns global rules; `command.txt` owns command dispatch; `workflow.md` owns route precedence; `workflow/documentation.md` owns technical documentation. Target repositories own implementation contracts. Loading any workflow does not grant permissions.
 
 ## Fresh-chat bootstrap
 
-1. **Read:** complete current `core.yaml`, `behavior.yaml`, and `command.yaml` through the connected GitHub connector. Record revision and file SHA where exposed.
+1. **Read:** complete current `core.txt`, `behavior.txt`, and `command.txt` through the connected GitHub connector. Record revision and file SHA where exposed.
 2. **Resolve repository:** use an explicit repository in the request or a verified active task/repository binding. Never infer repository identity from a ChatGPT Project name, session label or chat title. Read the target's `AGENTS.md` when present; otherwise apply the Admin repository-agent fallback.
-3. **Select conditional sources:** evaluate `core.yaml` registry gates independently and load only relevant complete workflows and repository-owned helpers.
+3. **Select conditional sources:** evaluate `core.txt` registry gates independently and load only relevant complete workflows and repository-owned helpers.
 4. **Reuse or refresh:** reuse verified sources at unchanged revision and scope; refresh on source change, active repository scope change or explicit request.
 5. **Report:** `loaded_verified`, `not_applicable`, `absent_verified`, `unavailable`, `partial`, or `unknown`; identify incomplete sources precisely.
 
@@ -65,7 +65,7 @@ Bootstrap is **read-only**. It does not create a ChatGPT chat, discover MCP tool
 
 ## Behavior schema
 
-[`behavior.yaml`](behavior.yaml) defines 23 prioritized rule blocks using the invariant structure:
+[`behavior.txt`](behavior.txt) defines 23 prioritized rule blocks using the invariant structure:
 
 ```yaml
 <rule_id>:
@@ -82,11 +82,11 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 
 ## Command dispatch
 
-[`command.yaml`](command.yaml) defines five commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
+[`command.txt`](command.txt) defines five commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
 
 | Command | Aliases | Operation / boundary |
 | --- | --- | --- |
-| `reload admin` | `reload admin plane`, `reload admin control plane` | Re-read Admin sources via `core.yaml`; no runtime restart |
+| `reload admin` | `reload admin plane`, `reload admin control plane` | Re-read Admin sources via `core.txt`; no runtime restart |
 | `chat handoff` | `chat_handoff` | [Handoff workflow](workflow/chat-handoff.md); context-only default, `workspace` explicit opt-in |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
 | `update mcp` | `auto update` | [AWA self-update](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence); guarded host pull and conditional `awa:mcp` restart |
