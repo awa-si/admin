@@ -39,7 +39,7 @@ mcp:
   - examples: use_OWNER_REPOSITORY_ws|use_existing_workspace_for_EXACT_REPOSITORY|use_workspace_ID
   - classification: natural_language_workspace_request_not_registered_admin_command
   - resolve: explicit_owner_repository_or_verified_current_repository_binding|never_infer_repository_from_project_label_or_chat_title
-  - route: current_live_workspace_exec_schema|awa-si/awa@mcp/workspace/workflow/session.md#fast-path--known-workspace-approved-handoff
+  - route: current_live_workspace_exec_schema|awa-si/awa@main:mcp/workspace/workflow/session.md#fast-path--known-workspace-approved-handoff
   - already_owned: verify_or_reuse_current_chat_reservation_without_handoff
   - foreign_slot: exact_existing_workspace_and_explicit_current_transfer_approval_required|do_not_use_short_phrase_as_mutation_authorization|provider_must_verify_single_owner_or_request_candidate_selection
   - verify: session.resolve_for_exact_repository_after_transfer|context_when_material|do_not_claim_binding_from_metadata_or_receipt_alone
