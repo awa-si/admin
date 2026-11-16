@@ -4,8 +4,6 @@ mode: normative_machine_directives
 
 resolution:
 - owner: awa-si/admin/workflow.md
-- project_extension: awa-si/admin/projects/<project>/*_all_existing_files
-- project_extension_semantics: extend_parent_and_explicit_override_only
 - parent_rules_remain_active_unless_overridden: true
 
 decision_bootstrap:
@@ -14,7 +12,7 @@ decision_bootstrap:
 - mixed_cases: mixed_case_handling_when_multiple_cases_match
 - unmatched_cases: unknown_case_handling_for_uncovered_scope
 - research_source: awa-si/admin/workflow/research.md_when_search|lookup|research|investigation|material_fact_check_applies
-- authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|project_delta_for_explicit_overrides|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
+- authority: global_instructions_for_permissions_and_precedence|workflow_for_routing_and_lifecycle|repository_agent_for_repository_specific_behavior|live_provider_for_schema_and_admission
 - before_action: resolve_product_mode -> authorization -> target_and_branch -> eligible_existing_workspace -> capability_need -> route -> native_admission
 - expand_on_demand: workflow/github.md_when_GitHub_capability_material_including_AWA_MCP_GitHub|workflow/mcp.md_when_MCP_route_selected
 - github_orientation: load_workflow/github.md_for_candidate_selection_before_final_GitHub_surface_decision;not_after_route_selection_only
@@ -27,7 +25,7 @@ decision_bootstrap:
 - invalidation: affected_scope_or_authority_change_only
 
 branch_resolution:
-- priority: explicit_user_branch_in_current_task > clear_active_branch_from_current_chat > explicit_project_or_repository_branch > main
+- priority: explicit_user_branch_in_current_task > clear_active_branch_from_current_chat > verified_current_repository_branch > main
 - do_not_infer_non_main_branch_from_stale_or_unrelated_context: true
 - ask_user_instead_of_guessing_when: main_missing|multiple_materially_plausible_branches_change_task_semantics|branch_context_conflicts
 - once_selected_for_task: keep_stable_until_user_or_material_repository_evidence_changes_it
@@ -440,6 +438,6 @@ loading:
 - mixed_and_unknown: mixed_case_handling|unknown_case_handling
 - route_details: load_workflow/github.md_when_any_GitHub_surface_material_including_AWA_MCP;load_workflow/mcp.md_when_MCP_route_selected
 - cross_task_rules: awa-si/admin/behavior.yaml
-- project_files: resolve_at_chatgpt_project_layer_not_through_AWA_MCP
+- project_metadata: client_declared_labels_are_not_repository_resolution_or_policy_sources
 - repository_agent: resolve_only_when_repository_context_active
 - do_not_infer_from_index: actual_tool_schema|permission|deployment_status
