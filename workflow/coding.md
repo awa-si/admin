@@ -5,12 +5,12 @@ resolution:
 - owner: awa-si/admin/workflow/coding.md
 - load_when: implementation|code_design|refactor|testing|test_design|lint|format|type_check|static_analysis|build_validation|performance_review|benchmark|dependency_selection|coding_documentation|security_review
 - read_when: coding_or_quality_case_matches_core_registry;load_only_applicable_coding_detail_modules
-- behavior_owner: awa-si/admin/behavior.yaml
-- registry_owner: awa-si/admin/core.yaml
+- behavior_owner: awa-si/admin/behavior.txt
+- registry_owner: awa-si/admin/core.txt
 - execution_owner: awa-si/admin/workflow.md
 - research_owner: awa-si/admin/workflow/research.md
 - repository_policy_owner: current_repository_AGENTS_md_and_narrowest_technical_contract
-- conditional_sources: core.yaml#registry.workflow.cases[id=coding].modules
+- conditional_sources: core.txt#registry.workflow.cases[id=coding].modules
 - loading_boundary: full_root_and_only_matching_full_module_files
 - override: explicit_only;parent_rules_remain_active
 - unrequested_work: no_unrelated_upgrade|migration|refactor|lint_cleanup
