@@ -1,41 +1,18 @@
-# ChatGPT Project Custom Instructions: Project settings > Project instructions.
-# Project context is not repository authorization.
+# ChatGPT Project Custom Instructions — paste into Project > Project settings > Project instructions.
+# Project instructions override global ChatGPT Custom Instructions; do not assume global.txt is automatically applied.
 bootstrap: chatgpt_project
-authority: awa-si/admin/core.yaml
-
-github:
-  connector: required
-  verify: connected|repository_access
-  no_fallback: memory|cached_repo|public_web
-  failure: report_blocker
+inherits: awa-si/admin/global.txt
 
 load:
-  source: connected_GitHub_connector
-  order: read_full_current_core.yaml -> behavior.yaml -> command.yaml
-  conditional: core.yaml#registry|matching_only
-  reuse: once_per_chat_per_verified_revision
-  refresh: source_or_scope_change|explicit_request
-  cache: invalid_after_refresh
-  admin_work: read_full_current_admin/README.md
+  first: read_full_current_awa-si/admin/global.txt_via_connected_GitHub_connector
+  apply: global.txt_shared_bootstrap_contract_except_its_global_UI_installation_scope
+  then: follow_global.txt_load_order_for_core.yaml|behavior.yaml|command.yaml
+  if_unavailable: report_exact_gap|do_not_claim_inherited_rules_loaded|continue_only_with_safely_verified_sources
+  reuse: only_when_verified_revision_and_scope_unchanged
 
-repository:
-  resolve: explicit_repo_or_verified_task_binding
-  never_infer: Project|title|session|hidden_UI
-  agent: <resolved_repository>/AGENTS.md_if_present
-  fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
-  load: when_repo_active
-  multi_repo: verify_owner|never_guess
-
-execution:
-  precedence: higher_priority_ChatGPT -> Admin -> workflows -> repo_agent
-  inherit: parent_rules|explicit_override_only
-  routing: awa-si/admin/workflow.md#routing_decision_order
-  mcp: selected_permitted|live_schema|technical_owner
-  authorization: bootstrap_or_discovery_never_grants_rights
-  effects: approval|admission|receipts
-
-failure:
-  never_invent: repo_state|files|permissions|tool_results
-  missing_source: report_exact_gap
-  incomplete_read: report_unread_paths
-  verified_success_only: true
+project:
+  applicability: conversations_inside_this_ChatGPT_Project_only
+  role: contextual_instructions_and_available_project_sources|not_automatic_repository_selection
+  repository: explicit_task_repository_or_verified_active_repository_binding_only
+  overrides: only_explicit_project_specific_directives|parent_Admin_rules_remain_active_unless_explicitly_overridden
+  authority: no_implicit_MCP_access|Workspace_ownership|repository_mutation|deployment
