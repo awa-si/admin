@@ -52,9 +52,7 @@ user request
   -> verify: report observed result or exact blocker
 ```
 
-**Ownership boundaries:** `behavior.yaml` declares cross-task invariants; `command.yaml` maps command names to workflows; `workflow.md` selects execution routes; `workflow/documentation.md` owns technical/spec documentation; target repositories own implementation-specific APIs and host operations.
-
-**Git access roles:** `workflow.md` selects the permitted provider; `workflow/github.md` distinguishes committed remote repository reads from local Workspace state; `workflow/mcp.md` selects `github_exec` for admitted remote reads and `workspace_exec` for authorized local worktrees after the AWA MCP route is selected. The [MCP GitHub contract](https://github.com/awa-si/awa/blob/main/mcp/github/contract.md) owns operations and schemas, not Admin. A workflow load never grants mutation permission.
+**Ownership boundaries:** `behavior.yaml` owns global rules; `command.yaml` owns command dispatch; `workflow.md` owns route precedence; `workflow/documentation.md` owns technical documentation. Target repositories own implementation contracts. Loading any workflow does not grant permissions.
 
 ## Fresh-chat bootstrap
 
@@ -106,7 +104,7 @@ An unavailable project-chat listing is not an empty listing. A generated Context
 
 ## Provider routing
 
-[`workflow.md#routing_decision_order`](workflow.md#routing_decision_order) is the route-precedence authority. [`workflow/github.md`](workflow/github.md) documents connector, Patch, GitHub Workspace, AWA MCP GitHub, and AWA MCP Workspace Git surfaces.
+[`workflow.md#routing_decision_order`](workflow.md#routing_decision_order) selects the permitted route. [`workflow/github.md`](workflow/github.md) classifies remote committed refs versus local Workspace state. For an admitted AWA MCP route, [`workflow/mcp.md`](workflow/mcp.md) dispatches remote reads through `github_exec` and authorized local worktree operations through `workspace_exec`; the [AWA MCP GitHub contract](https://github.com/awa-si/awa/blob/main/mcp/github/contract.md) owns operation schemas.
 
 | Required capability | Preferred eligible route |
 | --- | --- |
