@@ -24,7 +24,7 @@
 | Technical documentation | [`workflow/documentation.md`](workflow/documentation.md) | Technical docs, API references, READMEs, specifications, and docs audits |
 | Chat handoff | [`workflow/chat-handoff.md`](workflow/chat-handoff.md) | Explicit handoff command |
 | Repository policy | `<repository>/AGENTS.md` | Active repository context |
-| Repository fallback | [`AGENTS.md#fallback_repository_agent`](AGENTS.md#fallback_repository_agent) | Active target without `AGENTS.md` |
+| Repository fallback | [`AGENTS.md` — `fallback_repository_agent`](AGENTS.md) | Active target without `AGENTS.md` |
 
 Technical documentation and specification handling is owned exclusively by [`workflow/documentation.md`](workflow/documentation.md), independently of coding and research. Its audience contracts separate **GPT-facing machine-readable directives** (structured, explicit, schema-compatible and authorization-safe) from **developer-facing documentation** (precise technical prose, stable symbols, verifiable examples and canonical references). General office-document authoring, binary document processing, and format conversion are outside Admin's technical documentation contract.
 
@@ -38,7 +38,7 @@ A workflow specifies the **execution algorithm and evidence contract** for a cla
 
 - **Trigger:** matching task intent, registered command, or material capability requirement.
 - **Resolution:** applicable owner files and dependencies, without unrelated source loading.
-- **Routing:** permitted execution provider and operation under [`workflow.md#routing_decision_order`](workflow.md#routing_decision_order).
+- **Routing:** permitted execution provider and operation under [`workflow.md` — `routing_decision_order`](workflow.md).
 - **Execution:** ordered preflight, action, failure recovery, and required validation.
 - **Completion:** native receipts and independently observed target state; unresolved requirements remain explicit.
 
@@ -102,7 +102,7 @@ An unavailable project-chat listing is not an empty listing. A generated Context
 
 ## Provider routing
 
-[`workflow.md#routing_decision_order`](workflow.md#routing_decision_order) selects the permitted route. [`workflow/github.md`](workflow/github.md) classifies remote committed refs versus local Workspace state. For an admitted AWA MCP route, [`workflow/mcp.md`](workflow/mcp.md) dispatches remote reads through `github_exec` and authorized local worktree operations through `workspace_exec`; the [AWA MCP GitHub contract](https://github.com/awa-si/awa/blob/main/mcp/github/contract.md) owns operation schemas.
+[`workflow.md` — `routing_decision_order`](workflow.md) selects the permitted route. [`workflow/github.md`](workflow/github.md) classifies remote committed refs versus local Workspace state. For an admitted AWA MCP route, [`workflow/mcp.md`](workflow/mcp.md) dispatches remote reads through `github_exec` and authorized local worktree operations through `workspace_exec`; the [AWA MCP GitHub contract](https://github.com/awa-si/awa/blob/main/mcp/github/contract.md) owns operation schemas.
 
 | Required capability | Preferred eligible route |
 | --- | --- |
@@ -119,7 +119,7 @@ For MCP, [`workflow/mcp.md`](workflow/mcp.md) owns selective `mcp_model` discove
 
 **MCP first-contact SessionRegistry:** After the first successful authorized AWA MCP call in a chat, [`workflow/mcp.md`](workflow/mcp.md) defines a best-effort `session.record` read, one conditional `session.update` for explicitly known missing labels, and one concise visible session summary for subsequent chat context. For example, `awa wip` is a valid client-declared `chat_title` only when supplied explicitly; `project_name` requires explicit or client-verified Project identity. Neither label verifies the ChatGPT UI, authorizes Workspace access, or creates a transcript/checkpoint. The technical owner remains [`awa-si/awa/mcp/session/contract.md`](https://github.com/awa-si/awa/blob/main/mcp/session/contract.md).
 
-For overlapping use cases, follow [`mixed_case_handling`](workflow.md#mixed_case_handling). For uncovered execution requirements, follow [`unknown_case_handling`](workflow.md#unknown_case_handling). Both retain authorization and verification gates.
+For overlapping use cases, follow [`mixed_case_handling` in `workflow.md`](workflow.md). For uncovered execution requirements, follow [`unknown_case_handling` in `workflow.md`](workflow.md). Both retain authorization and verification gates.
 
 ## Development and verification
 
@@ -127,7 +127,7 @@ For overlapping use cases, follow [`mixed_case_handling`](workflow.md#mixed_case
 1. Identify the narrowest normative owner and affected consumers before editing.
 2. Resolve current repository, branch, source revision, explicit overrides, and public-safety constraints.
 3. Preserve semantics and update cross-references; avoid copying technical contracts into Admin.
-4. Validate changed YAML/Markdown, applicability mappings, links, and owner boundaries.
+4. Validate changed structured `.txt` directives and Markdown, applicability mappings, links, and owner boundaries.
 5. Verify the remote commit and report checks that were not executed.
 
 **Evidence levels:** instruction source loaded ≠ repository committed ≠ remote pushed ≠ host synchronized ≠ process restarted ≠ runtime activated. Each claim needs a matching native receipt or independent observation.
