@@ -19,13 +19,6 @@ chat_handoff:
   workflow: "awa-si/admin/workflow/chat-handoff.md"
   authorization: "context_only_by_default|workspace_suffix_explicit_opt_in|provider_admission_required"
 
-
-awa_workspace:
-  command: "use awa ws"
-  aliases: "awa wip; use awa ws"
-  workflow: "awa-si/awa@main:mcp/workspace/workflow/session.md#fast-path--known-workspace-approved-handoff"
-  authorization: "resolve_current_chat_read_only_by_default|known_workspace_and_explicit_contemporaneous_approval_required_for_foreign_slot_transfer|never_infer_consent_from_short_command_alone|live_provider_admission_and_destination_verification_required"
-
 mcp_instruction_reload:
   command: "reload mcp"
   aliases: ""
