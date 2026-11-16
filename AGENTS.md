@@ -8,12 +8,12 @@ mode: normative_machine_directives
 fallback_repository_agent:
 - activate_when: target_repository_context_exists_and_target_repository/AGENTS.md_is_missing
 - scope: repository_specific_AI_fallback_only
-- inherit: awa-si/admin/core.yaml_use_case_resolver|awa-si/admin/behavior.yaml|awa-si/admin/command.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable|applicable_project_delta
+- inherit: awa-si/admin/core.yaml_use_case_resolver|awa-si/admin/behavior.yaml|awa-si/admin/command.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable
 - target_repository_current_state: authoritative
 - target_repository_branch: use_resolved_current_branch
 - target_repository_visibility: do_not_assume_public_or_private
 - resolve: narrowest_repository_helper_or_canonical_owner -> material_dependencies -> task
-- repository_specific_AI_behavior_without_local_agent: use_global_and_project_behavior_only
+- repository_specific_AI_behavior_without_local_agent: use_global_behavior_and_applicable_workflows_only
 - substantive_domain_technical_business_operational_contracts: remain_in_target_repository_helpers_or_canonical_owners
 - admin_specific_role|managed_scope|public_visibility|admin_file_edit_rules: not_applicable_in_fallback
 - generic_completion: requested_outcome_completed_or_actual_blocker_identified|material_owner_contracts_preserved|observed_state_reported
@@ -25,11 +25,9 @@ role:
 
 managed_scope:
 - applies_when: repository_is_awa-si/admin_or_admin_control_plane_is_being_maintained
-- admin_role: control_plane_for_managed_projects_and_repositories
-- managed_projects: projects/*
-- managed_repository_resolution: projects/<project>/instructions.txt -> repository.source_of_truth_for_single_repo|repository_resolution_for_multi_repo
-- manage_from_here: instruction_hierarchy|coding_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|project_bootstrap|consistency_audits
-- cross_repository_work: allowed_when_required_to_keep_managed_project_and_repository_state_consistent
+- admin_role: global_control_plane_for_task_selected_repositories
+- manage_from_here: instruction_hierarchy|coding_guidance|workflow_hierarchy|repository_resolution|agent_policy|cross_repo_governance|consistency_audits
+- cross_repository_work: allowed_when_explicitly_requested_or_required_by_verified_active_task_scope
 - implementation_and_deployment: delegated_to_actual_target_repository_and_current_authorized_provider
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
 
@@ -46,9 +44,6 @@ owner_map:
 - technical_documentation_and_specifications: workflow/documentation.md
 - chat_handoff_workflow: workflow/chat-handoff.md
 - human_orientation: README.md
-- project_behavior_delta: projects/<project>/instructions.txt
-- project_workflow_delta: projects/<project>/workflow.md
-- project_bootstrap_template: projects/template.txt
 - repository_specific_AI_behavior: <repository>/AGENTS.md_or_fallback_repository_agent
 - substantive_target_repository_contract: narrowest_target_repository_helper_or_canonical_owner
 - benchmark_runner_or_script_owner: external_separately_authorized_system_not_this_repository
@@ -64,22 +59,20 @@ startup:
 - read: AGENTS.md
 - then_load_owner_files_required_by_task: true
 - global_bootstrap: core.yaml_registry -> behavior.yaml_always -> command.yaml_always -> matching_conditional_sources
-- new_chat_bootstrap: read_full_current_core_behavior_command_via_connected_GitHub|verify_project_slug_and_complete_project_directory_if_present|read_target_repo_agent_only_when_repo_active|resolve_conditional_workflows_on_task_demand
+- new_chat_bootstrap: read_full_current_core_behavior_command_via_connected_GitHub|read_target_repo_agent_only_when_repo_active|resolve_conditional_workflows_on_task_demand
 - bootstrap_status: loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown|never_claim_complete_when_required_source_unreadable
 - chat_handoff: command.yaml#chat_handoff_trigger -> full_workflow/chat-handoff.md_on_invocation
 - core_semantics: ordered_source_graph_not_authority_priority
 - conditional_coding_modules: evaluate_each_core.yaml_coding.modules_read_when_independently_and_load_matching_full_files_only
 - avoid_reread: reuse_only_when_verified_same_source_revision_and_scope
-- refresh_on: explicit_reload|source_change|active_project_or_repository_scope_change
+- refresh_on: explicit_reload|source_change|active_repository_or_task_scope_change
 - when_required_owner_unreadable: identify_exact_gap_and_do_not_claim_complete_load
-- for_project_change: enumerate_and_read_every_existing_projects/<project>/*_file_completely
-- for_managed_repo_change: resolve_target_repository_from_project_instructions -> read_target_agent_if_present_else_fallback_repository_agent -> load_material_helpers_or_owners
-- avoid_loading_unrelated_project_files: true
+- for_managed_repo_change: resolve_target_from_explicit_task_or_verified_active_binding -> read_target_agent_if_present_else_fallback_repository_agent -> load_material_helpers_or_owners
 
 reasoning:
 - preserve_single_owner_per_rule: required
 - identify_before_edit: owner|consumers|precedence|inheritance|public_safety_impact
-- distinguish: global_behavior|global_commands|global_workflow|global_coding|project_delta|repo_agent_policy|human_documentation
+- distinguish: global_behavior|global_commands|global_workflow|global_coding|repo_agent_policy|human_documentation
 - move_rule_to_narrowest_correct_owner_when_misplaced: true
 - do_not_preserve_duplication_for_compatibility: true
 - preserve_information_when_moving_or_consolidating_rules: required
@@ -103,8 +96,6 @@ layering:
 - follow_resolution_order_from: core.yaml#registry
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
-- project_files: delta_only
-- admin_project_agent_snapshots: prohibited
 
 public_safety:
 - repository_visibility: public
@@ -119,13 +110,11 @@ edit_behavior:
 - preserve_unrelated_valid_content: true
 - update_consumers_when_semantics_or_resolution_changes: required
 - README_update: required_when_human_facing_architecture_or_responsibility_changes
-- template_update: required_when_bootstrap_or_project_contract_changes
 - docs_only_ci: follow_workflow.md_when_available
 - repository_file_types: declarative_yaml|markdown|text|safe_reference_data
 - no_embedded_runtime: do_not_create_python_scripts|local_test_runner|benchmark_harness_without_explicit_scope_change
 - file_removal: inventory_full_current_git_tree_then_remove_requested_paths_and_clean_stale_links
 - edits_to_core: preserve_always_loaded_behavior_and_command_as_well_as_independent_case_routing
-- edits_to_project: verify_project_slug_and_read_all_existing_files_before_modification
 - cross_repo_mutation: independent_target_agent_owner_permission_and_remote_verification
 - write_strategy: atomic_related_change_set_when_supported|avoid_stale_head_or_unreviewed_force
 - rollback_policy: no_unilateral_destructive_reset_of_unrelated_changes
