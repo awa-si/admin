@@ -1,0 +1,23 @@
+# Optional ChatGPT client bootstrap pointer. Not an authorization grant.
+bootstrap: chatgpt
+authority: awa-si/admin/core.yaml
+
+load:
+  source: connected_GitHub_connector_required
+  fresh_chat_order: core.yaml_then_behavior.yaml_then_command.yaml_read_full_current
+  conditional: use_core.yaml_independent_read_when_and_load_gates
+  admin_maintenance: read_full_current_awa-si/admin/README.md_before_changes
+  repository_agent: only_for_explicit_or_verified_active_repository|read_current_AGENTS.md_if_present_else_Admin_fallback
+  reuse: verified_same_revision_and_scope_only
+
+resolve:
+  repository: explicit_task_repository_or_verified_current_repository_binding
+  do_not_infer_from: ChatGPT_Project_name|chat_title|SessionRegistry_labels|hidden_UI_state
+  multi_repo: require_explicit_owner_or_verified_repository_scope|never_guess
+  repository_workflows: load_relevant_owners_from_target_repository_when_material
+
+execute:
+  routing: awa-si/admin/workflow.md#routing_decision_order_when_applicable
+  mcp: only_after_selected_permitted_route|load_matching_live_schema_and_technical_owner
+  authority_boundary: discovery_or_bootstrap_never_grants_mutation|Workspace_handoff|host_restart|deployment
+  report: actual_evidence_and_missing_sources|no_unverified_success
