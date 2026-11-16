@@ -8,7 +8,7 @@ mode: normative_machine_directives
 fallback_repository_agent:
 - activate_when: target_repository_context_exists_and_target_repository/AGENTS.md_is_missing
 - scope: repository_specific_AI_fallback_only
-- inherit: awa-si/admin/core.yaml_use_case_resolver|awa-si/admin/behavior.yaml|awa-si/admin/command.yaml|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable
+- inherit: awa-si/admin/core.txt_use_case_resolver|awa-si/admin/behavior.txt|awa-si/admin/command.txt|awa-si/admin/workflow.md_when_applicable|awa-si/admin/workflow/research.md_when_applicable|awa-si/admin/workflow/coding.md_when_applicable
 - target_repository_current_state: authoritative
 - target_repository_branch: use_resolved_current_branch
 - target_repository_visibility: do_not_assume_public_or_private
@@ -32,14 +32,14 @@ managed_scope:
 - admin_does_not_become_substantive_owner_of_managed_repo_domain_state: true
 
 owner_map:
-- source_router_and_use_case_registry: core.yaml
-- global_behavior: behavior.yaml
-- global_behavior_contract: behavior.yaml#rule_contract|every_rule_block_priority_scope_apply_when_rules|priority_ascending_from_1|rule_content_under_rules
-- nested_behavior_conditions: behavior.yaml#rule_contract.nested_applicability|rules.apply_when_is_additional_subrule_gate|list_items_preserved_under_rules.directives
-- global_commands: command.yaml
+- source_router_and_use_case_registry: core.txt
+- global_behavior: behavior.txt
+- global_behavior_contract: behavior.txt#rule_contract|every_rule_block_priority_scope_apply_when_rules|priority_ascending_from_1|rule_content_under_rules
+- nested_behavior_conditions: behavior.txt#rule_contract.nested_applicability|rules.apply_when_is_additional_subrule_gate|list_items_preserved_under_rules.directives
+- global_commands: command.txt
 - global_execution_workflow: workflow.md
 - global_coding: workflow/coding.md
-- conditional_coding_detail: workflow/coding/*.md_selected_by_core.yaml|documentation_owned_independently_by_workflow/documentation.md
+- conditional_coding_detail: workflow/coding/*.md_selected_by_core.txt|documentation_owned_independently_by_workflow/documentation.md
 - global_research: workflow/research.md
 - technical_documentation_and_specifications: workflow/documentation.md
 - chat_handoff_workflow: workflow/chat-handoff.md
@@ -58,12 +58,12 @@ agent_content_policy:
 startup:
 - read: AGENTS.md
 - then_load_owner_files_required_by_task: true
-- global_bootstrap: core.yaml_registry -> behavior.yaml_always -> command.yaml_always -> matching_conditional_sources
+- global_bootstrap: core.txt_registry -> behavior.txt_always -> command.txt_always -> matching_conditional_sources
 - new_chat_bootstrap: read_full_current_core_behavior_command_via_connected_GitHub|read_target_repo_agent_only_when_repo_active|resolve_conditional_workflows_on_task_demand
 - bootstrap_status: loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown|never_claim_complete_when_required_source_unreadable
-- chat_handoff: command.yaml#chat_handoff_trigger -> full_workflow/chat-handoff.md_on_invocation
+- chat_handoff: command.txt#chat_handoff_trigger -> full_workflow/chat-handoff.md_on_invocation
 - core_semantics: ordered_source_graph_not_authority_priority
-- conditional_coding_modules: evaluate_each_core.yaml_coding.modules_read_when_independently_and_load_matching_full_files_only
+- conditional_coding_modules: evaluate_each_core.txt_coding.modules_read_when_independently_and_load_matching_full_files_only
 - avoid_reread: reuse_only_when_verified_same_source_revision_and_scope
 - refresh_on: explicit_reload|source_change|active_repository_or_task_scope_change
 - when_required_owner_unreadable: identify_exact_gap_and_do_not_claim_complete_load
@@ -78,13 +78,13 @@ reasoning:
 - preserve_information_when_moving_or_consolidating_rules: required
 - semantic_consistency_over_textual_similarity: true
 - when_admin_change_affects_managed_projects_or_repositories: inspect_downstream_semantic_impact
-- select_owner_by: core_registry_for_source_loading|command.yaml_for_command_dispatch|workflow.md_for_execution_routing|target_repository_for_technical_operations
+- select_owner_by: core_registry_for_source_loading|command.txt_for_command_dispatch|workflow.md_for_execution_routing|target_repository_for_technical_operations
 - do_not_infer: repository_permissions|tool_admission|UI_controls|active_runtime_state_from_instruction_text
 
 command_governance:
-- canonical_owner: command.yaml_always_loaded_from_core.yaml
-- minimal_contract: command|aliases|workflow|authorization;command.yaml_dispatches_only|execution_and_output_follow_loaded_workflow_and_live_provider
-- discover_trigger_and_aliases: read_current_command.yaml_not_historical_conversation
+- canonical_owner: command.txt_always_loaded_from_core.txt
+- minimal_contract: command|aliases|workflow|authorization;command.txt_dispatches_only|execution_and_output_follow_loaded_workflow_and_live_provider
+- discover_trigger_and_aliases: read_current_command.txt_not_historical_conversation
 - approval_boundary: ordinary_trigger_or_button_does_not_grant_mutation_approval;explicit_current_update_mcp_or_auto_update_command_is_a_one_workflow_exception_for_fixed_host_pull_and_conditional_awa_mcp_restart
 - ui_confirmation: only_for_commands_that_require_separate_approval;update_mcp_uses_exact_current_command_as_authorization_without_extra_UI;always_recheck_live_provider_gates
 - execution_details: follow_command_owner_reference_to_target_repository_contract_and_current_provider_schema
@@ -93,7 +93,7 @@ command_governance:
 - command_contract_mutation: update_consumers_and_check_existing_aliases_without_redefining_technical_provider_details
 
 layering:
-- follow_resolution_order_from: core.yaml#registry
+- follow_resolution_order_from: core.txt#registry
 - child_override: explicit_only
 - parent_rules_remain_active_unless_overridden: true
 
