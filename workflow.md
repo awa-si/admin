@@ -183,7 +183,7 @@ routing_decision_order:
 
 mixed_case_handling:
 - apply_when: one_request_matches_multiple_known_cases_or_requires_multiple_execution_capabilities
-- case_detection: identify_all_applicable_core.yaml#registry.workflow.cases;do_not_force_single_case_match
+- case_detection: identify_all_applicable_core.txt#registry.workflow.cases;do_not_force_single_case_match
 - classification: separate_intent_and_domain_cases_from_execution_provider_routes;research_or_coding_does_not_by_itself_authorize_GitHub_or_AWA_MCP
 - source_loading: load_each_applicable_case_owner_once|reuse_same_verified_revision|load_workflow.md_when_routing_or_shared_execution_is_material
 - authority: behavior_and_higher_priority_instructions_remain_active|project_and_repository_rules_apply_as_explicit_deltas|routing_decision_order_owns_route_precedence
@@ -196,7 +196,7 @@ mixed_case_handling:
 unknown_case_handling:
 - apply_when: no_registered_case_sufficiently_covers_the_requested_execution_or_capability
 - scope: controlled_dynamic_execution_strategy_not_a_permission_override
-- preserve: behavior.yaml|product_mode_constraints|authorization|project_repository_contracts|routing_decision_order|live_provider_admission|verification
+- preserve: behavior.txt|product_mode_constraints|authorization|project_repository_contracts|routing_decision_order|live_provider_admission|verification
 - resolve: intent_and_required_outcome -> minimal_capabilities -> current_client_tool_discovery -> eligible_route -> authorized_execution -> observed_verification
 - native_first: consider_currently_available_native_capabilities_for_isolated_tasks_before_external_workspaces
 - avoid: guessing_tool_names_or_schemas|inventing_credentials|blind_mutation_retries|bypassing_denied_routes|unapproved_external_side_effects
@@ -437,7 +437,7 @@ loading:
 - common_workflow: loaded_with_workflow.md;not_a_separate_optional_source
 - mixed_and_unknown: mixed_case_handling|unknown_case_handling
 - route_details: load_workflow/github.md_when_any_GitHub_surface_material_including_AWA_MCP;load_workflow/mcp.md_when_MCP_route_selected
-- cross_task_rules: awa-si/admin/behavior.yaml
+- cross_task_rules: awa-si/admin/behavior.txt
 - project_metadata: client_declared_labels_are_not_repository_resolution_or_policy_sources
 - repository_agent: resolve_only_when_repository_context_active
 - do_not_infer_from_index: actual_tool_schema|permission|deployment_status
