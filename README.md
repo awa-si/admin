@@ -84,13 +84,12 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 
 ## Command dispatch
 
-[`command.yaml`](command.yaml) defines six commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
+[`command.yaml`](command.yaml) defines five commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
 
 | Command | Aliases | Operation / boundary |
 | --- | --- | --- |
 | `reload admin` | `reload admin plane`, `reload admin control plane` | Re-read Admin sources via `core.yaml`; no runtime restart |
 | `chat handoff` | `chat_handoff` | [Handoff workflow](workflow/chat-handoff.md); context-only default, `workspace` explicit opt-in |
-| `use awa ws` | `awa wip; use awa ws` | [Workspace fast path](https://github.com/awa-si/awa/blob/main/mcp/workspace/workflow/session.md#fast-path--known-workspace-approved-handoff); resolve current slot without mutation, transfer foreign slot only with explicit contemporaneous approval and provider verification |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
 | `update mcp` | `auto update` | [AWA self-update](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence); guarded host pull and conditional `awa:mcp` restart |
 | `update host` | `sync host` | [Host Git maintenance](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/maintenance.md#awa-organization-host-git-update); fast-forward-only `awa-si/awa@main` pull into `/opt/awa`; no push, restart, or deployment |
@@ -113,6 +112,8 @@ An unavailable project-chat listing is not an empty listing. A generated Context
 | Repository tests/builds/debugging requiring a runtime | Authorized AWA MCP Workspace |
 | Isolated calculation, processing, temporary artifacts | Available native sandbox |
 | Selected MCP operation | Live MCP schema plus matching technical workflow |
+
+For generic requests such as `use <owner/repository> ws`, treat the text as Workspace intent rather than an Admin command. Resolve the exact repository and current-chat slot using the [MCP workflow](workflow/mcp.md) and the [Workspace session contract](https://github.com/awa-si/awa/blob/main/mcp/workspace/workflow/session.md); do not infer repository identity from a ChatGPT Project label. A cross-chat transfer requires explicit approval and live destination verification.
 
 **Routing is conditional:** product mode, explicit user provider selection, scope, repository ownership, current schema, and provider admission constrain the choice. Connector and AWA credentials are independent; a workspace is not implicitly authorized or reusable.
 
