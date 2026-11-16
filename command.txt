@@ -1,7 +1,7 @@
 # Always-loaded command dispatch registry. Operational rules live in referenced owners.
 scope: global_commands
 mode: normative_machine_directives
-inherits: awa-si/admin/behavior.yaml
+inherits: awa-si/admin/behavior.txt
 
 # Trigger and authorization only; load the referenced workflow on invocation.
 # Current provider schema and admission remain authoritative.
@@ -10,7 +10,7 @@ contract_fields: "command|aliases|workflow|authorization"
 admin_reload:
   command: "reload admin"
   aliases: "reload admin plane|reload admin control plane"
-  workflow: "awa-si/admin/core.yaml#registry"
+  workflow: "awa-si/admin/core.txt#registry"
   authorization: "read_only_instruction_refresh|no_runtime_restart_or_mutation"
 
 chat_handoff:
