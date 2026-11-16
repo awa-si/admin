@@ -9,18 +9,18 @@ contract_fields: command|aliases|workflow|authorization
 
 admin_reload:
   command: reload admin
-  aliases: reload admin plane|reload admin control plane
+  aliases: reload admin plane|admin reload
   workflow: awa-si/admin/core.txt#registry
   authorization: read_only_instruction_refresh|no_runtime_restart_or_mutation
 
 chat_handoff:
   command: chat handoff
-  aliases: chat_handoff
+  aliases: chat handoff ws
   workflow: awa-si/admin/workflow/chat-handoff.md
   authorization: context_only_by_default|workspace_suffix_explicit_opt_in|provider_admission_required
 
 
-use_agent:
+mcp_agent:
   command: use agent
   aliases: use_agent
   workflow: awa-si/awa@main:mcp/agent/workflow/dialog.md
@@ -28,13 +28,13 @@ use_agent:
 
 mcp_instruction_reload:
   command: reload mcp
-  aliases: ""
+  aliases: mcp reload
   workflow: mcp_reload()
   authorization: explicit_current_command_only|default_scope_all|provider_admission_required|no_service_restart_or_unrelated_mutation
 
 mcp_auto_update:
   command: update mcp
-  aliases: auto update
+  aliases: auto update|self update
   workflow: awa-si/awa@main:mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence
   authorization: exact_current_command_authorizes_once_fixed_awa_host_fast_forward_pull_and_conditional_awa:mcp_restart|no_extra_confirmation_unless_provider_requires|provider_admission_required|no_standing_or_unrelated_authorization
 
