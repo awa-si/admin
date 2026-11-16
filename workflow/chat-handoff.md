@@ -3,9 +3,9 @@
 scope: global_chat_handoff_workflow
 mode: normative_machine_directives
 owner: awa-si/admin/workflow/chat-handoff.md
-command_owner: awa-si/admin/command.yaml#chat_handoff
+command_owner: awa-si/admin/command.txt#chat_handoff
 read_when: explicit_chat_handoff_command_only
-inherits: awa-si/admin/behavior.yaml|awa-si/admin/command.yaml
+inherits: awa-si/admin/behavior.txt|awa-si/admin/command.txt
 side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owner_source_slots|no_implicit_MCP|no_job_execution|no_repo_mutation|checkpoints_suspended
 
 ## Purpose and invocation
