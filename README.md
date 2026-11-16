@@ -52,7 +52,9 @@ user request
   -> verify: report observed result or exact blocker
 ```
 
-**Ownership boundaries:** `behavior.yaml` declares cross-task invariants; `command.yaml` maps command names to workflows; `workflow.md` selects execution routes; `workflow/documentation.md` owns technical/spec documentation; target repositories own implementation-specific APIs and host operations. A workflow load never grants mutation permission.
+**Ownership boundaries:** `behavior.yaml` declares cross-task invariants; `command.yaml` maps command names to workflows; `workflow.md` selects execution routes; `workflow/documentation.md` owns technical/spec documentation; target repositories own implementation-specific APIs and host operations.
+
+**Git access roles:** `workflow.md` selects the permitted provider; `workflow/github.md` distinguishes committed remote repository reads from local Workspace state; `workflow/mcp.md` selects `github_exec` for admitted remote reads and `workspace_exec` for authorized local worktrees after the AWA MCP route is selected. The [MCP GitHub contract](https://github.com/awa-si/awa/blob/main/mcp/github/contract.md) owns operations and schemas, not Admin. A workflow load never grants mutation permission.
 
 ## Fresh-chat bootstrap
 
