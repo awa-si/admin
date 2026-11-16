@@ -82,12 +82,13 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 
 ## Command dispatch
 
-[`command.txt`](command.txt) defines five commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
+[`command.txt`](command.txt) defines six commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
 
 | Command | Aliases | Operation / boundary |
 | --- | --- | --- |
 | `reload admin` | `reload admin plane`, `reload admin control plane` | Re-read Admin sources via `core.txt`; no runtime restart |
 | `chat handoff` | `chat_handoff` | [Handoff workflow](workflow/chat-handoff.md); context-only default, `workspace` explicit opt-in |
+| `use agent` | `use_agent` | [AWA Agent dialog](https://github.com/awa-si/awa/blob/main/mcp/agent/workflow/dialog.md); live discovery and guided selection only, no automatic invocation |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
 | `update mcp` | `auto update` | [AWA self-update](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence); guarded host pull and conditional `awa:mcp` restart |
 | `update host` | `sync host` | [Host Git maintenance](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/maintenance.md#awa-organization-host-git-update); fast-forward-only `awa-si/awa@main` pull into `/opt/awa`; no push, restart, or deployment |
