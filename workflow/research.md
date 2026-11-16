@@ -4,9 +4,9 @@ mode: normative_machine_directives
 resolution:
 - owner: awa-si/admin/workflow/research.md
 - load_when: search|lookup|research|investigation|material_fact_check|source_verification
-- behavior_owner: awa-si/admin/behavior.yaml
+- behavior_owner: awa-si/admin/behavior.txt
 - routing_owner: awa-si/admin/workflow.md#routing_decision_order_when_execution_or_provider_selection_is_material
-- conditional_sources: core.yaml#registry.workflow.cases[id=research].modules
+- conditional_sources: core.txt#registry.workflow.cases[id=research].modules
 - loading_boundary: load_this_short_root_then_only_matching_full_research_module_files
 - overrides: project_and_repository_rules_explicit_only|parent_rules_remain_active
 
@@ -15,7 +15,7 @@ search_and_research:
 - first: resolve_question|scope|existing_conversation_or_connected_context|currentness|needed_evidence
 - quick_search: use_smallest_relevant_authoritative_source_or_connected_search|stop_when_verified_and_sufficient
 - research_routes:
-  - direct_chat_default: normal_search|lookup|fact_check|ordinary_multi_source_research|read_matching_research_topic_modules_from_core.yaml|use_authorized_native_web_files_or_connected_sources
+  - direct_chat_default: normal_search|lookup|fact_check|ordinary_multi_source_research|read_matching_research_topic_modules_from_core.txt|use_authorized_native_web_files_or_connected_sources
   - mcp_agent_intelligence_heavy: complex_cross_source_reasoning|multi_query_evidence_correlation|persisted_attempts_and_provenance|reviewed_claim_entity_processing|specialized_darknet_or_threat_intelligence_research_when_permitted
   - mcp_label: mcp.agent.intelligence_is_a_logical_route_not_a_registered_tool_name;agent_exec_is_registry_and_delegation|intelligence_exec_is_direct_provider|live_registration_and_permission_required
   - mcp_preflight: confirm_selected_permitted_MCP_route_under_workflow.md|load_workflow/mcp.md|read_mcp_instructions(compact=true)_topic_index_then_mcp_instructions(topic="agent",compact=false)_for_normative_Agent_contract|mcp_instructions(topic="agent.intelligence",compact=false)_for_Intelligence_Agent_intro|agent.intelligence_is_a_child_source_not_independent_SOURCE_REGISTRY_topic|inspect_mcp_model(operation="tools",tool="agent_exec")_or_mcp_model(operation="tools",tool="intelligence_exec")_as_selected
