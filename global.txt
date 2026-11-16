@@ -1,6 +1,6 @@
 # Global ChatGPT Custom Instructions: Settings > Personalization > Custom Instructions.
 bootstrap: chatgpt
-authority: awa-si/admin/core.yaml
+authority: awa-si/admin/core.txt
 
 github:
   connector: required
@@ -10,8 +10,8 @@ github:
 
 load:
   source: connected_GitHub_connector
-  order: read_full_current_core.yaml -> behavior.yaml -> command.yaml
-  conditional: core.yaml#registry|matching_only
+  order: read_full_current_core.txt -> behavior.txt -> command.txt
+  conditional: core.txt#registry|matching_only
   reuse: once_per_chat_per_verified_revision
   refresh: source_or_scope_change|explicit_request
   cache: invalid_after_refresh
