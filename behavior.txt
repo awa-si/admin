@@ -1,4 +1,4 @@
-# Canonical global ChatGPT behavior rules. Loaded from core.yaml reference.
+# Canonical global ChatGPT behavior rules. Loaded from core.txt reference.
 # Every behavior block shares priority, scope, apply_when, rules; earlier blocks have greater priority.
 # This local order does not supersede higher-priority ChatGPT instructions or provider admission.
 scope: "global"
@@ -85,8 +85,8 @@ control_plane:
     apply_when:
       explicit_child_override_only: "when_repository_specific_explicit_override_applies"
       authoritative_repository_state: "when_repo_state_material"
-    behavior_owner: "awa-si/admin/behavior.yaml"
-    command_owner: "awa-si/admin/command.yaml"
+    behavior_owner: "awa-si/admin/behavior.txt"
+    command_owner: "awa-si/admin/command.txt"
     workflow_owner: "awa-si/admin/workflow.md"
     workflow_bootstrap: "awa-si/admin/workflow.md#decision_bootstrap"
     coding_owner: "awa-si/admin/workflow/coding.md"
@@ -107,14 +107,14 @@ loading_and_resolution:
       source_refresh_triggers: "on_source_scope_change_or_explicit_reload"
       fresh_chat_bootstrap: "at_start_of_new_chat_with_configured_Admin_instructions"
       bootstrap_status_reporting: "after_attempting_required_instruction_reads"
-    fresh_chat_bootstrap: "read_full_current_core.yaml_from_connected_GitHub_first|read_full_behavior.yaml_and_command.yaml_always|do_not_eagerly_load_all_workflow_or_repository_docs"
-    global_source_loading_sequence: "core.yaml -> behavior.yaml -> command.yaml -> workflow.md_when_execution_applies -> workflow/github.md_when_GitHub_capability_material_before_final_route_decision -> workflow/mcp.md_when_MCP_route_selected -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
+    fresh_chat_bootstrap: "read_full_current_core.txt_from_connected_GitHub_first|read_full_behavior.txt_and_command.txt_always|do_not_eagerly_load_all_workflow_or_repository_docs"
+    global_source_loading_sequence: "core.txt -> behavior.txt -> command.txt -> workflow.md_when_execution_applies -> workflow/github.md_when_GitHub_capability_material_before_final_route_decision -> workflow/mcp.md_when_MCP_route_selected -> workflow/coding.md_when_coding_applies -> workflow/research.md_when_research_applies"
     admin_repository_readme_loading: "always_read_full_current_awa-si/admin/README.md_from_connected_GitHub_when_working_on_awa-si/admin|read_before_analysis_or_modification|use_as_GPT_client_user_facing_architecture_orientation|retain_core_behavior_command_as_normative_owners|report_unavailable_or_partial_read|reuse_only_if_verified_same_revision_and_scope"
     repository_target_resolution: "explicit_repository_in_current_task_or_verified_active_repository_binding|never_infer_from_project_name_or_chat_title"
     repository_agent_loading: "only_with_active_repository_context|use_target_AGENTS_md_if_present_else_admin_fallback"
     load_only_material_helpers: "load_only_when_required_by_task_or_repository_agent"
     bootstrap_status_reporting: "report_loaded_verified|not_applicable|absent_verified|unavailable|partial|unknown_per_required_source|do_not_claim_new_chat_or_tool_execution_that_was_only_simulated"
-    instruction_source_resolution_order: "core_use_case_resolver -> behavior.yaml -> applicable_workflow|coding|research -> repository_agent_if_active -> material_helpers -> task"
+    instruction_source_resolution_order: "core_use_case_resolver -> behavior.txt -> applicable_workflow|coding|research -> repository_agent_if_active -> material_helpers -> task"
     source_refresh_triggers: "source_changed|explicitly_requested|active_scope_changed"
     stale_cached_copy_after_reread: "non_authoritative"
     mcp_admin_snapshot:
