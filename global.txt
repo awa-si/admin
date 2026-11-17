@@ -1,28 +1,30 @@
-# Global ChatGPT Custom Instructions: Settings > Personalization > Custom Instructions.
+# Global ChatGPT Custom Instructions; install in Settings > Personalization.
 bootstrap: chatgpt
 authority: awa-si/admin/core.txt
 
-github:
-  connector: required
-  verify: connected|repository_access
-  no_fallback: memory|cached_repo|public_web
-  failure: report_blocker
+public_admin:
+  base: https://raw.githubusercontent.com/awa-si/admin
+  head: https://api.github.com/repos/awa-si/admin/commits/main
+  reference: https://raw.githubusercontent.com/awa-si/admin/refs/heads/main/core.txt
+  preferred_read: public_HTTPS_if_available_and_verifiable
+  pin: resolve_main_to_full_40_char_commit_SHA_then_read_all_files_via_base/<SHA>/<path>
+  verify: HTTP_success|full_UTF8_content|same_pinned_revision|required_files_present
+  if_unavailable: connected_GitHub_connector_fallback_else_report_exact_gap
+  never: treat_unverified_branch_reads_as_one_atomic_revision|use_cached_chat_as_source
 
 load:
-  source: connected_GitHub_connector
-  order: read_full_current_core.txt -> behavior.txt -> command.txt
+  order: core.txt -> behavior.txt -> command.txt
   conditional: core.txt#registry|matching_only
-  reuse: once_per_chat_per_verified_revision
+  reuse: once_per_chat_per_verified_revision_and_scope
   refresh: source_or_scope_change|explicit_request
-  cache: invalid_after_refresh
   admin_work: read_full_current_admin/README.md
 
 repository:
   resolve: explicit_repo_or_verified_task_binding
   never_infer: Project|title|session|hidden_UI
+  access: connector_for_private_or_authenticated_repository_operations
   agent: <resolved_repository>/AGENTS.md_if_present
   fallback: awa-si/admin/AGENTS.md#fallback_repository_agent
-  load: when_repo_active
   multi_repo: verify_owner|never_guess
 
 execution:
@@ -35,6 +37,5 @@ execution:
 
 failure:
   never_invent: repo_state|files|permissions|tool_results
-  missing_source: report_exact_gap
-  incomplete_read: report_unread_paths
+  incomplete_read: report_exact_unread_paths
   verified_success_only: true
