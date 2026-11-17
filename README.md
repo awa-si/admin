@@ -90,8 +90,8 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 | `chat handoff` | `chat_handoff` | [Handoff workflow](workflow/chat-handoff.md); context-only default, `workspace` explicit opt-in |
 | `use agent` | `use agent *` | MCP-only dialog: `mcp_model(operation="bootstrap.agents")` → select and inspect Agent; `mcp_instructions(topic="agent", compact=false)` only when needed; no automatic `agent_exec invoke` |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
-| `update mcp` | `auto update` | [AWA self-update](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/update.md#gpt-operated-awa-self-update-sequence); guarded host pull and conditional `awa:mcp` restart |
-| `update host` | `sync host` | [Host Git maintenance](https://github.com/awa-si/awa/blob/main/mcp/host/workflow/maintenance.md#awa-organization-host-git-update); fast-forward-only `awa-si/awa@main` pull into `/opt/awa`; no push, restart, or deployment |
+| `update mcp` | `auto update`, `self update` | MCP-native: read-only `host_exec git.inspect` preflight, then one `mcp_diagnostic(operation="update")`; guarded host pull and conditional `awa:mcp` restart, verified separately |
+| `update host` | `sync host` | MCP-native: `host_exec git.inspect` → admitted `host_exec git.pull` → `host_exec git.inspect` for `awa-si/awa@main` at `/opt/awa`; no push, restart, or deployment |
 
 The exact current command provides only its bounded authorization. Provider admission is still required; discovery and command definitions are not execution receipts. `update host` does not authorize `update mcp` effects.
 
