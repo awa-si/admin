@@ -23,6 +23,7 @@ mcp_agent:
   command: use agent
   aliases: use agent *
   workflow: mcp_model(operation=bootstrap.agents)|select_registered_agent_in_ChatGPT_dialog|mcp_model(operation=bootstrap.agents.NAME)_for_selected_agent|mcp_instructions(topic=agent,compact=false)_only_if_technical_contract_needed|agent_exec_only_after_explicit_action
+  technical_workflow_owner: awa-si/awa@main:mcp/agent/workflow.md#dialog|loaded_via_mcp_instructions(topic=agent,compact=false)_only_when_needed
   authorization: discovery_dialog_only_on_command|no_GitHub_workflow_lookup_for_agent_selection|no_agent_invoke_or_side_effects_from_command|explicit_execution_intent_and_provider_admission_required
 
 mcp_instruction_reload:
