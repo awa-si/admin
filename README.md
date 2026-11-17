@@ -88,7 +88,7 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 | --- | --- | --- |
 | `reload admin` | `reload admin plane`, `reload admin control plane` | Re-read Admin sources via `core.txt`; no runtime restart |
 | `chat handoff` | `chat_handoff` | [Handoff workflow](workflow/chat-handoff.md); context-only default, `workspace` explicit opt-in |
-| `use agent` | `use agent *` | MCP-only dialog: `mcp_model(operation="bootstrap.agents")` → select and inspect Agent; [canonical Agent workflow](https://github.com/awa-si/awa/blob/main/mcp/agent/workflow.md#dialog) via `mcp_instructions(topic="agent", compact=false)` only when needed; no automatic `agent_exec invoke` |
+| `use agent` | `use agent *` | MCP-only dialog: `mcp_model(operation="bootstrap.agents")` → select and inspect Agent; `mcp_instructions(topic="agent", compact=false)` only when needed; no automatic `agent_exec invoke` |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
 | `update mcp` | `auto update`, `self update` | MCP-native: read-only `host_exec git.inspect` preflight, then one `mcp_diagnostic(operation="update")`; guarded host pull and conditional `awa:mcp` restart, verified separately |
 | `update host` | `sync host` | MCP-native: `host_exec git.inspect` → admitted `host_exec git.pull` → `host_exec git.inspect` for `awa-si/awa@main` at `/opt/awa`; no push, restart, or deployment |
