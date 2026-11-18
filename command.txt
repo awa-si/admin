@@ -7,36 +7,35 @@ inherits: awa-si/admin/behavior.txt
 # Current provider schema and admission remain authoritative.
 contract_fields: command|aliases|workflow|authorization
 
-admin_reload:
+chatgpt_admin_reload:
   command: reload admin
   aliases: reload admin plane|admin reload
   workflow: awa-si/admin/core.txt#registry
   authorization: read_only_instruction_refresh|no_runtime_restart_or_mutation
 
-chat_handoff:
+chatgpt_handoff:
   command: chat handoff
   aliases: chat handoff ws
   workflow: awa-si/admin/workflow/chat-handoff.md
   authorization: context_only_by_default|workspace_suffix_explicit_opt_in|provider_admission_required
 
-mcp_agent:
+mcp_agent_invoke:
   command: use agent
   aliases: use agent *
   workflow: mcp_model(operation=bootstrap.agents)|select_registered_agent_in_ChatGPT_dialog|mcp_model(operation=bootstrap.agents.NAME)_for_selected_agent|mcp_instructions(topic=agent,compact=false)_only_if_technical_contract_needed|agent_exec_only_after_explicit_action
   authorization: discovery_dialog_only_on_command|no_GitHub_workflow_lookup_for_agent_selection|no_agent_invoke_or_side_effects_from_command|explicit_execution_intent_and_provider_admission_required
 
-mcp_instruction_reload:
+mcp_reload:
   command: reload mcp
   aliases: mcp reload
   workflow: mcp_reload()
   authorization: explicit_current_command_only|default_scope_all|provider_admission_required|no_service_restart_or_unrelated_mutation
 
-mcp_auto_update:
+mcp_update:
   command: update mcp
   aliases: auto update|self update
   workflow: mcp_model(operation=tools.compact,tool=host_exec)_if_registered_else_current_host_exec_schema|mcp_instructions(topic=host,compact=false)_for_matching_technical_owner|mcp_version()_capture_loaded_commit_and_process_identity|host_exec(operation=git.inspect,arguments.repository=awa)_read_only_preflight|verify_trusted_canonical_/opt/awa_clean_main_upstream_and_remote_SHA|host_exec(operation=git.pull,arguments.repository=awa)_once_after_provider_admission|host_exec(operation=git.inspect,arguments.repository=awa)_verify_pulled_head|if_loaded_commit_differs_from_verified_host_head_then_host_exec(operation=supervisor.control,arguments.service=awa:mcp,arguments.action=restart)_once_after_provider_admission|reconnect_and_verify_mcp_version_process_identity_loaded_commit_and_service_status|report_queued_or_uncertain_separately_without_blind_replay
   authorization: exact_current_command_once_authorizes_scoped_awa_si_awa_host_pull_and_conditional_awa:mcp_restart|each_effect_requires_live_provider_admission|no_mcp_diagnostic_update|no_standing_permission|no_unrelated_repository_or_service|no_extra_confirmation_unless_provider_requires|one_pull_and_at_most_one_restart|verify_native_receipts
-
 
 mcp_host_update:
   command: update host
