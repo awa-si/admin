@@ -15,9 +15,9 @@ chatgpt_admin_reload:
 
 chatgpt_handoff:
   command: chat handoff
-  aliases: chat handoff ws
+  aliases: chat_handoff|chat handoff ws|chat_handoff ws
   workflow: awa-si/admin/workflow/chat-handoff.md
-  authorization: context_only_by_default|workspace_suffix_explicit_opt_in|provider_admission_required
+  authorization: context_only_by_default|workspace_or_ws_suffix_explicit_opt_in|named_chat_targeted_lookup_without_unverified_project_membership_claim|provider_admission_required
 
 mcp_agent_invoke:
   command: use agent
