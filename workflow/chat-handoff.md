@@ -10,25 +10,25 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 
 ## Purpose and invocation
 
-- Input: `chat_handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]`. With no argument (or `chat_handoff list`), list discoverable chats in the current verified project as a **Project Chat Overview** and allow the user to select one by title or grounded list reference. Use `chat_handoff current` to summarize the current conversation directly; with a chat name or a valid overview reference, identify that source chat in the verified current project.
+- Input: `chat handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]`; `chat_handoff` is an equivalent alias. Accept `ws` as a short alias of the explicit `workspace` suffix. With no source (or `list`), attempt a **Project Chat Overview**; `current` selects the invoking chat, and an explicit title or grounded overview number selects a source. A named-chat request is a **targeted lookup**, not a requirement to enumerate every project chat first.
 - Select exactly one route: **Route 1 — Context only** by default; **Route 2 — Context + Workspace including slots** only when `workspace` is explicitly supplied. Both use the same project chat discovery and context reconstruction. Route 2 attempts provider-authorized automatic transfer of existing Workspace slots.
 - Load this complete file **only** on the explicit `chat_handoff` command. Do not load it for ordinary discussion, implicit continuation, research, GitHub work, workspace selection, or an unrelated session operation.
 - Produce a **short Context Summary based only on the last 5–10 accessible source-chat interactions**, ready for reuse. Do not create/open/populate the receiving chat or execute its unfinished tasks. Route 2 may transfer server-side slot reservations under independent authorization, preserving existing checkout and jobs.
-- Classify project identity as `verified` (explicitly surfaced or independently verified), `inferred` (suggested by context only), or `unknown`. Only `verified` allows claiming a named-chat lookup within that project. Do not silently search across project boundaries.
-- If project or named-chat membership cannot be verified, report the limitation. A `current` handoff can still produce a grounded partial summary, but do not substitute an unrelated current-chat summary for an empty or unavailable project-wide listing.
+- Classify project identity as `verified` (explicitly surfaced or independently verified), `inferred` (suggested by context only), or `unknown`. Only `verified` allows claiming **same-project membership**. An explicitly named chat may be sought through an available, authorized **targeted chat-search** capability even when project membership is unknown; never claim it is in the current project without proof. Do not broaden that targeted search into an account-wide overview or guess among matching chat titles.
+- If the project listing is unavailable, report that limitation separately. `current` can still summarize accessible current turns; an explicit named chat can still be summarized from an unambiguous, authorized targeted result with `project_status=unknown` or `inferred` and verified source-chat identity when supported. Never substitute an unrelated current chat for an unavailable named source.
 - A reference such as `chat_handoff 2` resolves **only** to a chat in the most recently displayed overview **in this conversation**, if the overview and exact mapping remain available. Otherwise ask for the title or rerun the overview; never guess a list index.
 
 ## Route selection — exactly two routes
 
 | Route | Explicit trigger | Behavior |
 | --- | --- | --- |
-| **1. Context only** | `chat handoff`, `chat handoff list`, `chat handoff current`, or selected chat without `workspace` | Overview when no chat selected; otherwise read-only Context Summary, then stop |
-| **2. Context + Workspace including slots** | Selected chat or `current` **with** `workspace` suffix | Same Context Summary **plus** verified automatic Workspace slot adoption |
+| **1. Context only** | `chat handoff`, `chat handoff list`, `chat handoff current`, or selected chat without `workspace`/`ws` | Overview when no chat selected; otherwise read-only Context Summary, then stop |
+| **2. Context + Workspace including slots** | Selected chat or `current` **with** explicit `workspace` or `ws` suffix | Same Context Summary **plus** independently verified Workspace slot continuity |
 
 - With no source selected, **both routes stop at Project Chat Overview**. Do not inspect or mutate Workspaces from an overview alone.
 - An overview-number selection is valid only in the same conversation where the number-to-chat mapping was displayed. Never infer a Workspace request from an earlier listing; the selection must explicitly contain `workspace`.
 - The `workspace` suffix requests Workspace continuity; provider admission and the existing MCP gateway/provider authorization boundary remain mandatory.
-- The default route never calls `mcp_model`, `session_exec` or `workspace_exec`.
+- The default route never calls `mcp_model`, `session_exec` or `workspace_exec`. A source title or source context never authorizes Workspace access by itself.
 
 ## Route 1 — Context only
 
@@ -39,11 +39,18 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 
 ## Route 2 — Context + Workspace (including slots)
 
-1. Recover only the same most recent 5–10 accessible source-chat interactions
-   used in Route 1. Historical context is not an MCP access credential.
-2. Resolve the existing Workspace ID from grounded recent context or current
-   provider evidence. Do not invent the mapping from ChatGPT title to the AWA
-   correlation digest. The destination is the invoking MCP conversation.
+1. Recover the same bounded recent-chat window used in Route 1 when accessible.
+   If the selected source chat is inaccessible, report `context_unavailable`;
+   the independently authorized Workspace phase may still proceed **only**
+   with an exact, currently verified Workspace ID and live provider evidence.
+   Do not invent transcript content or treat historical context as an MCP
+   access credential.
+2. Resolve an exact existing Workspace ID from grounded recent context,
+   explicit user-supplied identity or current provider evidence. Verify it
+   through the live Workspace provider before transfer; a historical ID is
+   a locator, not permission or proof of current ownership. Do not invent
+   a mapping from ChatGPT title to the AWA correlation digest. The
+   destination is the invoking MCP conversation.
 3. For an operator-verified **single-owner MCP**, call
    `workspace_exec(operation="session.handoff", payload={"workspace_id":"EXISTING", "approved":true})`.
    The MCP resolves the only other slot-holding conversation automatically.
@@ -53,7 +60,10 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
    use `workspace_exec(operation="session.handoff_candidates",
    payload={"workspace_id":"EXISTING"})` to obtain read-only slot-owner groups.
    Report each candidate's `source_slot`, `source_ref`, slots and repositories
-   without claiming it corresponds to a ChatGPT title. Request selection of
+   without claiming it corresponds to a ChatGPT title. If exactly one
+   authoritative source group exists, the explicitly requested `workspace`
+   or `ws` handoff may use that unique group, subject to live provider
+   admission. If multiple source groups remain, request selection of
    one group and transfer only with `session.handoff` using `approved=true`,
    the selected `source_slot` and matching `source_ref`. The pair prevents
    switching to a different source owner if a slot is reassigned. Source title
@@ -116,15 +126,15 @@ Use `resolve_chat → retrieve_last_5_to_10_interactions → assess_coverage →
 
 ### Summary window — hard limit
 
-- The Context Summary is based **only on the latest 5–10 interactions of the selected source chat** (prefer 10 if available; otherwise use all available up to 10). An interaction is one user turn and its associated Assistant response(s), not an arbitrary number of individual messages or tool calls.
+- The **recent-context summary** is based on the latest 5–10 accessible interactions of the selected source chat (prefer 10 if available; otherwise use all available up to 10). An interaction is one user turn and its associated Assistant response(s), not an arbitrary number of individual messages or tool calls. The window is a bounded text summary, **not** a completeness assertion about the source chat or the live technical state.
 - Apply the limit to **source conversation content**, not the current chat's tool-operation messages. Do not expand the summary with older original messages, historical Memory or earlier chat summaries, even if they are accessible.
 - If the retrieval API supplies fewer than 5 complete interactions, summarize the available recent interactions, label the lower count and do not extrapolate missing turns. If chronology cannot be established, label the selection/window uncertain; do not assert they are the most recent.
-- Include an earlier decision, commit, file, reference or unfinished task **only when it is explicitly visible within the selected recent window**. Older state may independently inform Route 2 live Workspace resolution but must **not** be silently injected into the Context Summary.
+- Include an earlier decision, commit, file, reference or unfinished task in the **recent-context section** only when explicitly visible in the selected recent window. A separate **Continuity Evidence** section may contain an independently observed current repository HEAD, Workspace slots/owners, live jobs or deployment status only when explicitly requested by `workspace`/`ws` and verified through live provider reads. Do not call those observations original-chat messages or silently merge them into historical decisions.
 - Record `interaction_window=last_N_accessible` and `window_coverage=verified_recent|partial|unknown` where evidence permits. These describe the 5–10 interaction window, **not** completeness of the source chat.
 - Treat the summary as a compact recent-state delta; never assert that it represents the entire historical chat or permanently removes old context from ChatGPT.
 
 
-1. Identify project status and the selected source chat from the overview, verified title or explicit `current` option; record title and time range only if actually evidenced. For named chat lookup, prefer verified exact title, then an unambiguous verified close match; disambiguate material collisions.
+1. Identify the selected chat using `current`, the prior overview reference or a targeted search of an explicitly supplied title. Prefer exact title plus stable source identity; a close match requires disambiguation if material. Record project membership only when independently verified; source-chat identification and project membership have different evidence requirements.
 2. Retrieve the most recent accessible original User **and Assistant** turns within the 5–10 interaction window; use direct messages preferentially. A contextual summary may identify missing chronology, but must not contribute substantive claims from outside the window.
 3. Extract only objectives, decisions, constraints, completed work, blockers and next action **that occur or are restated in the selected recent window**; carry repository/document/workspace/job/commit references only when present there. Mark them historical context, not instructions to execute.
 4. Separate requests, historical Assistant reports and verified outcomes. Note gaps rather than inventing message IDs, attachments, tool receipts, timestamps or a complete transcript.
@@ -159,7 +169,7 @@ Produce a normal structured ChatGPT response with the visible Markdown heading `
 - **Short/simple:** Source, Objective, Decisions, Next Action. Omit empty headings.
 - **Long/substantial:** Still summarize **only the latest 5–10 interactions**; include Source/Window Coverage, Objective, Decisions & Constraints, Recent Completed Work, Next Action, References and material gaps in compact form.
 - **Partial or uncertain:** Include project status `verified|inferred|unknown`, `interaction_window` and window coverage `verified_recent|partial|unknown`, material evidence labels and missing recent turns.
-- **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. Do not execute or invent evidence.
+- **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. In `workspace`/`ws` mode keep recent-chat reports separate from current provider-confirmed slot/HEAD/job observations, and report the exact transfer receipt and destination check. Do not execute unfinished tasks or invent evidence.
 
 Conclude with an instruction that the receiving chat treats this as historical context, reloads applicable current rules and verifies any material live state under its own authorization.
 
@@ -173,7 +183,7 @@ The note describes **visible response capture only**. It does not assert storage
 
 ## Safety and completion
 
-- Restrict project-wide listing and named-chat discovery to the verified project. When project status is inferred or unknown, report the listing blocker; a separate explicit `chat_handoff current` may still produce a grounded current-chat partial summary.
+- Restrict **project-wide enumeration** to a verified project. A named-chat request permits only an authorized, targeted title lookup, even when project status is inferred or unknown; label unverified project membership and reject ambiguous matches. A separate explicit `chat_handoff current` may produce a grounded current-chat partial summary without a project listing.
 - If access is partial, deliver a labeled partial summary and state the missing details.
 - Exclude secrets, bearer tokens, authentication material and unnecessary private content.
-- An overview displays **Project Chat Overview** and stops for a source selection. Route 1 ends with a **recent 5–10-interaction Context Summary** and **Previous Context Captured** (or a truthful blocker). Route 2 adds separately verified Workspace/slot continuity status. Neither route implies destination-chat persistence, job replay or deployment.
+- An overview displays **Project Chat Overview** and stops for a source selection. Route 1 ends with a **recent 5–10-interaction Context Summary** and **Previous Context Captured** (or a truthful blocker). Route 2 adds separately verified Workspace/slot continuity status even when source-chat retrieval is blocked, provided the exact Workspace and provider admission are independently verified. Neither route implies destination-chat persistence, job replay or deployment.
