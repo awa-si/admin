@@ -87,7 +87,7 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 | Command | Aliases | Operation / boundary |
 | --- | --- | --- |
 | `reload admin` | `reload admin plane`, `reload admin control plane` | Re-read Admin sources via `core.txt`; no runtime restart |
-| `chat handoff` | `chat_handoff` | [Handoff workflow](workflow/chat-handoff.md); context-only default, `workspace` explicit opt-in |
+| `chat handoff` | `chat_handoff`, `chat handoff ws` | [Handoff workflow](workflow/chat-handoff.md); targeted named-chat lookup, context-only default, explicit `workspace`/`ws` slot-continuity opt-in |
 | `use agent` | `use agent *` | MCP-only dialog: `mcp_model(operation="bootstrap.agents")` → select and inspect Agent; `mcp_instructions(topic="agent", compact=false)` only when needed; no automatic `agent_exec invoke` |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
 | `update mcp` | `auto update`, `self update` | Admin-owned chain: `mcp_version` → `git.inspect(awa)` → `git.pull(awa)` → `git.inspect(awa)` → conditional authorized `supervisor.control(awa:mcp,restart)` → verify live version |
@@ -97,7 +97,7 @@ The exact current command provides only its bounded authorization. Provider admi
 
 ### Handoff semantics
 
-With no selected source, `chat handoff` requests an authoritative project-chat overview. `chat_handoff current` selects the current conversation. Source summaries cover the last 5–10 accessible interactions; missing data is labeled, not reconstructed. The `workspace` suffix requests separately admitted Workspace continuity under the [canonical handoff contract](workflow/chat-handoff.md).
+With no selected source, `chat handoff` requests an authoritative project-chat overview; an unavailable listing is not a zero-chat result. `chat_handoff current` selects the invoking conversation. An explicitly named chat uses an authorized, targeted lookup even when project membership cannot be established; the response must not assert same-project membership without evidence. Recent chat summaries cover the latest 5–10 accessible interactions and label any gaps. The explicit `workspace` or `ws` suffix additionally requests independently admitted Workspace/slot continuity, which is verified and reported separately from chat-history claims under the [canonical handoff contract](workflow/chat-handoff.md).
 
 An unavailable project-chat listing is not an empty listing. A generated Context Summary is not proof of chat creation, persistence, slot transfer, or adoption.
 
