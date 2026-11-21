@@ -11,7 +11,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 ## Purpose and invocation
 
 - Input: `chat handoff [CHAT_NAME|list|current|OVERVIEW_NUMBER] [workspace]`; `chat_handoff` is an equivalent alias. Accept `ws` as a short alias of the explicit `workspace` suffix. With no source (or `list`), attempt a **Project Chat Overview**; `current` selects the invoking chat, and an explicit title or grounded overview number selects a source. A named-chat request is a **targeted lookup**, not a requirement to enumerate every project chat first.
-- Select exactly one route: **Route 1 — Context only** by default; **Route 2 — Context + Workspace including slots** only when `workspace` is explicitly supplied. Both use the same project chat discovery and context reconstruction. Route 2 attempts provider-authorized automatic transfer of existing Workspace slots.
+- Select exactly one route: **Route 1 — Context only** by default; **Route 2 — Context + Workspace including slots** only when `workspace` or `ws` is explicitly supplied. Both use the same bounded source-chat retrieval when accessible. Route 2 separately attempts provider-authorized continuity of existing Workspace slots.
 - Load this complete file **only** on the explicit `chat_handoff` command. Do not load it for ordinary discussion, implicit continuation, research, GitHub work, workspace selection, or an unrelated session operation.
 - Produce a **short Context Summary based only on the last 5–10 accessible source-chat interactions**, ready for reuse. Do not create/open/populate the receiving chat or execute its unfinished tasks. Route 2 may transfer server-side slot reservations under independent authorization, preserving existing checkout and jobs.
 - Classify project identity as `verified` (explicitly surfaced or independently verified), `inferred` (suggested by context only), or `unknown`. Only `verified` allows claiming **same-project membership**. An explicitly named chat may be sought through an available, authorized **targeted chat-search** capability even when project membership is unknown; never claim it is in the current project without proof. Do not broaden that targeted search into an account-wide overview or guess among matching chat titles.
@@ -25,14 +25,14 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 | **1. Context only** | `chat handoff`, `chat handoff list`, `chat handoff current`, or selected chat without `workspace`/`ws` | Overview when no chat selected; otherwise read-only Context Summary, then stop |
 | **2. Context + Workspace including slots** | Selected chat or `current` **with** explicit `workspace` or `ws` suffix | Same Context Summary **plus** independently verified Workspace slot continuity |
 
-- With no source selected, **both routes stop at Project Chat Overview**. Do not inspect or mutate Workspaces from an overview alone.
+- With no source selected, **both routes stop at Project Chat Overview** (or a truthful listing-unavailable status). Do not inspect or mutate Workspaces from an overview alone.
 - An overview-number selection is valid only in the same conversation where the number-to-chat mapping was displayed. Never infer a Workspace request from an earlier listing; the selection must explicitly contain `workspace`.
-- The `workspace` suffix requests Workspace continuity; provider admission and the existing MCP gateway/provider authorization boundary remain mandatory.
+- The explicit `workspace`/`ws` suffix requests Workspace continuity; provider admission and the existing MCP gateway/provider authorization boundary remain mandatory.
 - The default route never calls `mcp_model`, `session_exec` or `workspace_exec`. A source title or source context never authorizes Workspace access by itself.
 
 ## Route 1 — Context only
 
-1. Perform same-project chat identification and read only the latest 5–10 accessible interactions using the shared extraction limit below; distinguish verified project membership from inferred context and partial transcripts.
+1. Identify the source through `current`, a verified same-project overview reference, or an unambiguous authorized targeted title lookup; read only the latest 5–10 accessible interactions under the shared extraction limit. Distinguish confirmed source identity, verified project membership and partial transcripts.
 2. Produce **Context Summary** with evidence labels, decisions, completed and pending work, relevant references, gaps and immediate next step.
 3. Display **Previous Context Captured** only for a usable visible response, without claiming Memory or other persistence.
 4. **Stop.** No MCP discovery, checkpoint creation/reading, Workspace/slot access, jobs, Git mutation or follow-on execution. The receiving chat decides independently how to continue.
@@ -167,7 +167,7 @@ Use `resolve_chat → retrieve_last_5_to_10_interactions → assess_coverage →
 Produce a normal structured ChatGPT response with the visible Markdown heading `Context Summary`. Do not claim to render a native persistent UI element. Adapt detail to the source:
 
 - **Short/simple:** Source, Objective, Decisions, Next Action. Omit empty headings.
-- **Long/substantial:** Still summarize **only the latest 5–10 interactions**; include Source/Window Coverage, Objective, Decisions & Constraints, Recent Completed Work, Next Action, References and material gaps in compact form.
+- **Long/substantial:** Summarize **only the latest 5–10 interactions** in the recent-context section; include Source/Window Coverage, Objective, Decisions & Constraints, Recent Completed Work, Next Action, References and material gaps in compact form.
 - **Partial or uncertain:** Include project status `verified|inferred|unknown`, `interaction_window` and window coverage `verified_recent|partial|unknown`, material evidence labels and missing recent turns.
 - **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. In `workspace`/`ws` mode keep recent-chat reports separate from current provider-confirmed slot/HEAD/job observations, and report the exact transfer receipt and destination check. Do not execute unfinished tasks or invent evidence.
 
