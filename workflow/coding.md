@@ -3,18 +3,48 @@ mode: normative_machine_directives
 
 resolution:
 - owner: awa-si/admin/workflow/coding.md
-- load_when: implementation|code_design|refactor|testing|test_design|lint|format|type_check|static_analysis|build_validation|performance_review|benchmark|dependency_selection|coding_documentation|security_review
-- read_when: coding_or_quality_case_matches_core_registry;load_only_applicable_coding_detail_modules
+- load_when: implementation|code_design|refactor|test|testing|test_design|lint|format|type_check|static_analysis|build_validation|benchmark|performance_review|dependency_selection|coding_documentation|security_review
+- read_when: coding_or_quality_intent_matches_this_owner;load_only_applicable_coding_detail_modules
 - behavior_owner: awa-si/admin/behavior.txt
 - registry_owner: awa-si/admin/core.txt
 - execution_owner: awa-si/admin/workflow.md
 - research_owner: awa-si/admin/workflow/research.md
 - repository_policy_owner: current_repository_AGENTS_md_and_narrowest_technical_contract
-- conditional_sources: core.txt#registry.workflow.cases[id=coding].modules
+- conditional_sources: workflow/coding.md#conditional_modules
 - loading_boundary: full_root_and_only_matching_full_module_files
 - override: explicit_only;parent_rules_remain_active
 - unrequested_work: no_unrelated_upgrade|migration|refactor|lint_cleanup
 
+
+conditional_modules:
+  - id: architecture
+    path: awa-si/admin/workflow/coding/architecture.md
+    load: on_material_implementation_or_architecture_relevance
+    read_when: substantive_implementation|architecture_design|refactor|code_review|public_contract|security_sensitive_change|shared_helper_or_module_design|observability_change|error_or_resource_handling
+  - id: quality
+    path: awa-si/admin/workflow/coding/quality.md
+    load: on_quality_gate_or_verification_relevance
+    read_when: code_change|bugfix|lint|format|type_check|static_analysis|build_validation|test_execution|verification|benchmark|quality_review|documentation_validation
+  - id: dependencies
+    path: awa-si/admin/workflow/coding/dependencies.md
+    load: on_dependencies_relevance
+    read_when: dependency_selection|version_sensitive_API|dependency_management|package_manager_change|toolchain_change|build_setup
+  - id: concurrency
+    path: awa-si/admin/workflow/coding/concurrency.md
+    load: on_concurrency_relevance
+    read_when: async_API|network_or_database_IO|parallel_processing|shared_mutable_state|backpressure|cancellation
+  - id: performance
+    path: awa-si/admin/workflow/coding/performance.md
+    load: on_performance_relevance
+    read_when: performance_sensitive_implementation|profiling|hot_path|benchmark|scaling|memory_or_IO_optimization
+  - id: testing
+    path: awa-si/admin/workflow/coding/testing.md
+    load: on_testing_relevance
+    read_when: writing_tests|changing_tests|bugfix|behavior_change|test_review|test_design
+  - id: async_testing
+    path: awa-si/admin/workflow/coding/async-testing.md
+    load: on_async_testing_relevance
+    read_when: Python_asyncio_with_pytest|pytest_asyncio_fixture|async_test_failure|async_loop_configuration
 
 coding_execution_tiers:
 - read_when: coding_task_needs_execution_or_repository_files_or_verification

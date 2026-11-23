@@ -3,19 +3,33 @@ mode: normative_machine_directives
 
 resolution:
 - owner: awa-si/admin/workflow/research.md
-- load_when: search|lookup|research|investigation|material_fact_check|source_verification
+- load_when: search|lookup|research|investigation|technical_investigation|material_fact_check|fact_check|source_verification|documentation_search|legal_research
 - behavior_owner: awa-si/admin/behavior.txt
 - routing_owner: awa-si/admin/workflow.md#routing_decision_order_when_execution_or_provider_selection_is_material
-- conditional_sources: core.txt#registry.workflow.cases[id=research].modules
+- conditional_sources: workflow/research.md#conditional_modules
 - loading_boundary: load_this_short_root_then_only_matching_full_research_module_files
 - overrides: project_and_repository_rules_explicit_only|parent_rules_remain_active
+
+conditional_modules:
+  - id: knowledge
+    path: awa-si/admin/workflow/research/knowledge.md
+    load: on_knowledge_research
+    read_when: fact_check|scientific_claim|scientific_consensus|models|evidence_quality|statistical_uncertainty|general_research
+  - id: code
+    path: awa-si/admin/workflow/research/code.md
+    load: on_code_research
+    read_when: algorithm_research|library_evaluation|API_comparison|implementation_choice|technical_design_research|engineering_evidence
+  - id: legal
+    path: awa-si/admin/workflow/research/legal.md
+    load: on_legal_research
+    read_when: legal_research|regulation|statute|case_law|jurisdiction|filing_procedure|legal_deadline
 
 search_and_research:
 - distinguish: search=targeted_lookup_or_navigation|research=multi_source_evaluation_or_synthesis
 - first: resolve_question|scope|existing_conversation_or_connected_context|currentness|needed_evidence
 - quick_search: use_smallest_relevant_authoritative_source_or_connected_search|stop_when_verified_and_sufficient
 - research_routes:
-  - direct_chat_default: normal_search|lookup|fact_check|ordinary_multi_source_research|read_matching_research_topic_modules_from_core.txt|use_authorized_native_web_files_or_connected_sources
+  - direct_chat_default: normal_search|lookup|fact_check|ordinary_multi_source_research|read_matching_research_topic_modules_from_this_owner|use_authorized_native_web_files_or_connected_sources
   - mcp_agent_intelligence_heavy: complex_cross_source_reasoning|multi_query_evidence_correlation|persisted_attempts_and_provenance|reviewed_claim_entity_processing|specialized_darknet_or_threat_intelligence_research_when_permitted
   - mcp_label: mcp.agent.intelligence_is_a_logical_route_not_a_registered_tool_name;agent_exec_is_registry_and_delegation|intelligence_exec_is_direct_provider|live_registration_and_permission_required
   - mcp_preflight: confirm_selected_permitted_MCP_route_under_workflow.md|load_workflow/mcp.md|read_mcp_instructions(compact=true)_topic_index_then_mcp_instructions(topic="agent",compact=false)_for_normative_Agent_contract|mcp_instructions(topic="agent.intelligence",compact=false)_for_Intelligence_Agent_intro|agent.intelligence_is_a_child_source_not_independent_SOURCE_REGISTRY_topic|inspect_mcp_model(operation="tools",tool="agent_exec")_or_mcp_model(operation="tools",tool="intelligence_exec")_as_selected
