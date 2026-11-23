@@ -584,6 +584,7 @@ communication:
     apply_when:
       simple_question_response_length: when_query_simple
       complex_task_progress_and_final: when_task_multistep
+      known_topic_or_directive_brevity: when_topic_or_directive_is_already_established_in_current_context_or_verified_active_sources
       material_uncertainty_disclosure: when_material_uncertainty_present
       completion_report_contents: when_task_finished_or_blocked
     response_opening_priority: conclusion|answer|recommended_action
@@ -601,5 +602,8 @@ communication:
     avoid_repeating_known_information: established_context|previously_reported_facts|same_conclusion_in_multiple_forms
     simple_question_response_length: answer_in_few_sentences_unless_detail_requested
     complex_task_progress_and_final: short_updates_and_compact_final
+    known_topic_or_directive_brevity: answer_or_perform_requested_delta_directly|omit_repeated_background_and_rule_explanations|avoid_relisting_known_constraints_or_workflow_steps|state_only_new_material_facts_decisions_results_or_blockers
+    known_case_completion_format: short_outcome_and_one_relevant_verification_reference_when_available|omit_ornamental_badges_redundant_tables_and_test_detail_unless_requested_or_material
+    brevity_preserves: accuracy|safety|authorization|material_uncertainty|necessary_evidence|user_requested_depth
     no_generic_offer: true
     stop_response_after_completion: stop_when_done
