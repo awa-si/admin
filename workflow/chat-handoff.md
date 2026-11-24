@@ -23,7 +23,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 | Route | Explicit trigger | Behavior |
 | --- | --- | --- |
 | **1. Context only** | `chat handoff`, `chat handoff list`, `chat handoff current`, or selected chat without `workspace`/`ws` | Overview when no chat selected; otherwise read-only Context Summary, then stop |
-| **2. Context + Workspace including slots** | Selected chat or `current` **with** explicit `workspace` or `ws` suffix | Same Context Summary **plus** independently verified Workspace slot continuity |
+| **2. Context + Workspace including slots** | Selected chat or `current` **with** explicit `workspace` or `ws` suffix | Same Context Summary **plus** verified Workspace slot continuity and, when a repository is present, read-only checkout status + last three local commits |
 
 - With no source selected, **both routes stop at Project Chat Overview** (or a truthful listing-unavailable status). Do not inspect or mutate Workspaces from an overview alone.
 - The `chat handoff ws` / `chat_handoff ws` alias **without a selected source** requests only the overview stage; `ws` is explicit opt-in for Route 2 once a source is selected, not authority to infer a source or transfer slots immediately. Do not treat the `ws` suffix as a chat title.
@@ -106,6 +106,38 @@ repository. Technical owner:
    cross-Workspace transfer. Do not start jobs, re-import repositories, clean
    worktrees, restart services or replay unfinished tasks.
 
+### Workspace repository snapshot — Route 2 only
+
+- If the selected, **currently verified and authorized** Workspace contains one
+  or more imported repositories, read their **current local checkout state**
+  before concluding the handoff. This is read-only continuity evidence, not
+  additional source-chat history or permission to modify Git state.
+- For each repository in the verified source/destination slot set, obtain
+  repository identity, slot, branch or detached-HEAD status, full local HEAD
+  SHA, upstream/tracking reference when configured, and clean/dirty state
+  (including uncommitted/untracked changes when the provider exposes them).
+  Read the **last three commits reachable from that local HEAD** in newest-first
+  order: abbreviated/full SHA, subject and commit date; use only as many as
+  exist. Prefer the Workspace provider's admitted repository/status/log
+  operations, or an authorized bounded read-only `git status`,
+  `git rev-parse` and `git log -3` in the correct checkout and slot.
+  Check the **current live operation schema** first. Do not clone, fetch,
+  pull, checkout, merge, reset, clean, push or start development jobs.
+- Label the evidence `workspace_repository_snapshot` and include the
+  verified Workspace ID, repository/slot, observed local HEAD, working-tree
+  state and three commit records. Distinguish **local checkout HEAD** from
+  remote `origin/main`, live deployment version and previous assistant
+  reports; do not assume any are equal. Source-chat messages remain limited
+  to the recent 5–10 interactions. Snapshot data belongs in the separate
+  **Continuity Evidence** section.
+- If the workspace has no imported repository, skip this snapshot. If the
+  repository cannot be read under current ownership/admission, state
+  `repository_snapshot_unavailable` with the concrete blocker and continue
+  only with verified handoff evidence. Never use an old chat summary or GitHub
+  remote history as a substitute for the local checkout; never infer a
+  missing commit, a clean worktree or a successful transfer. No additional
+  handoff authorization is implied by the snapshot.
+
 **Checkpoint suspended:** `session_exec` checkpoint code and historical
 records remain in MCP but are disabled by default and are not used by either
 route, including MCP self-update. No prepare/accept handshake, bearer token,
@@ -170,7 +202,7 @@ Produce a normal structured ChatGPT response with the visible Markdown heading `
 - **Short/simple:** Source, Objective, Decisions, Next Action. Omit empty headings.
 - **Long/substantial:** Summarize **only the latest 5–10 interactions** in the recent-context section; include Source/Window Coverage, Objective, Decisions & Constraints, Recent Completed Work, Next Action, References and material gaps in compact form.
 - **Partial or uncertain:** Include project status `verified|inferred|unknown`, `interaction_window` and window coverage `verified_recent|partial|unknown`, material evidence labels and missing recent turns.
-- **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. In `workspace`/`ws` mode keep recent-chat reports separate from current provider-confirmed slot/HEAD/job observations, and report the exact transfer receipt and destination check. Do not execute unfinished tasks or invent evidence.
+- **Technical/development:** Include grounded repository/branch/commits, known workspace/slot/job references, tests and affected files. In `workspace`/`ws` mode keep recent-chat reports separate from current provider-confirmed slot/HEAD/job observations; for each accessible imported repository add the local checkout/dirty state and latest three locally reachable commits to **Continuity Evidence**. Report the exact transfer receipt and destination check. Do not execute unfinished tasks or invent evidence.
 
 Conclude with an instruction that the receiving chat treats this as historical context, reloads applicable current rules and verifies any material live state under its own authorization.
 
