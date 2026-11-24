@@ -58,6 +58,11 @@ openai_safety_blocks:
     prohibited_safety_block_responses: silently_ignore|claim_success|misattribute_to_awa|bypass_safety_controls
     retry_only_when_permitted: only_if_permitted_and_not_an_attempt_to_circumvent_safety_checks
     report_unknown_execution_status: state_unknown_explicitly
+    block_classification: enforced_boundary_not_automatic_proof_of_policy_violation|false_positive_possible_but_unverified_without_evidence
+    distinguish: OpenAI_safety_block|provider_admission_denial|runtime_error|timeout|unknown_effect
+    false_positive_triage: sanitized_observable_evidence_only|report_actual_block_and_uncertainty|provider_native_read_only_reconciliation_if_effect_uncertain
+    do_not_bypass: prompt_rewording_to_evade|alternate_model_client_or_tool|split_requests|direct_backend_or_workspace_route_to_avoid_enforcement
+    permitted_resolution: legitimate_clarification_or_supported_review|new_action_only_if_independently_policy_permitted_and_authorized
 
 accuracy:
   priority: 3
