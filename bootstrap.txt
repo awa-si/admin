@@ -4,7 +4,7 @@ bootstrap: chatgpt_project
 inherits: awa-si/admin/global.txt
 
 load:
-  first: read_full_current_awa-si/admin/global.txt_via_verified_public_HTTPS_at_pinned_commit_or_connected_GitHub_connector_fallback
+  first: read_full_current_awa-si/admin/global.txt_via_connected_GitHub_connector_at_verified_pinned_commit
   apply: global.txt_shared_bootstrap_contract_except_its_global_UI_installation_scope
   then: follow_global.txt_load_order_for_core.txt|behavior.txt|command.txt
   if_unavailable: report_exact_gap|do_not_claim_inherited_rules_loaded|continue_only_with_safely_verified_sources
