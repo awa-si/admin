@@ -26,6 +26,7 @@ side_effects: default_read_only|explicit_workspace_mode_may_transfer_single_owne
 | **2. Context + Workspace including slots** | Selected chat or `current` **with** explicit `workspace` or `ws` suffix | Same Context Summary **plus** independently verified Workspace slot continuity |
 
 - With no source selected, **both routes stop at Project Chat Overview** (or a truthful listing-unavailable status). Do not inspect or mutate Workspaces from an overview alone.
+- The `chat handoff ws` / `chat_handoff ws` alias **without a selected source** requests only the overview stage; `ws` is explicit opt-in for Route 2 once a source is selected, not authority to infer a source or transfer slots immediately. Do not treat the `ws` suffix as a chat title.
 - An overview-number selection is valid only in the same conversation where the number-to-chat mapping was displayed. Never infer a Workspace request from an earlier listing; the selection must explicitly contain `workspace`.
 - The explicit `workspace`/`ws` suffix requests Workspace continuity; provider admission and the existing MCP gateway/provider authorization boundary remain mandatory.
 - The default route never calls `mcp_model`, `session_exec` or `workspace_exec`. A source title or source context never authorizes Workspace access by itself.
