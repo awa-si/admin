@@ -3,13 +3,12 @@ bootstrap: chatgpt
 authority: awa-si/admin/core.txt
 
 admin_read:
-  head: https://api.github.com/repos/awa-si/admin/commits/main
-  raw: https://raw.githubusercontent.com/awa-si/admin/<SHA>/<path>
-  primary: public_HTTPS_if_verified
-  pin: resolve_main_to_40_char_SHA|read_all_at_same_SHA
-  verify: HTTP_success|full_UTF8|same_revision|required_paths
-  fallback: connected_GitHub_connector_if_unavailable
-  never: unpinned_main_as_atomic_snapshot|cached_chat_as_source
+  primary: connected_GitHub_connector
+  repository: awa-si/admin
+  pin: resolve_main_to_commit_SHA_via_connector|read_all_at_same_SHA
+  verify: connector_success|full_UTF8|same_revision|required_paths
+  unavailable: report_exact_gap|do_not_claim_loaded
+  never: public_HTTPS_fallback|unpinned_main_as_atomic_snapshot|cached_chat_as_source
 
 load:
   order: core.txt -> behavior.txt -> command.txt
