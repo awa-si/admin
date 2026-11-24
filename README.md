@@ -82,7 +82,7 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 
 ## Command dispatch
 
-[`command.txt`](command.txt) defines six commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
+[`command.txt`](command.txt) defines seven commands. Each entry contains `command`, `aliases`, `workflow`, and `authorization`. Execution procedures remain in the referenced owners.
 
 | Command | Aliases | Operation / boundary |
 | --- | --- | --- |
@@ -90,10 +90,11 @@ Priority `1` is highest **within the same instruction authority**. Only applicab
 | `chat handoff` | `chat_handoff`, `chat handoff ws` | [Handoff workflow](workflow/chat-handoff.md); targeted named-chat lookup, context-only default, explicit `workspace`/`ws` slot-continuity opt-in |
 | `use agent` | `use agent *` | MCP-only dialog: `mcp_model(operation="bootstrap.agents")` → select and inspect Agent; `mcp_instructions(topic="agent", compact=false)` only when needed; no automatic `agent_exec invoke` |
 | `reload mcp` | — | `mcp_reload()` with default scope; in-process reload only |
-| `update mcp` | `auto update`, `self update` | Admin-owned chain: `mcp_version` → `git.inspect(awa)` → `git.pull(awa)` → `git.inspect(awa)` → conditional authorized `supervisor.control(awa:mcp,restart)` → verify live version |
+| `restart mcp` | `mcp restart` | Restart only `awa:mcp` through the admitted Supervisor handoff; wait at least 5 seconds after accepted handoff before live verification; no Git pull |
+| `update mcp` | `auto update`, `self update` | Admin-owned chain: `mcp_version` → `git.inspect(awa)` → `git.pull(awa)` → `git.inspect(awa)` → conditional authorized `supervisor.control(awa:mcp,restart)` → wait at least 5 seconds after accepted handoff → verify live version |
 | `update host` | `sync host` | Admin-owned chain: `git.catalog` → inspect each configured `/opt/<repo>` → one `git.pull` (default all, or `update host awa` / `update host odoo` suffix) → inspect completed checkouts; no push/restart/deployment |
 
-The exact current command provides only its bounded authorization. Provider admission is still required; discovery and command definitions are not execution receipts. `update host` does not authorize `update mcp` effects. Its default selection comes from `host.git` in the target repository’s validated `config.json`, not a directory wildcard. Future suffixes require explicit configuration.
+The exact current command provides only its bounded authorization. Provider admission is still required; discovery and command definitions are not execution receipts. `update host` does not authorize `update mcp` effects. `restart mcp` authorizes only the single `awa:mcp` restart, not a Git update. The 5-second delay is a minimum verification grace period, not confirmation of restart completion; uncertain outcomes must not trigger a second restart. Its default selection comes from `host.git` in the target repository’s validated `config.json`, not a directory wildcard. Future suffixes require explicit configuration.
 
 ### Handoff semantics
 
